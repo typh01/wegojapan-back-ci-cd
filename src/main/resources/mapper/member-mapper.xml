@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.avengers.member.model.dao.MemberMapper">
+
+    <select id="getMemberByMemberId"  parameterType="String"  resultType="long">
+      select 
+             COUNT(*)
+        FROM
+             TB_MEMBER
+       WHERE
+             MEMBER_ID = #{memberId}
+    </select>
+
+    <select id="getMemberByEmail" parameterType="String" resultType="long">
+      SELECT
+             COUNT(*)
+        FROM
+             TB_MEMBER
+       WHERE
+             EMAIL = #{email}
+    
+    </select>
+
+    <!-- 회원 가입 -->
+    <insert id="signUp" parameterType="com.kh.avengers.member.model.vo.Member">
+      INSERT
+        INTO
+             TB_MEMBER
+           (
+             MEMBER_ID 
+           , MEMBER_PW 
+           , MEMBER_NAME 
+           , EMAIL 
+           , MEMBER_ROLE 
+           )
+      VALUES
+           (
+             #{memberId}
+           , #{memberPw} 
+           , #{memberName}         
+           , #{email}
+           , #{memberRole}
+           )
+    </insert>
+
+  </mapper>
+    
