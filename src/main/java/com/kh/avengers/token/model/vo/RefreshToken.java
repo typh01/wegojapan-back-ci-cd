@@ -1,6 +1,6 @@
-package com.kh.avengers.token.vo;
+package com.kh.avengers.token.model.vo;
 
-import java.time.LocalDateTime;
+
 
 import lombok.Builder;
 import lombok.Value;
@@ -10,7 +10,7 @@ import lombok.Value;
 public class RefreshToken {
   private Long memberNo;
   private String refreshToken;
-  private Long expiration;
+  private Long expried;
 
 
 }

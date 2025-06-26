@@ -11,9 +11,15 @@
              MEMBER_ID = #{memberId}
     </select>
 
-    <select id="getMemberByEmail" parameterType="String" resultType="long">
+    <select id="getMemberByEmail" parameterType="String" resultType="MemberDTO">
       SELECT
-             COUNT(*)
+              MEMBER_NO memberNo
+            , MEMBER_ID memberId        
+            , MEMBER_PW memberPw
+            , MEMBER_NAME memberName
+            , MEMBER_ROLE memberRole  
+            , EMAIL email 
+            , IS_ACTIVE isActive           
         FROM
              TB_MEMBER
        WHERE

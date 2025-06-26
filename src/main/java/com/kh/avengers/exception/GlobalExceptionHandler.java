@@ -15,6 +15,7 @@ import com.kh.avengers.exception.commonexception.NotExistException;
 import com.kh.avengers.exception.commonexception.NotFoundException;
 import com.kh.avengers.exception.commonexception.UpdateException;
 import com.kh.avengers.exception.util.AlreadyExistException;
+import com.kh.avengers.exception.util.CustomMessagingException;
 import com.kh.avengers.exception.util.ForbiddenException;
 import com.kh.avengers.exception.util.TagAddException;
 import com.kh.avengers.exception.util.TravelSyncFailException;
@@ -83,5 +84,10 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(InvalidException.class)
   public ResponseEntity<RequestData> handleInvalidException(InvalidException e){
     return makeResponseEntity(e, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(CustomMessagingException.class)
+  public ResponseEntity<RequestData> handleCustomMessagingException(CustomMessagingException e){
+    return makeResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

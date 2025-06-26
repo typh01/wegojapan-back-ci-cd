@@ -8,13 +8,13 @@
          (
            MEMBER_NO
          , REFRESH_TOKEN
-         , EXPIRATION
+         , EXPRIED
          ) 
     VALUES
          (
-         , #{memberNo},
-         , #{refreshToken},
-         , #{expiration}
+           #{memberNo}
+         , #{refreshToken}
+         , #{expried}
          )    
   </insert>
 
@@ -22,7 +22,7 @@
     SELECT
            MEMBER_NO memberNo
          , REFRESH_TOKEN refreshToken
-         , EXPIRATION expiration
+         , EXPRIED expried
       FROM
            TB_TOKEN
      WHERE

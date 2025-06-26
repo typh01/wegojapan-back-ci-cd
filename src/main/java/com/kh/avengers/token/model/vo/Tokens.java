@@ -1,4 +1,4 @@
-package com.kh.avengers.token.vo;
+package com.kh.avengers.token.model.vo;
 
 import lombok.Builder;
 import lombok.Value;

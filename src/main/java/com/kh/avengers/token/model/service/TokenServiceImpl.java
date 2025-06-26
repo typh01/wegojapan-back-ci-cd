@@ -1,19 +1,20 @@
-package com.kh.avengers.token.service;
+package com.kh.avengers.token.model.service;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce.Cluster.Refresh;
 import org.springframework.stereotype.Service;
 
 import com.kh.avengers.configuration.util.JwtUtil;
-import com.kh.avengers.token.dao.TokenMapper;
-import com.kh.avengers.token.vo.RefreshToken;
-import com.kh.avengers.token.vo.Tokens;
+import com.kh.avengers.token.model.dao.TokenMapper;
+import com.kh.avengers.token.model.vo.RefreshToken;
+import com.kh.avengers.token.model.vo.Tokens;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService{
@@ -25,7 +26,10 @@ public class TokenServiceImpl implements TokenService{
 
   @Override
   public Tokens generateToken(String memberId, Long memberNo){
+    log.info(" generateToken 호출됨 - memberId: {}, memberNo: {}", memberId, memberNo);
     Map<String, String> tokens = createToken(memberId);
+    log.info(" 생성된 AccessToken: {}", tokens.get("accessToken"));
+    log.info(" 생성된 RefreshToken: {}", tokens.get("refreshToken"));
     
     saveToken(tokens.get("refreshToken"), memberNo);
 
@@ -40,7 +44,7 @@ public class TokenServiceImpl implements TokenService{
     RefreshToken token = RefreshToken.builder()
                                      .refreshToken(refreshToken)
                                      .memberNo(memberNo)
-                                     .expiration(System.currentTimeMillis() + 3600000L * 24 * 3)
+                                     .expried(System.currentTimeMillis() + (3600000L * 24 * 3))
                                      .build();
                                      
     tokenMapper.saveToken(token);
@@ -64,7 +68,7 @@ public class TokenServiceImpl implements TokenService{
     RefreshToken token = RefreshToken.builder().refreshToken(refreshToken).build();
     RefreshToken responseToken = tokenMapper.findByToken(token);
 
-    if(responseToken == null || token.getExpiration() < System.currentTimeMillis()) {
+    if(responseToken == null || token.getExpried() < System.currentTimeMillis()) {
 			throw new RuntimeException("유효하지 않은 토큰입니다");
 		}
 

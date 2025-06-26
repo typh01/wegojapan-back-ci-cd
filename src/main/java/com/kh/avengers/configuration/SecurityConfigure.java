@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,10 +34,11 @@ public class SecurityConfigure {
 
     return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
                        .httpBasic(AbstractHttpConfigurer::disable)
+                       .cors(Customizer.withDefaults())
                        .csrf(AbstractHttpConfigurer::disable)
                        .authorizeHttpRequests(requests -> {
                         requests.requestMatchers("/admin/**").hasRole("ADMIN");
-                        requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "/members").permitAll();
+                        requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/members", "/api/emails/send-email","/api/emails/verify-code").permitAll();
                         requests.requestMatchers(HttpMethod.GET).permitAll();
                         requests.requestMatchers(HttpMethod.POST).authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
