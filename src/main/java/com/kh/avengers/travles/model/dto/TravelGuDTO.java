@@ -13,10 +13,11 @@ import lombok.Getter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TravelCategoryDTO {
-  private long travelCategoryNo;
-  private String travelCategoryName;
-  private Date travelCategoryCreatedDate;
-  private Date travelCategoryModifiedDate;
-  private String travelCategoryStatus;
+public class TravelGuDTO {
+  private Long guNo;
+  private Long cityNo;
+  private String guName;
+  private Date guCreatedDate;
+  private Date guModifiedDate;
+  private String guStatus;
 }

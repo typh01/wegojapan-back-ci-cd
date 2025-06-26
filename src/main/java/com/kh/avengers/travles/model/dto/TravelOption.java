@@ -20,4 +20,5 @@ public class TravelOption {
   private String travelOptiontDetail;
   private Date travelOptionCreatedDate;
   private Date travelOptionModifiedDate;
+  private String travelOptionStatus;
 }
