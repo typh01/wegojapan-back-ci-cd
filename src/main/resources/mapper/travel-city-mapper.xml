@@ -3,11 +3,17 @@
 <mapper namespace="com.kh.avengers.travles.model.dao.TravelCityMapper">
 
     <!-- 시 목록 조회 -->
-    <select id="selectTravelCityList" parameterType="TravelCityDTO" resultType="TravelCityDTO">
+    <select id="selectCityList" parameterType="TravelCityDTO" resultType="TravelCityDTO">
         SELECT
             CITY_NO AS cityNo,
-            CITY_NAME AS cityName
-        FROM TB_CITY
+            CITY_NAME AS cityName,
+            CITY_MAPY AS cityMapY,
+            CITY_MAPX AS cityMapX,
+            CITY_CREATED_DATE AS cityCreatedDate,
+            CITY_MODIFIED_DATE AS cityModifiedDate,
+            CITY_STATUS AS cityStatus
+        FROM 
+            TB_CITY
         <where>
             CITY_STATUS = 'Y'
             <if test="cityName != null and cityName != ''">
@@ -16,39 +22,60 @@
         </where>
     </select>
 
+    <!-- 관리자 시 목록 조회 -->
+    <select id="selectCity" parameterType="TravelCityDTO" resultType="TravelCityDTO">
+        SELECT
+            CITY_NO AS cityNo,
+            CITY_NAME AS cityName,
+            CITY_MAPY AS cityMapY,
+            CITY_MAPX AS cityMapX,
+            CITY_CREATED_DATE AS cityCreatedDate,
+            CITY_MODIFIED_DATE AS cityModifiedDate,
+            CITY_STATUS AS cityStatus
+        FROM 
+            TB_CITY
+    </select>
+
     <!-- 시 번호로 존재 여부 검색 -->
-    <select id="searchGuCity" parameterType="long" resultType="int">
+    <select id="searchCityNo" parameterType="long" resultType="int">
         SELECT 
             COUNT(*) 
         FROM 
             TB_CITY 
         WHERE 
             CITY_NO = #{cityNo}
-            AND CITY_STATUS = 'Y'
     </select>
 
     <!-- 시 등록 -->
-    <insert id="insertTravelCity" parameterType="TravelCityDTO">
+    <insert id="insertCity" parameterType="TravelCityDTO">
         INSERT INTO 
-            TB_CITY (CITY_NAME)
+            TB_CITY (
+                CITY_NAME, 
+                CITY_MAPX, 
+                CITY_MAPY
+                )
         VALUES 
-            (#{cityName})
+            (#{cityName},
+             #{cityMapX},
+             #{cityMapY})
     </insert>
 
     <!-- 시 수정 -->
-    <update id="updateTravelCity" parameterType="TravelCityDTO">
+    <update id="updateCity" parameterType="TravelCityDTO">
         UPDATE 
             TB_CITY 
         SET 
             CITY_NAME = #{cityName},
-            CITY_MODIFIED_DATE = SYSDATE
+            CITY_MAPX = #{cityMapX},
+            CITY_MAPY = #{cityMapY},
+            CITY_MODIFIED_DATE = SYSDATE,
+            CITY_STATUS = #{cityStatus}
         WHERE 
             CITY_NO = #{cityNo}
-            AND CITY_STATUS = 'Y'
     </update>
 
     <!-- 시 삭제 -->
-    <delete id="deleteTravelCity" parameterType="long">
+    <delete id="deleteCity" parameterType="long">
         UPDATE 
             TB_CITY 
         SET 

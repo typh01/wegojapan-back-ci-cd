@@ -2,7 +2,7 @@ package com.kh.avengers.member.model.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
-
+import com.kh.avengers.member.model.dto.MemberDTO;
 import com.kh.avengers.member.model.vo.Member;
 
 
@@ -11,7 +11,7 @@ public interface MemberMapper {
 
   Long getMemberByMemberId(String memberId);
 
-  Long getMemberByEmail(String email);
+  MemberDTO getMemberByEmail(String email);
 
   void signUp(Member memberValue);
 

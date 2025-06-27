@@ -1,4 +1,4 @@
-package com.kh.avengers.travles.model.dto;
+package com.kh.avengers.admin.travels.model.dto;
 
 import java.sql.Date;
 
@@ -16,7 +16,9 @@ import lombok.Setter;
 public class TravelCityDTO {
   private Long cityNo;
   private String cityName;
+  private String cityMapX;
+  private String cityMapY;
   private Date cityCreatedDate;
-  private Date cityModifieDate;
+  private Date cityModifiedDate;
   private String cityStatus;
 }
