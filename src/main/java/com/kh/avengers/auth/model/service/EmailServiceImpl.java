@@ -157,13 +157,16 @@ public class EmailServiceImpl implements EmailService{
   public RequestData findPassword(Map<String, String> findPw){
     String memberId = findPw.get("memberId");
     String email = findPw.get("email");
-    Long member = memberMapper.getMemberByMemberId(memberId);
-    if(memberId == null){
-      throw new NotFoundException("유효하지 않은 사용자 아이디입니다.");
+    
+    if(memberId == null || memberId.trim().isEmpty()){ 
+      throw new NotFoundException("아이디를 입력해주세요.");
     }
-
-    if(member != 1){
-      throw new NotFoundException(("유효하지 않은 이메일 입니다."));
+    if(email == null || email.trim().isEmpty()){
+      throw new NotFoundException(("이메일을 입력해주세요."));
+    }
+    Long member = memberMapper.getMemberByMemberId(memberId);
+    if(member != 1){  // 회원 존재 여부 (DB에 없을수도 있음)
+      throw new NotFoundException("해당하는 회원이 없습니다.");
     }
     sendCodeEmail(email);
     return responseUtil.rd("200", null, "인증 코드가 발송되었습니다."); 
