@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.avengers.auth.model.dto.FindIdRequestDTO;
 import com.kh.avengers.auth.model.service.AuthService;
 import com.kh.avengers.auth.model.vo.Login;
 import com.kh.avengers.common.dto.RequestData;

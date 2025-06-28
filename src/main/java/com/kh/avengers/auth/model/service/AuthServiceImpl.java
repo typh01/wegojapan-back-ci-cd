@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
+import com.kh.avengers.auth.model.dto.FindIdRequestDTO;
 import com.kh.avengers.auth.model.vo.CustomUserDetails;
 import com.kh.avengers.auth.model.vo.Login;
 import com.kh.avengers.auth.model.vo.LoginInfo;
@@ -54,12 +55,9 @@ public class AuthServiceImpl implements AuthService{
                                     .isActive(loginMember.getIsActive())
                                     .build();
     log.info("머임");
-
     loginResponse.put("loginInfo", loginInfo);
-    
-  
-
     return responseUtil.rd("200", loginResponse, "로그인 성공");
   }
+
 
 }

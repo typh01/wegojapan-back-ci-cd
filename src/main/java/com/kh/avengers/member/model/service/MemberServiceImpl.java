@@ -27,6 +27,7 @@ public class MemberServiceImpl implements MemberService{
     Long searchMember = memberMapper.getMemberByMemberId(member.getMemberId());
     MemberDTO searchEmail =  memberMapper.getMemberByEmail(member.getEmail());
 
+
     if(searchMember ==1 || searchEmail != null){
       throw new InvalidException("존재하는 아이디 또는 이메일 입니다.");
     }
