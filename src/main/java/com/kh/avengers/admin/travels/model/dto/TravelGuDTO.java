@@ -1,6 +1,6 @@
-package com.kh.avengers.travles.model.dto;
+package com.kh.avengers.admin.travels.model.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -14,10 +14,13 @@ import lombok.Getter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TravelGuDTO {
-  private Long guNo;
   private Long cityNo;
+  private String cityName;
+  private Long guNo;
   private String guName;
-  private Date guCreatedDate;
-  private Date guModifiedDate;
+  private String guMapY;
+  private String guMapX;
+  private LocalDateTime guCreatedDate;
+  private LocalDateTime guModifiedDate;
   private String guStatus;
 }

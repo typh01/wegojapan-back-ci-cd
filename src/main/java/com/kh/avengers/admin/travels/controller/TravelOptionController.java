@@ -1,4 +1,4 @@
-package com.kh.avengers.travles.controller;
+package com.kh.avengers.admin.travels.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class TravelCategoryController {
-  
+public class TravelOptionController {
+
 }

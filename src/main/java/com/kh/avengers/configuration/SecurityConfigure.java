@@ -39,8 +39,8 @@ public class SecurityConfigure {
                        .authorizeHttpRequests(requests -> {
                         requests.requestMatchers("/admin/**").hasRole("ADMIN");
                         requests.requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/members", "/api/emails/send-email","/api/emails/verify-code").permitAll();
-                        requests.requestMatchers(HttpMethod.GET, "/api/admin/*").permitAll();
-                        requests.requestMatchers(HttpMethod.POST, "/api/admin/*").authenticated();
+                        requests.requestMatchers(HttpMethod.GET, "/api/admin/**").permitAll();
+                        requests.requestMatchers(HttpMethod.POST).authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
                         requests.requestMatchers(HttpMethod.DELETE).authenticated();
                         requests.anyRequest().authenticated();

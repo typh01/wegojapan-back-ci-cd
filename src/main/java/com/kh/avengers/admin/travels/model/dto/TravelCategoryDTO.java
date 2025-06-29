@@ -13,12 +13,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TravelCityDTO {
-  private Long cityNo;
-  private String cityName;
-  private String cityMapX;
-  private String cityMapY;
-  private LocalDateTime cityCreatedDate;
-  private LocalDateTime cityModifiedDate;
-  private String cityStatus;
+public class TravelCategoryDTO {
+  private Long categoryNo;
+  private String categoryName;
+  private LocalDateTime categoryCreatedDate;
+  private LocalDateTime categoryModifiedDate;
+  private String categoryStatus;
 }

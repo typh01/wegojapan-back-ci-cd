@@ -44,6 +44,7 @@ public class AdminTravelCityController {
   public ResponseEntity<RequestData> updateTravelCity(
       @PathVariable Long cityNo,
       @RequestBody TravelCityDTO cityDTO) {
+      cityDTO.setCityNo(cityNo);
       RequestData result = adminTravelCityService.updateCity(cityDTO);
       return ResponseEntity.ok(result);
   }

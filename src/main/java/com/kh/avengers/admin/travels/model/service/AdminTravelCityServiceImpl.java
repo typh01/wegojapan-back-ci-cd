@@ -23,7 +23,7 @@ public class AdminTravelCityServiceImpl implements AdminTravelCityService {
     private final TravelCityMapper travelCityMapper;
     private final ResponseUtil responseUtil;
 
-    private void checkCityExists(long cityNo) {
+  private void checkCityExists(long cityNo) {
     if (travelCityMapper.searchCityNo(cityNo) <= 0) {
         throw new guNotFoundException("City를 찾지 못했습니다.");
     }
@@ -38,7 +38,7 @@ public class AdminTravelCityServiceImpl implements AdminTravelCityService {
   @Override
   public RequestData getAdminCities(TravelCityDTO cityDTO) {
     List<TravelCityDTO> cityList = travelCityMapper.selectCity(cityDTO);
-    return responseUtil.rd("200", cityList, "City 목록 조회 완료");
+    return responseUtil.rd("200", cityList, "관리자 City 목록 조회 완료");
   }
   
   @Override
