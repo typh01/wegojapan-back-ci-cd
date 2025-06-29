@@ -130,14 +130,14 @@ public class EmailServiceImpl implements EmailService{
   }
 
   @Override
-  public RequestData findVerifyCode(EmailDTO findCode) {
+  public RequestData findVerifyCode(Map<String, String> findCode) {
     EmailDTO emailCode = EmailDTO.builder()
-                                 .email(findCode.getEmail())
-                                 .verifyCode(findCode.getVerifyCode())
-                                 .emailCreatedDate(findCode.getEmailCreatedDate())
+                                 .email(findCode.get("email"))
+                                 .verifyCode(findCode.get("verifyCode"))
+                                 .emailCreatedDate(null)
                                  .build();
 
-    EmailDTO checkVerify = emailMapper.checkedVerifyCode(emailCode);
+     EmailDTO checkVerify = emailMapper.checkedVerifyCode(emailCode);
     if(checkVerify == null){
       throw new InvalidException("인증 코드가 일치하지 않습니다.");
     }

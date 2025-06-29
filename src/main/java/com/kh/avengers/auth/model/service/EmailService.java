@@ -20,7 +20,7 @@ public interface EmailService {
 
   RequestData findId(FindIdRequestDTO findId);
 
-  RequestData findVerifyCode(EmailDTO findCode);
+  RequestData findVerifyCode(Map<String, String> findCode);
 
   RequestData findPassword(Map<String, String> findPw);
 

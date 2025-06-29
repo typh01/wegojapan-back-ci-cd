@@ -44,17 +44,18 @@ public class EmailController {
   } 
   //---------------------------------------------------------------------------------
 
+  
+  // 아이디 찾기 이메일 인증코드
+  @PostMapping("/findVerify-code")
+  public ResponseEntity<RequestData> findVerifyCode(@RequestBody Map<String, String> findCode){
+    RequestData result = emailService.findVerifyCode(findCode);
+    return ResponseEntity.ok(result);
+  }
+
   // 아이디 찾기
   @PostMapping("/find-id")
   public ResponseEntity<RequestData> findId(@RequestBody @Valid FindIdRequestDTO findId){
     RequestData result = emailService.findId(findId);
-    return ResponseEntity.ok(result);
-  }
-
-  // 아이디 찾기 이메일 인증코드
-  @PostMapping("/findVerify-code")
-  public ResponseEntity<RequestData> findVerifyCode(@RequestBody @Valid EmailDTO findCode){
-    RequestData result = emailService.findVerifyCode(findCode);
     return ResponseEntity.ok(result);
   }
   //----------------------------------------------------------------------------------

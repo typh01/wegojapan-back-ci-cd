@@ -39,9 +39,15 @@ public class SecurityConfigure {
                        .authorizeHttpRequests(requests -> {
                         requests.requestMatchers("/admin/**").hasRole("ADMIN");
                         requests.requestMatchers(HttpMethod.POST, "/api/auth/login", 
-                        "/api/members", "/api/emails/send-email","/api/emails/verify-code","/api/emails/find-id","/api/emails/findVerify-code","/api/emails/find-password",
-                        "/api/emails/findPassword-code","/api/emails/new-password").permitAll();
-                        
+                        "/api/members", 
+                        "/api/emails/send-email",
+                        "/api/emails/verify-code",
+                        "/api/emails/find-id",
+                        "/api/emails/findVerify-code",
+                        "/api/emails/find-password",
+                        "/api/emails/findPassword-code",
+                        "/api/emails/new-password").permitAll();
+
                         requests.requestMatchers(HttpMethod.GET).permitAll();
                         requests.requestMatchers(HttpMethod.POST).authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
