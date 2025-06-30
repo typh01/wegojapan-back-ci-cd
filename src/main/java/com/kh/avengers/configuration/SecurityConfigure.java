@@ -48,6 +48,8 @@ public class SecurityConfigure {
                         "/api/emails/findPassword-code",
                         "/api/emails/new-password").permitAll();
 
+                        requests.requestMatchers("/api/travel-planner/**").authenticated();
+
                         requests.requestMatchers(HttpMethod.GET, "/api/admin/**", "/api/travels/**").permitAll();
                         requests.requestMatchers(HttpMethod.POST).authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();

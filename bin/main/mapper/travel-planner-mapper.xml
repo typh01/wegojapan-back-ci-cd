@@ -2,31 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace = "com.kh.avengers.plan.model.dao.TravelPlannerMapper">
 
+
+
     <!-- 
         여행 플랜 DB에 삽입
-        useGeneratedKeys : 자동 생성된 키(PLAN_NO)사용
-        keyProperty : 생성된 키가 저장될 객체의 속성명
      -->
-    <insert id="insertTravelPlan"
-            parameterType="com.kh.avengers.plan.model.dto.TravelPlannerDto"
-            useGeneratedKeys="true"
-            keyProperty="planNo"
-            >
-        INSERT
-            INTO 
-                TRAVEL_PLANNER
-                    (
-                        MEMBER_NO,
-                        TRAVEL_START_DATE,
-                        TRAVEL_END_DATE,
-                        GROUP_SIZE
-                    )
-                VALUES 
-                    (
-                        #{memberNo},
-                        #{travelStartDate},
-                        #{travelEndDate},
-                        #{groupSize}
-                    )
-    </insert>
+<insert id="insertTravelPlan"
+        parameterType="com.kh.avengers.plan.model.dto.TravelPlannerDto">
+    
+    <selectKey keyProperty="planNo" resultType="long" order="BEFORE">
+        SELECT TB_TRAVEL_PLANNER_SEQ.NEXTVAL FROM DUAL
+    </selectKey>
+
+    INSERT INTO TB_TRAVEL_PLANNER
+        (
+            PLAN_NO,
+            MEMBER_NO,
+            TRAVEL_START_DATE,
+            TRAVEL_END_DATE,
+            GROUP_SIZE
+        )
+    VALUES
+        (
+            #{planNo},
+            #{memberNo},
+            #{travelStartDate},
+            #{travelEndDate},
+            #{groupSize}
+        )
+</insert>
+
+
 </mapper>
