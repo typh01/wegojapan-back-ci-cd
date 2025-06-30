@@ -6,17 +6,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.avengers.auth.model.vo.CustomUserDetails;
+import com.kh.avengers.exception.commonexception.InvalidException;
 import com.kh.avengers.exception.util.InvalidTravelDateException;
+import com.kh.avengers.plan.model.dao.TravelPlannerMapper;
 import com.kh.avengers.plan.model.dto.TravelPlannerDto;
 import com.kh.avengers.plan.model.dto.request.TravelPlannerStep1Request;
 import com.kh.avengers.plan.model.dto.response.TravelPlannerStep1Response;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 @Transactional(readOnly = true)
-public class TravelPlannerStep1ServiceImpl implements TravelPlannerService {
+@RequiredArgsConstructor
+public class TravelPlannerStep1ServiceImpl implements TravelPlannerStep1Service {
+
+    private final TravelPlannerMapper travelPlannerMapper;
 
     /**
      * step1 플랜 생성 & 저장
@@ -37,15 +43,31 @@ public class TravelPlannerStep1ServiceImpl implements TravelPlannerService {
         TravelPlannerDto travelPlannerDto = convertToDto(request, userDetails);
 
         // 3. DB에 여행 플랜 저장
-        
+        int insertResult = travelPlannerMapper.insertTravelPlan(travelPlannerDto);
 
         // 4. 삽입 결과 확인
+        if(insertResult != 1){
+            log.error("여행플랜 저장 실패!!");
+            throw new InvalidException("여행플랜 저장에 실패했습니다.");
+        }
 
         // 5. 생성된 플랜 번호 확인
+        Long generatedPlanNo = travelPlannerDto.getPlanNo();
+        if(generatedPlanNo == null || generatedPlanNo <= 0) {
+            log.error("플랜 번호 생성 실패!!");
+            throw new InvalidException("여행플랜 번호 생성에 실패했습니다.");
+        }
 
         // 6. 성공 로그 찍기
+        log.info("step1 여행 플랜 생성 완료!!! >> 플랜번호 : {}, 사용자 번호 : {}", generatedPlanNo, userDetails.getMemberNo());
 
-        return null;
+        // 7. 응답 DTO 생성
+        return TravelPlannerStep1Response.builder()
+                .planNo(generatedPlanNo)
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .travelers(request.getTravelers())
+                .build();
 
     }
 
