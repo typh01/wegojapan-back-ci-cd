@@ -4,16 +4,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import com.kh.avengers.auth.controller.EmailController;
+
+
 import com.kh.avengers.auth.model.dao.EmailMapper;
 import com.kh.avengers.auth.model.dto.EmailDTO;
+import com.kh.avengers.auth.model.dto.FindIdRequestDTO;
+import com.kh.avengers.auth.model.dto.UpdatePasswordDTO;
 import com.kh.avengers.common.dto.RequestData;
 import com.kh.avengers.exception.commonexception.InvalidException;
 import com.kh.avengers.exception.commonexception.NotFoundException;
@@ -21,9 +23,11 @@ import com.kh.avengers.exception.util.CustomMessagingException;
 import com.kh.avengers.member.model.dao.MemberMapper;
 import com.kh.avengers.member.model.dto.MemberDTO;
 import com.kh.avengers.util.ResponseUtil;
+
+import io.jsonwebtoken.security.Password;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +40,7 @@ public class EmailServiceImpl implements EmailService{
     private final MemberMapper memberMapper;
     private final EmailMapper emailMapper;
     private final JavaMailSender sender;
+    private final PasswordEncoder passwordEncoder;
 
   private void sendCodeEmail(String email) {
     int verifyCode = verifyCodeCreate();
@@ -59,7 +64,7 @@ public class EmailServiceImpl implements EmailService{
                 """ + verifyCode + """
               </span>
             </div>
-            <p>인증 코드는 <strong>3분</strong> 동안 유효합니다.</p>
+            <p>인증 코드는 <strong>1분</strong> 동안 유효합니다.</p>
             <p>감사합니다.</p>
           </div>
         </div>
@@ -103,12 +108,6 @@ public class EmailServiceImpl implements EmailService{
     if(checkVerify == null){
       throw new InvalidException("인증 코드가 일치하지 않습니다.");
     }
-    Date createDate = checkVerify.getCreateDate();
-    Long nowMillis = System.currentTimeMillis();
-    Long expireMillis = createDate.getTime() + 180000L;
-    if (nowMillis > expireMillis){
-      throw new InvalidException("인증 시간이 만료되었습니다.");
-    }
     MemberDTO member = memberMapper.getMemberByEmail(checkVerify.getEmail());
     if(member != null){
       Map<String, String> data = new HashMap<>();
@@ -117,6 +116,102 @@ public class EmailServiceImpl implements EmailService{
     }
     return responseUtil.rd("200", null, "인증 코드가 확인되었습니다. 회원가입을 진행해주세요.");  
   }
+
+  @Override
+  public RequestData findId(FindIdRequestDTO findId) {
+    FindIdRequestDTO loginInfo =  memberMapper.findMemberByNameAndEmail(findId.getMemberName(),findId.getEmail());
+
+    if(loginInfo == null || !loginInfo.getMemberName().equals(findId.getMemberName())){
+      throw new NotFoundException("해당하는 회원이 없습니다.");
+    }
+    sendCodeEmail(findId.getEmail());
+  
+    return responseUtil.rd("200", null, "인증 코드 발송 성공.");
+  }
+
+  @Override
+  public RequestData findVerifyCode(Map<String, String> findCode) {
+    EmailDTO emailCode = EmailDTO.builder()
+                                 .email(findCode.get("email"))
+                                 .verifyCode(findCode.get("verifyCode"))
+                                 .emailCreatedDate(null)
+                                 .build();
+
+     EmailDTO checkVerify = emailMapper.checkedVerifyCode(emailCode);
+    if(checkVerify == null){
+      throw new InvalidException("인증 코드가 일치하지 않습니다.");
+    }
+    MemberDTO member = memberMapper.getMemberByEmail(checkVerify.getEmail());
+    if(member == null){
+      throw new NotFoundException("유효한 이메일이 아닙니다.");
+    }
+    if(checkVerify.getEmailCreatedDate() == null){
+      throw new InvalidException("인증 시간이 만료되었습니다.");
+    }
+    Map<String, String> data = new HashMap<>();
+    data.put("memberId", member.getMemberId());
+    return responseUtil.rd("200", data, "아이디 찾기 성공.");
+  }
+
+   @Override
+  public RequestData findPassword(Map<String, String> findPw){
+    String memberId = findPw.get("memberId");
+    String email = findPw.get("email");
+    
+    if(memberId == null || memberId.trim().isEmpty()){ 
+      throw new NotFoundException("아이디를 입력해주세요.");
+    }
+    if(email == null || email.trim().isEmpty()){
+      throw new NotFoundException(("이메일을 입력해주세요."));
+    }
+    Long member = memberMapper.getMemberByMemberId(memberId);
+    if(member != 1){  // 회원 존재 여부 (DB에 없을수도 있음)
+      throw new NotFoundException("해당하는 회원이 없습니다.");
+    }
+    sendCodeEmail(email);
+    return responseUtil.rd("200", null, "인증 코드가 발송되었습니다."); 
+  }
+
+   @Override
+   public RequestData findPasswordCode(Map<String, String> findPwCode) {
+    EmailDTO emailCode = EmailDTO.builder()
+                                 .email(findPwCode.get("email"))
+                                 .verifyCode(findPwCode.get("verifyCode"))
+                                 .build();     
+    EmailDTO checkVerify = emailMapper.checkedVerifyCode(emailCode);
+    if(checkVerify == null){
+      throw new InvalidException("인증 코드가 일치하지 않습니다.");
+    }
+
+    MemberDTO member = memberMapper.getMemberByEmail(checkVerify.getEmail());
+    if(member == null){
+      throw new NotFoundException("유효한 이메일이 아닙니다.");
+    }
+    return responseUtil.rd("200", null, "인증 코드가 확인되었습니다. 새 비밀번호 입력 진행해주세요.");
+   }
+
+   @Override
+   public RequestData newPassword(Map<String, String> newPw) {
+    String memberId = newPw.get("memberId");
+    String newPassword = newPw.get("newPassword");
+
+    UpdatePasswordDTO updatePw = UpdatePasswordDTO.builder()
+                                                  .memberId(memberId)
+                                                  .newPw(passwordEncoder.encode(newPassword))
+                                                  .build();
+    memberMapper.updateMemberPassword(updatePw);
+
+    return responseUtil.rd("200", null," 새 비밀번호가 설정되었습니다.");
+    
+
+    
+
+  
+   }
+
+   
+
+ 
 }
 
 

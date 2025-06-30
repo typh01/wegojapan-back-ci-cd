@@ -26,7 +26,6 @@
              EMAIL = #{email}
     
     </select>
-
     <!-- 회원 가입 -->
     <insert id="signUp" parameterType="com.kh.avengers.member.model.vo.Member">
       INSERT
@@ -48,6 +47,45 @@
            , #{memberRole}
            )
     </insert>
+
+    <select id="findMemberByNameAndEmail" parameterType="FindIdRequestDTO" resultType="FindIdRequestDTO">
+      SELECT
+            
+            MEMBER_NAME memberName
+          , EMAIL
+          , IS_ACTIVE
+        FROM
+            TB_MEMBER
+      WHERE
+            MEMBER_NAME = #{memberName}
+        AND 
+            EMAIL = #{email}
+        AND 
+            IS_ACTIVE = 'Y'
+</select>
+  
+  <!-- 비밀번호 중복 체크 -->
+ <select id="getMemberByPassword" parameterType="map" resultType="int">
+      SELECT 
+            COUNT(*) 
+      FROM 
+            TB_MEMBER 
+      WHERE 
+            MEMBER_NO = #{memberNo}
+        AND 
+            MEMBER_PW = #{newPassword}
+ </select>
+
+ <update id="updateMemberPassword" parameterType="map">
+    UPDATE 
+        TB_MEMBER
+      SET 
+          MEMBER_PW = #{newPw}
+      WHERE 
+          MEMBER_ID = #{memberId}
+ 
+ </update>
+
 
   </mapper>
     

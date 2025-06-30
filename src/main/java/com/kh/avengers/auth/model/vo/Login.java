@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
-@Value
+// @Value
 @Builder
 @Getter
 public class Login {

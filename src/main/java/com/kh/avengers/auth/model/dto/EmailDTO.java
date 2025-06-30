@@ -25,5 +25,5 @@ public class EmailDTO {
 
     @NotBlank(message = "인증 코드는 필수입니다.")
     private String verifyCode;
-    private Date createDate;
+    private Date emailCreatedDate;
 }
