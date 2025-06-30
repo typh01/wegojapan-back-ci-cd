@@ -4,7 +4,7 @@ import com.kh.avengers.auth.model.vo.CustomUserDetails;
 import com.kh.avengers.plan.model.dto.request.TravelPlannerStep1Request;
 import com.kh.avengers.plan.model.dto.response.TravelPlannerStep1Response;
 
-public interface TravelPlannerService {
+public interface TravelPlannerStep1Service {
     
     /**
      * step1 플랜 생성 & 저장
