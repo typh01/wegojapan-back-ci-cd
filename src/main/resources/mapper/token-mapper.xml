@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.avengers.token.model.dao.TokenMapper">
+  <insert id="saveToken" parameterType="RefreshToken">
+    INSERT
+      INTO
+           TB_TOKEN
+         (
+           MEMBER_NO
+         , REFRESH_TOKEN
+         , EXPRIED
+         ) 
+    VALUES
+         (
+           #{memberNo}
+         , #{refreshToken}
+         , #{expried}
+         )    
+  </insert>
+
+  <select id="findByToken" parameterType="RefreshToken" resultType="RefreshToken">
+    SELECT
+           MEMBER_NO memberNo
+         , REFRESH_TOKEN refreshToken
+         , EXPRIED expried
+      FROM
+           TB_TOKEN
+     WHERE
+           REFRESH_TOKEN = #{refreshToken}
+  </select>
+
+</mapper>
+

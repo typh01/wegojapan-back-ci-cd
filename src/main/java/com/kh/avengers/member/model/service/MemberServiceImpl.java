@@ -25,9 +25,10 @@ public class MemberServiceImpl implements MemberService{
   @Override
   public RequestData signUp(MemberDTO member) {
     Long searchMember = memberMapper.getMemberByMemberId(member.getMemberId());
-    Long searchEmail =  memberMapper.getMemberByEmail(member.getEmail());
+    MemberDTO searchEmail =  memberMapper.getMemberByEmail(member.getEmail());
 
-    if(searchMember ==1 || searchEmail == 1){
+
+    if(searchMember ==1 || searchEmail != null){
       throw new InvalidException("존재하는 아이디 또는 이메일 입니다.");
     }
 
