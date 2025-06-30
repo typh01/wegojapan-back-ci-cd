@@ -2,6 +2,8 @@ package com.kh.avengers.plan.model.dto.request;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -19,9 +21,11 @@ import lombok.Setter;
 public class TravelPlannerStep1Request {
 
     @NotNull(message = "여행 시작일을 선택해주세요.")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
     @NotNull(message = "여행 종료일을 선택해주세.")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     @NotNull(message = "여행 인원을 입력해주세요.")
