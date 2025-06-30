@@ -13,10 +13,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TravelOptionDTO {
-  private Long optionNo; 
-  private String optionName;
-  private LocalDateTime optionCreatedDate;
-  private LocalDateTime optionModifiedDate;
-  private String optionStatus;
+public class TravelThemaDTO {
+  private Long themaNo; 
+  private String themaName;
+  private LocalDateTime themaCreatedDate;
+  private LocalDateTime themaModifiedDate;
+  private String themaStatus;
 }

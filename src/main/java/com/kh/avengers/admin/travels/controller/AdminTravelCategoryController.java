@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/travel/category")
+@RequestMapping("/api/admin/travels/category")
 @RequiredArgsConstructor
 public class AdminTravelCategoryController {
   private final AdminTravelCategoryService travelCategoryService;
@@ -35,7 +35,7 @@ public class AdminTravelCategoryController {
 
   @PostMapping
   public ResponseEntity<RequestData> postTravelCategories(@RequestBody TravelCategoryDTO categoryDTO) {
-    RequestData result = travelCategoryService.postAdminCategories(categoryDTO);
+    RequestData result = travelCategoryService.postAdminCategory(categoryDTO);
       return ResponseEntity.ok(result);
   }
 

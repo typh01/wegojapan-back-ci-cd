@@ -1,4 +1,4 @@
-package com.kh.avengers.travles.model.service;
+package com.kh.avengers.travels.model.service;
 
 public interface TravelService {
 

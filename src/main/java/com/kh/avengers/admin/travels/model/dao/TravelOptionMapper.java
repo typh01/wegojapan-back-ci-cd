@@ -9,10 +9,10 @@ import com.kh.avengers.admin.travels.model.dto.TravelOptionDTO;
 @Mapper
 public interface TravelOptionMapper {
     List<TravelOptionDTO> getOptionList(TravelOptionDTO optionDTO);
-    List<TravelOptionDTO> getAdminOption(TravelOptionDTO optionDTO);
-    int searchOption(long guNo);
+    List<TravelOptionDTO> getAdminOptionList(TravelOptionDTO optionDTO);
+    int searchOptionNo(long guNo);
     int insertOption(TravelOptionDTO optionDTO);
     int updateOption(TravelOptionDTO optionDTO);
-    int deleteOption(long optionNo);
+    int deleteOptions(List<Long> optionNos);
 }
 

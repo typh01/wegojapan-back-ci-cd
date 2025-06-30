@@ -1,4 +1,4 @@
-package com.kh.avengers.travles.model.dto;
+package com.kh.avengers.travels.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

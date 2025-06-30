@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.avengers.admin.travels.model.dao.TravelTagMapper">
+
+  <!-- 사용자용 태그 목록-->
+  <select id="getTagList" parameterType="TravelTagDTO" resultType="TravelTagDTO">
+    SELECT
+      TAG_NO AS tagNo,
+      TAG_NAME AS tagName,
+      TAG_CREATED_DATE AS tagCreatedDate,
+      TAG_MODIFIED_DATE AS tagModifiedDate
+    FROM TB_TRAVEL_TAG
+    <where>
+      <if test="tagName != null and tagName != ''">
+        TAG_NAME LIKE '%' || #{tagName} || '%'
+      </if>
+    </where>
+    ORDER BY TAG_NO ASC
+  </select>
+
+  <!-- 관리자용 전체 태그 목록 -->
+  <select id="getAdminTagList" parameterType="TravelTagDTO" resultType="TravelTagDTO">
+    SELECT
+      TAG_NO AS tagNo,
+      TAG_NAME AS tagName,
+      TAG_CREATED_DATE AS tagCreatedDate,
+      TAG_MODIFIED_DATE AS tagModifiedDate
+    FROM TB_TRAVEL_TAG
+    ORDER BY TAG_NO ASC
+  </select>
+
+  <!-- 태그 존재 여부 확인 -->
+  <select id="searchTagNo" parameterType="long" resultType="int">
+    SELECT COUNT(*)
+    FROM TB_TRAVEL_TAG
+    WHERE TAG_NO = #{tagNo}
+  </select>
+
+  <!-- 태그 등록 -->
+  <insert id="insertTag" parameterType="TravelTagDTO">
+    INSERT INTO TB_TRAVEL_TAG (
+      TAG_NAME
+    ) VALUES (
+      #{tagName}
+    )
+  </insert>
+
+  <!-- 태그 수정 -->
+  <update id="updateTag" parameterType="TravelTagDTO">
+    UPDATE TB_TRAVEL_TAG
+    SET
+      TAG_NAME = #{tagName},
+      TAG_MODIFIED_DATE = SYSDATE
+    WHERE TAG_NO = #{tagNo}
+  </update>
+
+  <!-- 태그 삭제 (다중) -->
+  <delete id="deleteTags" parameterType="list">
+    DELETE FROM TB_TRAVEL_TAG
+    WHERE TAG_NO IN
+    <foreach collection="list" item="tagNo" open="(" separator="," close=")">
+      #{tagNo}
+    </foreach>
+  </delete>
+
+</mapper>

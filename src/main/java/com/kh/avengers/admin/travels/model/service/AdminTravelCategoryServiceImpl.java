@@ -43,7 +43,7 @@ public class AdminTravelCategoryServiceImpl implements AdminTravelCategoryServic
     }
 
     @Override
-    public RequestData postAdminCategories(TravelCategoryDTO categoryDTO) {
+    public RequestData postAdminCategory(TravelCategoryDTO categoryDTO) {
         int result = travelCategoryMapper.insertCategory(categoryDTO);
         if (result <= 0) {
             throw new InvalidException("Category 등록 실패");

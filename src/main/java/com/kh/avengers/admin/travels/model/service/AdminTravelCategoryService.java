@@ -11,7 +11,7 @@ public interface AdminTravelCategoryService {
 
   RequestData getAdminCategories(TravelCategoryDTO categoryDTO);
 
-  RequestData postAdminCategories(TravelCategoryDTO categoryDTO);
+  RequestData postAdminCategory(TravelCategoryDTO categoryDTO);
 
   RequestData updateAdminCategory(TravelCategoryDTO categoryDTO);
 
