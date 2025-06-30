@@ -2,9 +2,9 @@ package com.kh.avengers.exception.util;
 
 import com.kh.avengers.exception.commonexception.NotExistException;
 
-public class SigunguNotExistException extends NotExistException{
+public class guNotExistException extends NotExistException{
 
-  public SigunguNotExistException(String message){
+  public guNotExistException(String message){
     super(message);
   }
 }
