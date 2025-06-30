@@ -2,8 +2,8 @@ package com.kh.avengers.exception.util;
 
 import com.kh.avengers.exception.commonexception.NotFoundException;
 
-public class SigunguNotFoundException extends NotFoundException{
-  public SigunguNotFoundException(String message){
+public class guNotFoundException extends NotFoundException{
+  public guNotFoundException(String message){
     super(message);
     
   }
