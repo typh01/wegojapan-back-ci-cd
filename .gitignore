@@ -1,23 +1,59 @@
-# 빌드 아티팩트
-/build/
-/target/
-/.gradle/
-*.class
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-# IDE 설정
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
 .vscode/
-.idea/
+
+target/
+build/
+
+release.properties
+
+.gradle/
+build/
+
+.metadata
 .classpath
 .project
 .settings/
 *.launch
 
-# OS 파일
+*.log
+
 .DS_Store
 Thumbs.db
-
-# 로그 파일
-*.log
 
 # 환경설정 및 민감 정보
 application.yml

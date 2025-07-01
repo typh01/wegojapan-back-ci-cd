@@ -46,14 +46,23 @@ public class SecurityConfigure {
                         "/api/emails/findVerify-code",
                         "/api/emails/find-password",
                         "/api/emails/findPassword-code",
-                        "/api/emails/new-password").permitAll();
+                        "/api/emails/new-password",
+                        "/api/upload/s3",
+                        "/api/admin/**").permitAll();
+
+
+                        requests.requestMatchers(HttpMethod.PATCH, "/api/members/changeName",
+                        "/api/members/changePassword"
+                        ).authenticated();
+                        requests.requestMatchers(HttpMethod.GET).permitAll();
 
                         requests.requestMatchers("/api/travel-planner/**").authenticated();
 
                         requests.requestMatchers(HttpMethod.GET, "/api/admin/**", "/api/travels/**").permitAll();
+
                         requests.requestMatchers(HttpMethod.POST).authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
-                        requests.requestMatchers(HttpMethod.DELETE).authenticated();
+                        requests.requestMatchers(HttpMethod.DELETE, "/api/members/deleteMember").authenticated();
                         requests.anyRequest().authenticated();
                        })
                        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

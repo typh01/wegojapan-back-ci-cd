@@ -1,4 +1,4 @@
-package com.kh.avengers.plan.model.dto.response;
+package com.kh.avengers.admin.travels.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,9 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TravelPlannerStep2Response {
-
-    private Long planNo;
-    private String selectedRegion;
-    private String message;
-
+public class TravelTagBridgeDTO {
+    private Long bridgeNo;
+    private Long travelNo;
+    private Long tagNo;
+    private String tagName;
 }

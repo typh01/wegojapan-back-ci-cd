@@ -164,12 +164,15 @@ public class EmailServiceImpl implements EmailService{
     if(email == null || email.trim().isEmpty()){
       throw new NotFoundException(("이메일을 입력해주세요."));
     }
-    Long member = memberMapper.getMemberByMemberId(memberId);
-    if(member != 1){  // 회원 존재 여부 (DB에 없을수도 있음)
+    MemberDTO member = memberMapper.getMemberByIdAndEmail(memberId, email);
+    log.info("잘찎힘? {}", member);
+    if(member == null){  
       throw new NotFoundException("해당하는 회원이 없습니다.");
     }
     sendCodeEmail(email);
-    return responseUtil.rd("200", null, "인증 코드가 발송되었습니다."); 
+    Map<String, String> data = new HashMap<>();
+    data.put("email", email);
+    return responseUtil.rd("200", data, "인증 코드가 발송되었습니다."); 
   }
 
    @Override
@@ -187,7 +190,9 @@ public class EmailServiceImpl implements EmailService{
     if(member == null){
       throw new NotFoundException("유효한 이메일이 아닙니다.");
     }
-    return responseUtil.rd("200", null, "인증 코드가 확인되었습니다. 새 비밀번호 입력 진행해주세요.");
+    Map<String, String> data = new HashMap<>();
+    data.put("memberId", member.getMemberId());
+    return responseUtil.rd("200", data, "인증 코드가 확인되었습니다. 새 비밀번호 입력 진행해주세요.");
    }
 
    @Override
@@ -200,12 +205,11 @@ public class EmailServiceImpl implements EmailService{
                                                   .newPw(passwordEncoder.encode(newPassword))
                                                   .build();
     memberMapper.updateMemberPassword(updatePw);
+      Map<String, String> data = new HashMap<>();
+    data.put("memberId", memberId);
 
-    return responseUtil.rd("200", null," 새 비밀번호가 설정되었습니다.");
+    return responseUtil.rd("200", data," 새 비밀번호가 설정되었습니다.");
     
-
-    
-
   
    }
 
