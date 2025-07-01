@@ -46,7 +46,9 @@ public class SecurityConfigure {
                         "/api/emails/findVerify-code",
                         "/api/emails/find-password",
                         "/api/emails/findPassword-code",
-                        "/api/emails/new-password").permitAll();
+                        "/api/emails/new-password",
+                        "/api/upload/s3",
+                        "/api/admin/**").permitAll();
 
                         requests.requestMatchers(HttpMethod.GET, "/api/admin/**", "/api/travels/**").permitAll();
                         requests.requestMatchers(HttpMethod.POST).authenticated();

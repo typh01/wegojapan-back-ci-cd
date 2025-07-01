@@ -1,4 +1,4 @@
-package com.kh.avengers.travels.model.dto;
+package com.kh.avengers.admin.travels.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,8 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TravelTagBridge {
-  private Long bridgeNo;
-  private Long travelNo;
-  private Long tagNo;
+public class TravelOptionBridgeDTO {
+    private Long bridgeNo;
+    private Long travelNo;
+    private Long travelOptionNo;
 }
