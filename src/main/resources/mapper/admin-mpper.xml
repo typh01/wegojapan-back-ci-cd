@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.avengers.admin.model.dao.AdminMapper">
+  <select id="findAllMembers" parameterType="map" resultType="AdminMemberDTO">
+    SELECT 
+            MEMBER_NO memberNo
+          , MEMBER_ID memberId
+          , MEMBER_NAME memberName
+          , EMAIL email
+          , MEMBER_ROLE memberRole
+          , IS_ACTIVE isActive
+          , ENROLL_DATE enrollDate
+          , MODIFIED_DATE modifiedDate
+      FROM 
+            TB_MEMBER
+    <where>
+      <if test="status != null and status != ''">
+        AND 
+            IS_ACTIVE = #{status}
+      </if>
+      <if test="role != null and role != ''">
+        AND 
+            MEMBER_ROLE = #{role}
+      </if>
+   </where>
+    ORDER 
+       BY 
+          ENROLL_DATE DESC
+   OFFSET #{startIndex} ROWS FETCH NEXT #{size} ROWS ONLY
+</select>
+
+ <select id="getMemberById" resultType="AdminMemberDTO">
+  SELECT 
+          MEMBER_NO memberNo
+        , MEMBER_ID memberId        
+        , MEMBER_NAME memberName
+        , MEMBER_ROLE memberRole  
+        , EMAIL email 
+        , IS_ACTIVE isActive  
+    FROM
+          TB_MEMBER
+    WHERE
+          MEMBER_NO =  #{memberNo}
+ </select>
+
+  <update id="updateMemberStatus" parameterType="AdminMemberDTO">
+    UPDATE 
+            TB_MEMBER
+       SET 
+            IS_ACTIVE = #{status}
+     WHERE 
+            MEMBER_NO = #{memberNo}
+  </update>
+
+ 	<!--역할 업데이트-->
+    <update id="updateMemberRole" parameterType="AdminMemberDTO">
+        UPDATE 
+                TB_MEMBER
+           SET 
+                MEMBER_ROLE = #{role} 
+         WHERE 
+                MEMBER_NO = #{memberNo}
+    </update>
+
+</mapper>

@@ -48,10 +48,13 @@ public class SecurityConfigure {
                         "/api/emails/findPassword-code",
                         "/api/emails/new-password").permitAll();
 
+                        requests.requestMatchers(HttpMethod.PATCH, "/api/members/changeName",
+                        "/api/members/changePassword"
+                        ).authenticated();
                         requests.requestMatchers(HttpMethod.GET).permitAll();
                         requests.requestMatchers(HttpMethod.POST).authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
-                        requests.requestMatchers(HttpMethod.DELETE).authenticated();
+                        requests.requestMatchers(HttpMethod.DELETE, "/api/members/deleteMember").authenticated();
                         requests.anyRequest().authenticated();
                        })
                        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

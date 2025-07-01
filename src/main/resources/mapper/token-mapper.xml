@@ -29,5 +29,13 @@
            REFRESH_TOKEN = #{refreshToken}
   </select>
 
+  <delete id="deleteByMemberNo" parameterType="long">
+    DELETE 
+      FROM 
+           TB_TOKEN 
+     WHERE 
+           MEMBER_NO = #{memberNo}
+  </delete>
+
 </mapper>
 

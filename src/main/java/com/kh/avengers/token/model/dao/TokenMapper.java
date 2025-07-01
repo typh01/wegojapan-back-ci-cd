@@ -10,5 +10,6 @@ public interface TokenMapper {
   void saveToken(RefreshToken token);
 
   RefreshToken findByToken(RefreshToken token);
+  void deleteByMemberNo(Long memberNo);
 
 }
