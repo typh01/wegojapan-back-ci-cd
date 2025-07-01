@@ -1,12 +1,19 @@
 package com.kh.avengers.member.controller;
 
+import java.util.Map;
+
+import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.avengers.auth.model.dto.UpdatePasswordDTO;
 import com.kh.avengers.common.dto.RequestData;
+import com.kh.avengers.member.model.dto.ChangeMemberNameDTO;
 import com.kh.avengers.member.model.dto.MemberDTO;
 import com.kh.avengers.member.model.service.MemberService;
 
@@ -29,6 +36,25 @@ public class MemberController {
     return ResponseEntity.ok(result);
   }
 
+  @PatchMapping("/changeName")
+  public ResponseEntity<RequestData> updateMember(@RequestBody @Valid ChangeMemberNameDTO member){
 
+    RequestData result = memberService.updateMember(member);
+    return ResponseEntity.ok(result);
+  }
+
+  @PatchMapping("/changePassword")
+  public ResponseEntity<RequestData> updatePassword(@RequestBody Map<String, String> member){
+
+    RequestData result = memberService.updatePassword(member);
+    return ResponseEntity.ok(result);
+  }
+
+  @DeleteMapping("/deleteMember")
+  public ResponseEntity<RequestData> deleteMember(@RequestBody Map<String, String> member ){
+    
+    RequestData result = memberService.deleteMember(member);
+    return ResponseEntity.ok(result);
+  }
 
 }
