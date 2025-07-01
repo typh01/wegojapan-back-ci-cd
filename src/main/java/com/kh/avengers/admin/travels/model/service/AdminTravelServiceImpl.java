@@ -36,6 +36,10 @@
             List<TravelDTO> travelList = travelMapper.selectAdminTravelList();
 
         for (TravelDTO t : travelList) {
+            List<TravelTimeDTO> timeList = travelMapper.selectTravelTimeList(t.getTravelNo());
+            t.setTimeList(timeList);
+            List<TravelImageDTO> imageList = travelMapper.selectTravelImageList(t.getTravelNo());
+            t.setImageList(imageList);
             List<TravelTagDTO> tagList = travelMapper.selectTravelTagList(t.getTravelNo());
             t.setTagListForView(tagList);
             List<TravelThemaDTO> themaList = travelMapper.selectTravelThemaList(t.getTravelNo());
@@ -51,6 +55,7 @@
         public RequestData getTravelDetail(Long travelNo) {
             TravelDTO travel = travelMapper.selectTravelByNo(travelNo);
             if (travel == null) throw new NotFoundException("해당 여행지를 찾을 수 없습니다.");
+
 
             travel.setTimeList(travelMapper.selectTravelTimeList(travelNo));
             travel.setImageList(travelMapper.selectTravelImageList(travelNo));
@@ -89,12 +94,13 @@
                     tagBridge.setTravelNo(travelNo);
 
                     // tagNo가 없으면 tagName으로 태그 생성 후 tagNo 받아오기
+                    
                     if (tagBridge.getTagNo() == null ) {
                         String tagName = tagBridge.getTagName();
 
                         // 기존 태그 먼저 조회
                         Long getTagNo = travelMapper.selectTagByName(tagName);
-                        System.out.println("ㅣ여기에요 여기 " + getTagNo);
+                        System.out.println("여기에요 여기 " + getTagNo);
                         if (getTagNo != null) {
                             // 이미 있으면 기존 tagNo 사용
                             tagBridge.setTagNo(getTagNo);
@@ -127,16 +133,63 @@
         public RequestData updateTravel(TravelDTO travelDTO) {
             checkTravelExists(travelDTO.getTravelNo());
 
+            // 1) 여행지 기본 정보 수정
             int result = travelMapper.updateTravel(travelDTO);
             if (result <= 0) throw new UpdateException("여행지 수정 실패");
 
             Long travelNo = travelDTO.getTravelNo();
+            // 2) 기존 연관 데이터 삭제
             travelMapper.deleteTravelTimeByTravelNo(travelNo);
             travelMapper.deleteTravelImageByTravelNo(travelNo);
             travelMapper.deleteTravelTagBridgeByTravelNo(travelNo);
             travelMapper.deleteTravelOptionBridgeByTravelNo(travelNo);
 
-            postTravel(travelDTO); // insert로 재등록
+            // 3) 시간 재등록
+            if (travelDTO.getTimeList() != null) {
+                for (TravelTimeDTO t : travelDTO.getTimeList()) {
+                    t.setTravelNo(travelNo);
+                    travelMapper.insertTravelTime(t);
+                }
+            }
+
+            // 4) 이미지 재등록
+            if (travelDTO.getImageList() != null) {
+                for (TravelImageDTO img : travelDTO.getImageList()) {
+                    img.setTravelNo(travelNo);
+                    travelMapper.insertTravelImage(img);
+                }
+            }
+
+            // 5) 태그 재등록 (postTravel과 동일하게 tagNo null 처리)
+            if (travelDTO.getTagList() != null) {
+                for (TravelTagBridgeDTO tb : travelDTO.getTagList()) {
+                    tb.setTravelNo(travelNo);
+
+                    if (tb.getTagNo() == null) {
+                        String tagName = tb.getTagName();
+                        Long existing = travelMapper.selectTagByName(tagName);
+                        if (existing != null) {
+                            tb.setTagNo(existing);
+                        } else {
+                            TravelTagDTO newTag = new TravelTagDTO();
+                            newTag.setTagName(tagName);
+                            travelMapper.insertTag(newTag);
+                            // insertTag 호출 시 tagNo가 DTO에 셋팅되지 않으면 아래처럼 조회
+                            tb.setTagNo(travelMapper.selectTagByName(tagName));
+                        }
+                    }
+
+                    travelMapper.insertTravelTagBridge(tb);
+                }
+            }
+
+            // 6) 옵션 재등록
+            if (travelDTO.getOptionList() != null) {
+                for (TravelOptionBridgeDTO ob : travelDTO.getOptionList()) {
+                    ob.setTravelNo(travelNo);
+                    travelMapper.insertTravelOptionBridge(ob);
+                }
+            }
 
             return responseUtil.rd("200", travelDTO, "여행지 수정 성공");
         }

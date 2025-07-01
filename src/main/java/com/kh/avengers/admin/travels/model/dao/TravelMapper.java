@@ -43,21 +43,24 @@ public interface TravelMapper {
     int insertTravelImage(TravelImageDTO image);
     int deleteTravelImageByTravelNo(Long travelNo);
     List<TravelImageDTO> selectTravelImageList(Long travelNo);
-
+    
     // 태그 브릿지 등록 / 삭제 / 조회
     int insertTravelTagBridge(TravelTagBridgeDTO tagBridge);
     int deleteTravelTagBridgeByTravelNo(Long travelNo);
     List<TravelTagDTO> selectTravelTagList(Long travelNo);
-
+    int deleteTravelTagBridgeByTagNo(List<Long> tagNos);
+    
     // 옵션 브릿지 등록 / 삭제 / 조회
     int insertTravelOptionBridge(TravelOptionBridgeDTO optionBridge);
     int deleteTravelOptionBridgeByTravelNo(Long travelNo);
     List<TravelOptionDTO> selectTravelOptionList(Long travelNo);
-
+    int deleteTravelOptionBridgeByOptionNo(List<Long> optionNos);
+    
     // 테마 브릿지 등록 / 삭제 / 조회
     int insertTravelThemaBridge(TravelThemaBridgeDTO themaBridge);
     int deleteTravelThemaBridgeByTravelNo(Long travelNo);
     List<TravelThemaDTO> selectTravelThemaList(Long travelNo);
+    int deleteTravelThemaBridgeByThemaNo(List<Long> themaNos);
 
     // 태그명으로 기존 조회
     Long selectTagByName(String tagName);
@@ -67,5 +70,9 @@ public interface TravelMapper {
 
     // 관리자 여행지 전체 목록 조회
     List<TravelDTO> selectAdminTravelList();
+
+    
+
+
 
 }

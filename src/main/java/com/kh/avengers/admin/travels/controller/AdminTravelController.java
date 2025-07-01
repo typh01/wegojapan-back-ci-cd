@@ -26,6 +26,11 @@ public class AdminTravelController {
         return ResponseEntity.ok(adminTravelService.getTravelList());
     }
 
+    @GetMapping("/{travelNo}")
+    public RequestData getTravelDetail(@PathVariable Long travelNo) {
+    return adminTravelService.getTravelDetail(travelNo);
+    }
+
     // 여행지 등록
     @PostMapping
     public ResponseEntity<RequestData> postTravel(@Valid @RequestBody TravelDTO travelDTO) {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.avengers.admin.travels.model.dao.TravelMapper;
 import com.kh.avengers.admin.travels.model.dao.TravelTagMapper;
 import com.kh.avengers.admin.travels.model.dto.TravelTagDTO;
 import com.kh.avengers.common.dto.RequestData;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminTravelTagServiceImpl implements AdminTravelTagService {
 
     private final TravelTagMapper travelTagMapper;
+    private final TravelMapper travelMapper;
     private final ResponseUtil responseUtil;
 
     private void checkTagExists(long tagNo) {
@@ -63,8 +65,9 @@ public class AdminTravelTagServiceImpl implements AdminTravelTagService {
 
     @Override
     public RequestData deleteAdminTags(List<Long> tagNos) {
+        int bridge = travelMapper.deleteTravelTagBridgeByTagNo(tagNos);
         int result = travelTagMapper.deleteTags(tagNos);
-        if (result <= 0) {
+        if (result <= 0 & bridge <= 0) {
             throw new DeleteException("Tag 삭제 실패");
         }
         return responseUtil.rd("200", tagNos, "Tag 삭제 성공");
