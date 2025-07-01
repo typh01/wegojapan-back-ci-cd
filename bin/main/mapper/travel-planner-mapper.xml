@@ -66,6 +66,25 @@
             PLAN_NO = #{planNo}
     </update>
 
+    <!-- TODO step3 정보로 여행 플랜 업데이트 -->
+
+
+    <!-- step4 정보로 여행 플랜 업데이트 & 완료 -->
+    <update id="updateTravelPlanStep4"
+            parameterType="com.kh.avengers.plan.model.dto.TravelPlannerDto">
+        UPDATE
+            TB_TRAVEL_PLANNER
+        SET
+            PLAN_TITLE = #{planTitle},
+            PLAN_DESCRIPTION = #{planDescription},
+            MIN_BUDGET = #{minBudget},
+            MAX_BUDGET = #{maxBudget},
+            TRANSPORTRESERVATION_LINK = #{transportReservationLink},
+            ACCOMODATION_LINK = #{accomodationLink}
+        WHERE
+            PLAN_NO = #{planNo}
+
+    </update>
 
 
 </mapper>

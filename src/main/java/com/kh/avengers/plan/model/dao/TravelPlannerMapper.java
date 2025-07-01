@@ -28,5 +28,14 @@ public interface TravelPlannerMapper {
      * @return 업데이트된 행의 개수(성공 : 1, 실패 : 0)
      */
     int updateTravelPlanStep2(TravelPlannerDto travelPlannerDto);
+
+    // TODO TravelPlanStep3 데이터도 업데이트~~~
+
+    /**
+     * step4 정보로 여행 플랜 업데이트 및 완료
+     * @param travelPlannerDto 업데이트 할 여행 플랜 정보
+     * @return 업데이트된 행의 개수(성공 : 1, 실패 : 0)
+     */
+    int updateTravelPlanStep4(TravelPlannerDto travelPlannerDto);
     
 }
