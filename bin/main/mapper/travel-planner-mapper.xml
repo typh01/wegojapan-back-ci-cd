@@ -47,7 +47,7 @@
             PLAN_DESCRIPTION as planDescription,
             MIN_BUDGET as minBudget,
             MAX_BUDGET as maxBudget,
-            TRANSPORT_RESERVATION_LINK as transportReservationLink,
+            TRANSPORTRESERVATION_LINK as transportReservationLink,
             ACCOMODATION_LINK as accomodationLink
         FROM
             TB_TRAVEL_PLANNER
