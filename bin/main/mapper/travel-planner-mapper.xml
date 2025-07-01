@@ -48,7 +48,7 @@
             MIN_BUDGET as minBudget,
             MAX_BUDGET as maxBudget,
             TRANSPORTRESERVATION_LINK as transportReservationLink,
-            ACCOMODATION_LINK as accomodationLink
+            ACCOMMODATION_LINK as accommodationLink
         FROM
             TB_TRAVEL_PLANNER
         WHERE
@@ -80,11 +80,11 @@
             MIN_BUDGET = #{minBudget},
             MAX_BUDGET = #{maxBudget},
             TRANSPORTRESERVATION_LINK = #{transportReservationLink},
-            ACCOMODATION_LINK = #{accomodationLink}
+            ACCOMMODATION_LINK = #{accommodationLink}
         WHERE
             PLAN_NO = #{planNo}
-
     </update>
+
 
 
 </mapper>

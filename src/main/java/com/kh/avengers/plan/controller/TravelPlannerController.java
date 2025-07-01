@@ -12,10 +12,13 @@ import com.kh.avengers.auth.model.vo.CustomUserDetails;
 import com.kh.avengers.common.dto.RequestData;
 import com.kh.avengers.plan.model.dto.request.TravelPlannerStep1Request;
 import com.kh.avengers.plan.model.dto.request.TravelPlannerStep2Request;
+import com.kh.avengers.plan.model.dto.request.TravelPlannerStep4Request;
 import com.kh.avengers.plan.model.dto.response.TravelPlannerStep1Response;
 import com.kh.avengers.plan.model.dto.response.TravelPlannerStep2Response;
+import com.kh.avengers.plan.model.dto.response.TravelPlannerStep4Response;
 import com.kh.avengers.plan.model.service.TravelPlannerStep1Service;
 import com.kh.avengers.plan.model.service.TravelPlannerStep2Service;
+import com.kh.avengers.plan.model.service.TravelPlannerStep4Service;
 import com.kh.avengers.util.ResponseUtil;
 
 import jakarta.validation.Valid;
@@ -30,6 +33,8 @@ public class TravelPlannerController {
 
     private final TravelPlannerStep1Service travelPlannerStep1Service;
     private final TravelPlannerStep2Service travelPlannerStep2Service;
+    // TODO Step3Service
+    private final TravelPlannerStep4Service travelPlannerStep4Service;
     private final ResponseUtil responseUtil;
     
     @PostMapping("/step1")
@@ -64,5 +69,26 @@ public class TravelPlannerController {
 
                 return ResponseEntity.ok(result);
             } 
+            
+        // TODO step3 api 추가
+
+
+        @PutMapping("/step4")
+        public ResponseEntity<RequestData> completeStep4Plan(
+            @RequestBody @Valid TravelPlannerStep4Request request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+                log.info("여행 플래너 step4 완료 요청 >> 사용자 : {}, 플랜번호 : {}, 제목 : {}",
+                        userDetails.getUsername(), request.getPlanNo(), request.getPlanTitle());
+
+                TravelPlannerStep4Response response = travelPlannerStep4Service.completeStep4Plan(request, userDetails);
+
+                log.info("여행 플래너 step4 완료!!! >> 플랜번호 : {}, 제목 : {}", 
+                        response.getPlanNo(), response.getPlanTitle());
+
+                RequestData result = responseUtil.rd("200", response, "여행 플랜 완료");
+
+                return ResponseEntity.ok(result);
+            }
 
 }
