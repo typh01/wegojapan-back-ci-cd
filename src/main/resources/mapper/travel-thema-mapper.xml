@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.avengers.admin.travels.model.dao.TravelThemaMapper">
+
+    <!-- 사용자용 테마 목록 조회 -->
+    <select id="getThemaList" parameterType="TravelThemaDTO" resultType="TravelThemaDTO">
+        SELECT
+            TRAVEL_THEMA_NO AS themaNo,
+            TRAVEL_THEMA_NAME AS themaName,
+            TRAVEL_THEMA_CREATED_DATE AS themaCreatedDate,
+            TRAVEL_THEMA_MODIFIED_DATE AS themaModifiedDate,
+            TRAVEL_THEMA_STATUS AS themaStatus
+        FROM TB_TRAVEL_THEMA
+        <where>
+            TRAVEL_THEMA_STATUS = 'Y'
+            <if test="themaName != null and themaName != ''">
+                AND TRAVEL_THEMA_NAME LIKE '%' || #{themaName} || '%'
+            </if>
+        </where>
+        ORDER BY TRAVEL_THEMA_NO ASC
+    </select>
+
+    <!-- 관리자용 전체 목록 -->
+    <select id="getAdminThemaList" parameterType="TravelThemaDTO" resultType="TravelThemaDTO">
+        SELECT
+            TRAVEL_THEMA_NO AS themaNo,
+            TRAVEL_THEMA_NAME AS themaName,
+            TRAVEL_THEMA_CREATED_DATE AS themaCreatedDate,
+            TRAVEL_THEMA_MODIFIED_DATE AS themaModifiedDate,
+            TRAVEL_THEMA_STATUS AS themaStatus
+        FROM TB_TRAVEL_THEMA
+        ORDER BY TRAVEL_THEMA_NO ASC
+    </select>
+
+    <!-- 존재 여부 확인 -->
+    <select id="searchThemaNo" parameterType="long" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_TRAVEL_THEMA
+        WHERE TRAVEL_THEMA_NO = #{themaNo}
+    </select>
+
+    <!-- 테마 등록 -->
+    <insert id="insertThema" parameterType="TravelThemaDTO">
+        INSERT INTO TB_TRAVEL_THEMA (
+            TRAVEL_THEMA_NAME
+        ) VALUES (
+            #{themaName}
+        )
+    </insert>
+
+    <!-- 테마 수정 -->
+    <update id="updateThema" parameterType="TravelThemaDTO">
+        UPDATE TB_TRAVEL_THEMA
+        SET
+            TRAVEL_THEMA_NAME = #{themaName},
+            TRAVEL_THEMA_STATUS = #{themaStatus},
+            TRAVEL_THEMA_MODIFIED_DATE = SYSDATE
+        WHERE TRAVEL_THEMA_NO = #{themaNo}
+    </update>
+
+    <!-- 테마 삭제 (다중) -->
+    <update id="deleteThemas" parameterType="list">
+        UPDATE TB_TRAVEL_THEMA
+        SET
+            TRAVEL_THEMA_STATUS = 'N',
+            TRAVEL_THEMA_MODIFIED_DATE = SYSDATE
+        WHERE TRAVEL_THEMA_NO IN
+        <foreach collection="list" item="themaNo" open="(" separator="," close=")">
+            #{themaNo}
+        </foreach>
+    </update>
+
+</mapper>
