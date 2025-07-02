@@ -1,4 +1,4 @@
-package com.kh.report.controller;
+package com.kh.avengers.report.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
