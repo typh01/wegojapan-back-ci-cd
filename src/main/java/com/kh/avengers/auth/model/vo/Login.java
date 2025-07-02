@@ -4,19 +4,13 @@ package com.kh.avengers.auth.model.vo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
-
-
-
-
+// @Value
 @Builder
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Login {
 
   @NotBlank(message = "아이디는 필수 항목입니다.")

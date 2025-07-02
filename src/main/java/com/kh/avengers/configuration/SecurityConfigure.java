@@ -56,6 +56,8 @@ public class SecurityConfigure {
                         ).authenticated();
                         requests.requestMatchers(HttpMethod.GET).permitAll();
 
+                        requests.requestMatchers("/api/travel-planner/**").authenticated();
+
                         requests.requestMatchers(HttpMethod.GET, "/api/admin/**", "/api/travels/**").permitAll();
 
                         requests.requestMatchers(HttpMethod.POST).authenticated();
