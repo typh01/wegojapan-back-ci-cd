@@ -31,64 +31,64 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/travel-planner")
 public class TravelPlannerController {
 
-    private final TravelPlannerStep1Service travelPlannerStep1Service;
-    private final TravelPlannerStep2Service travelPlannerStep2Service;
-    // TODO Step3Service
-    private final TravelPlannerStep4Service travelPlannerStep4Service;
-    private final ResponseUtil responseUtil;
-    
-    @PostMapping("/step1")
-    public ResponseEntity<RequestData> createStep1Plan(
-        @RequestBody @Valid TravelPlannerStep1Request request,
-        @AuthenticationPrincipal CustomUserDetails userDetails) {
+  private final TravelPlannerStep1Service travelPlannerStep1Service;
+  private final TravelPlannerStep2Service travelPlannerStep2Service;
+  // TODO Step3Service
+  private final TravelPlannerStep4Service travelPlannerStep4Service;
+  private final ResponseUtil responseUtil;
 
-            log.info("여행 플래너 step1 생성 요청 >> 사용자 : {}, 시작일 : {}, 종료일 : {}, 여행인원 : {}",
-                    userDetails.getUsername(), request.getStartDate(), request.getEndDate(), request.getTravelers());
+  @PostMapping("/step1")
+  public ResponseEntity<RequestData> createStep1Plan(
+          @RequestBody @Valid TravelPlannerStep1Request request,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-            TravelPlannerStep1Response response = travelPlannerStep1Service.createStep1Plan(request, userDetails);
+    log.info("여행 플래너 step1 생성 요청 >> 사용자 : {}, 시작일 : {}, 종료일 : {}, 여행인원 : {}",
+            userDetails.getUsername(), request.getStartDate(), request.getEndDate(), request.getTravelers());
 
-            log.info("여행 플래너 step1 생성 완료!!! >> 플랜 번호 : {}", response.getPlanNo());
+    TravelPlannerStep1Response response = travelPlannerStep1Service.createStep1Plan(request, userDetails);
 
-            RequestData result = responseUtil.rd("201", response, "여행 플래너 생성" );
+    log.info("여행 플래너 step1 생성 완료!!! >> 플랜 번호 : {}", response.getPlanNo());
 
-            return ResponseEntity.status(201).body(result);
-        }
-    
-        @PutMapping("/step2")
-        public ResponseEntity<RequestData> updateStep2Plan(
-            @RequestBody @Valid TravelPlannerStep2Request request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-                
-                log.info("여행 플래너 step2 업데이트 요청 >> 시용자 : {}, 플랜번호 : {}, 선택지역 : {}", userDetails.getUsername(), request.getPlanNo(), request.getSelectedRegion());
+    RequestData result = responseUtil.rd("201", response, "여행 플래너 생성" );
 
-                TravelPlannerStep2Response response = travelPlannerStep2Service.updateStep2Plan(request,userDetails);
+    return ResponseEntity.status(201).body(result);
+  }
 
-                log.info("여행 플래너 step2 업데이트 완료!! >> 플랜번호 : {}, 선택지역 : {}",  response.getPlanNo(), response.getSelectedRegion());
+  @PutMapping("/step2")
+  public ResponseEntity<RequestData> updateStep2Plan(
+          @RequestBody @Valid TravelPlannerStep2Request request,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-                RequestData result = responseUtil.rd("200", response, "여행 지역 선택 완료!!!");
+    log.info("여행 플래너 step2 업데이트 요청 >> 시용자 : {}, 플랜번호 : {}, 선택지역 : {}", userDetails.getUsername(), request.getPlanNo(), request.getSelectedRegion());
 
-                return ResponseEntity.ok(result);
-            } 
-            
-        // TODO step3 api 추가
+    TravelPlannerStep2Response response = travelPlannerStep2Service.updateStep2Plan(request,userDetails);
+
+    log.info("여행 플래너 step2 업데이트 완료!! >> 플랜번호 : {}, 선택지역 : {}",  response.getPlanNo(), response.getSelectedRegion());
+
+    RequestData result = responseUtil.rd("200", response, "여행 지역 선택 완료!!!");
+
+    return ResponseEntity.ok(result);
+  }
+
+  // TODO step3 api 추가
 
 
-        @PutMapping("/step4")
-        public ResponseEntity<RequestData> completeStep4Plan(
-            @RequestBody @Valid TravelPlannerStep4Request request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+  @PutMapping("/step4")
+  public ResponseEntity<RequestData> completeStep4Plan(
+          @RequestBody @Valid TravelPlannerStep4Request request,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-                log.info("여행 플래너 step4 완료 요청 >> 사용자 : {}, 플랜번호 : {}, 제목 : {}",
-                        userDetails.getUsername(), request.getPlanNo(), request.getPlanTitle());
+    log.info("여행 플래너 step4 완료 요청 >> 사용자 : {}, 플랜번호 : {}, 제목 : {}",
+            userDetails.getUsername(), request.getPlanNo(), request.getPlanTitle());
 
-                TravelPlannerStep4Response response = travelPlannerStep4Service.completeStep4Plan(request, userDetails);
+    TravelPlannerStep4Response response = travelPlannerStep4Service.completeStep4Plan(request, userDetails);
 
-                log.info("여행 플래너 step4 완료!!! >> 플랜번호 : {}, 제목 : {}", 
-                        response.getPlanNo(), response.getPlanTitle());
+    log.info("여행 플래너 step4 완료!!! >> 플랜번호 : {}, 제목 : {}",
+            response.getPlanNo(), response.getPlanTitle());
 
-                RequestData result = responseUtil.rd("200", response, "여행 플랜 완료");
+    RequestData result = responseUtil.rd("200", response, "여행 플랜 완료");
 
-                return ResponseEntity.ok(result);
-            }
+    return ResponseEntity.ok(result);
+  }
 
 }

@@ -37,5 +37,5 @@ public interface TravelPlannerMapper {
      * @return 업데이트된 행의 개수(성공 : 1, 실패 : 0)
      */
     int updateTravelPlanStep4(TravelPlannerDto travelPlannerDto);
-    
+
 }
