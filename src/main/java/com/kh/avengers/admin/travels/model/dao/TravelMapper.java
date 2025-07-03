@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.kh.avengers.admin.travels.model.dto.TravelDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelImageDTO;
@@ -14,6 +15,7 @@ import com.kh.avengers.admin.travels.model.dto.TravelTagDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaBridgeDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelTimeDTO;
+import org.apache.ibatis.annotations.Param;
 
 
 @Mapper
@@ -26,7 +28,7 @@ public interface TravelMapper {
     int updateTravel(TravelDTO travel);
 
     // 여행지 삭제 (소프트 딜리트)
-    int deleteTravel(Long travelNo);
+    int deleteTravel(TravelDTO travel);
 
     // 여행지 상세 조회
     TravelDTO selectTravelByNo(Long travelNo);
@@ -44,21 +46,24 @@ public interface TravelMapper {
     int insertTravelImage(TravelImageDTO image);
     int deleteTravelImageByTravelNo(Long travelNo);
     List<TravelImageDTO> selectTravelImageList(Long travelNo);
-
+    
     // 태그 브릿지 등록 / 삭제 / 조회
     int insertTravelTagBridge(TravelTagBridgeDTO tagBridge);
     int deleteTravelTagBridgeByTravelNo(Long travelNo);
     List<TravelTagDTO> selectTravelTagList(Long travelNo);
-
+    int deleteTravelTagBridgeByTagNo(List<Long> tagNos);
+    
     // 옵션 브릿지 등록 / 삭제 / 조회
     int insertTravelOptionBridge(TravelOptionBridgeDTO optionBridge);
     int deleteTravelOptionBridgeByTravelNo(Long travelNo);
     List<TravelOptionDTO> selectTravelOptionList(Long travelNo);
-
+    int deleteTravelOptionBridgeByOptionNo(List<Long> optionNos);
+    
     // 테마 브릿지 등록 / 삭제 / 조회
     int insertTravelThemaBridge(TravelThemaBridgeDTO themaBridge);
     int deleteTravelThemaBridgeByTravelNo(Long travelNo);
     List<TravelThemaDTO> selectTravelThemaList(Long travelNo);
+    int deleteTravelThemaBridgeByThemaNo(List<Long> themaNos);
 
     // 태그명으로 기존 조회
     Long selectTagByName(String tagName);
@@ -68,8 +73,17 @@ public interface TravelMapper {
 
     // 관리자 여행지 전체 목록 조회
     List<TravelDTO> selectAdminTravelList();
+    
+    // 특정 구에 속한 여행지 목록 조회
+    List<TravelDTO> selectTravelListByGuName(@Param("guName") String guName);
 
+    List<TravelDTO> selectPagedAdminTravelList(@Param("offset") int offset, @Param("limit") int limit);
+    long countAllTravels();
+    int deleteTravelThemaBridgeByTravelNoAndThemaNo(TravelThemaBridgeDTO dto);
 
+    List<TravelDTO> selectFilteredTravelList(Map<String, Object> filters);
+    
+    long countFilteredTravelList(Map<String, Object> filters);
 
     // 즐겨찾기 중복 확인
     Long checkedBook(Map<String, String> book);

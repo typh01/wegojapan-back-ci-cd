@@ -2,336 +2,526 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.avengers.admin.travels.model.dao.TravelMapper">
 
-    <!-- 여행지 등록 -->
-    <insert id="insertTravel" parameterType="TravelDTO" keyProperty="travelNo" keyColumn="TRAVEL_NO">
-        <selectKey keyProperty="travelNo" resultType="long" order="BEFORE">
-          SELECT SEQ_TB_TRAVEL_TRAVEL_NO.NEXTVAL FROM DUAL
+      <!-- 여행지 등록 -->
+      <insert id="insertTravel" parameterType="TravelDTO" keyProperty="travelNo" keyColumn="TRAVEL_NO">
+          <selectKey keyProperty="travelNo" resultType="long" order="BEFORE">
+            SELECT SEQ_TB_TRAVEL_TRAVEL_NO.NEXTVAL FROM DUAL
+          </selectKey>
+          INSERT INTO TB_TRAVEL (
+              TRAVEL_NO,
+              GU_NO, 
+              TRAVEL_CATEGORY_NO, 
+              TRAVEL_TITLE, 
+              TRAVEL_EXPLAIN, 
+              TRAVEL_DISCRIPTION,
+              TRAVEL_ADDRESS, 
+              TRAVEL_MAPY, 
+              TRAVEL_MAPX, 
+              TRAVEL_TEL, 
+              TRAVEL_EMAIL,
+              TRAVEL_WEBSITE
+          ) VALUES (
+              #{travelNo},
+              #{guNo}, 
+              #{categoryNo}, 
+              #{title}, 
+              #{explain}, 
+              #{description},
+              #{address}, 
+              #{mapY}, 
+              #{mapX}, 
+              #{tel}, 
+              #{email},
+              #{website}
+          )
+      </insert>
+
+      <select id="countAllTravels" resultType="long">
+        SELECT COUNT(*) FROM TB_TRAVEL
+      </select>
+
+      <!-- 운영 시간 등록 -->
+      <insert id="insertTravelTime" parameterType="TravelTimeDTO">
+          INSERT INTO TB_TRAVEL_TIME (
+              TRAVEL_NO, 
+              TRAVEL_DAY_OF_WEEK, 
+              TRAVEL_START_TIME, 
+              TRAVEL_END_TIME
+          ) VALUES (
+              #{travelNo}, 
+              #{dayOfWeek}, 
+              #{startTime}, 
+              #{endTime}
+          )
+      </insert>
+
+      <!-- 운영 시간 삭제 -->
+      <delete id="deleteTravelTimeByTravelNo" parameterType="long">
+          DELETE FROM TB_TRAVEL_TIME WHERE TRAVEL_NO = #{travelNo}
+      </delete>
+
+      <!-- 이미지 등록 -->
+      <insert id="insertTravelImage" parameterType="TravelImageDTO">
+          INSERT INTO TB_TRAVEL_IMAGE (
+              TRAVEL_NO, 
+              TRAVEL_IMAGE_URL
+          ) VALUES (
+              #{travelNo}, 
+              #{imageUrl}
+          )
+      </insert>
+
+      <!-- 이미지 삭제 -->
+      <delete id="deleteTravelImageByTravelNo" parameterType="long">
+          DELETE FROM TB_TRAVEL_IMAGE WHERE TRAVEL_NO = #{travelNo}
+      </delete>
+
+      <!-- 태그 브릿지 등록 -->
+      <insert id="insertTravelTagBridge" parameterType="TravelTagBridgeDTO">
+          INSERT INTO TB_TRAVEL_TAG_BRIDGE (
+              TRAVEL_NO, 
+              TAG_NO
+          ) VALUES (
+              #{travelNo}, 
+              #{tagNo}
+          )
+      </insert>
+
+      <!-- 태그 브릿지 삭제 -->
+      <delete id="deleteTravelTagBridgeByTravelNo" parameterType="long">
+          DELETE FROM TB_TRAVEL_TAG_BRIDGE WHERE TRAVEL_NO = #{travelNo}
+      </delete>
+
+      <!-- 태그 브릿지 다중 삭제 -->
+      <delete id="deleteTravelTagBridgeByTagNo" parameterType="list">
+        DELETE FROM TB_TRAVEL_TAG_BRIDGE
+        WHERE TAG_NO IN
+        <foreach collection="list" item="tagNos" open="(" separator="," close=")">
+          #{tagNos}
+        </foreach>
+      </delete>
+
+      <!-- 옵션 브릿지 등록 -->
+      <insert id="insertTravelOptionBridge" parameterType="TravelOptionBridgeDTO">
+          INSERT INTO TB_TRAVEL_OPTION_BRIDGE (
+              TRAVEL_NO, 
+              TRAVEL_OPTION_NO
+          ) VALUES (
+              #{travelNo}, 
+              #{travelOptionNo}
+          )
+      </insert>
+
+      <!-- 옵션 브릿지 삭제 -->
+      <delete id="deleteTravelOptionBridgeByTravelNo" parameterType="long">
+          DELETE FROM TB_TRAVEL_OPTION_BRIDGE WHERE TRAVEL_NO = #{travelNo}
+      </delete>
+
+      <!-- 옵션 브릿지 다중 삭제 -->
+      <delete id="deleteTravelOptionBridgeByOptionNo" parameterType="list">
+        DELETE FROM TB_TRAVEL_OPTION_BRIDGE
+        WHERE TRAVEL_OPTION_NO IN
+        <foreach collection="list" item="optionNos" open="(" separator="," close=")">
+          #{optionNos}
+        </foreach>
+      </delete>
+
+      <!-- 테마 브릿지 등록 -->
+      <insert id="insertTravelThemaBridge" parameterType="TravelThemaBridgeDTO">
+          INSERT INTO TB_TRAVEL_THEMA_BRIDGE (
+              TRAVEL_NO, 
+              TRAVEL_THEMA_NO
+          ) VALUES (
+              #{travelNo}, 
+              #{themaNo}
+          )
+      </insert>
+
+      <!-- 테마 브릿지 삭제 -->
+      <delete id="deleteTravelThemaBridgeByTravelNo" parameterType="long">
+          DELETE FROM TB_TRAVEL_THEMA_BRIDGE WHERE TRAVEL_NO = #{travelNo}
+      </delete>
+
+      <delete id="deleteTravelThemaBridgeByTravelNoAndThemaNo" parameterType="long">
+          DELETE FROM TB_TRAVEL_THEMA_BRIDGE WHERE TRAVEL_NO = #{travelNo} AND TRAVEL_THEMA_NO = #{themaNo}
+      </delete>
+
+      <!-- 테마 브릿지 다중 삭제 -->
+      <delete id="deleteTravelThemaBridgeByThemaNo" parameterType="list">
+        DELETE FROM TB_TRAVEL_THEMA_BRIDGE
+        WHERE TRAVEL_THEMA_NO IN
+        <foreach collection="list" item="themaNos" open="(" separator="," close=")">
+          #{themaNos}
+        </foreach>
+      </delete>
+
+      <!-- 여행지 상세 조회 -->
+      <select id="selectTravelByNo" parameterType="long" resultType="TravelDTO">
+          SELECT
+              T.TRAVEL_NO AS travelNo,
+              T.GU_NO AS guNo,
+              T.TRAVEL_CATEGORY_NO AS categoryNo,
+              T.TRAVEL_TITLE AS title,
+              T.TRAVEL_EXPLAIN AS explain,
+              T.TRAVEL_DISCRIPTION AS description,
+              T.TRAVEL_ADDRESS AS address,
+              T.TRAVEL_MAPY AS mapY,
+              T.TRAVEL_MAPX AS mapX,
+              T.TRAVEL_TEL AS tel,
+              T.TRAVEL_EMAIL AS email,
+              T.TRAVEL_WEBSITE AS website,
+              T.TRAVEL_STATUS AS status,
+              T.TRAVEL_CREATED_DATE AS createdDate,
+              T.TRAVEL_MODIFIED_DATE AS modifiedDate,
+              C.TRAVEL_CATEGORY_NAME AS categoryName,
+              G.GU_NAME AS guName
+          FROM TB_TRAVEL T
+          JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+          JOIN TB_GU G ON T.GU_NO = G.GU_NO
+          WHERE T.TRAVEL_NO = #{travelNo}
+      </select>
+
+      <!-- 여행지 운영 시간 -->
+      <select id="selectTravelTimeList" resultType="TravelTimeDTO">
+        SELECT
+          TRAVEL_DAY_OF_WEEK AS dayOfWeek, 
+          TRAVEL_START_TIME AS startTime, 
+          TRAVEL_END_TIME AS endTime
+        FROM 
+          TB_TRAVEL_TIME 
+        WHERE 
+          TRAVEL_NO = #{travelNo}
+      </select>
+
+      <!-- 여행지 이미지 조회 -->
+      <select id="selectTravelImageList" resultType="TravelImageDTO">
+          SELECT
+              IMAGE_NO as imageNo,
+              TRAVEL_NO as travelNo,
+              TRAVEL_IMAGE_URL as imageUrl,
+              TRAVEL_IMAGE_URL as travelImageUrl
+          FROM
+              TB_TRAVEL_IMAGE
+          WHERE
+              TRAVEL_NO = #{travelNo}
+          ORDER BY IMAGE_NO ASC
+      </select>
+
+      <!-- 여행지 태그 리스트  조회-->
+      <select id="selectTravelTagList" resultType="TravelTagDTO">
+        SELECT 
+          TT.TAG_NO AS tagNo, 
+          TT.TAG_NAME AS tagName
+        FROM 
+          TB_TRAVEL_TAG_BRIDGE B
+        JOIN TB_TRAVEL_TAG TT ON B.TAG_NO = TT.TAG_NO
+        WHERE B.TRAVEL_NO = #{travelNo}
+      </select>
+
+      <!-- 여행지 옵션 리스트  조회-->
+      <select id="selectTravelOptionList" resultType="TravelOptionDTO">
+        SELECT 
+          O.TRAVEL_OPTION_NO AS optionNo, 
+          O.TRAVEL_OPTION_NAME AS optionName
+        FROM 
+          TB_TRAVEL_OPTION_BRIDGE B
+        JOIN 
+          TB_TRAVEL_OPTION O ON B.TRAVEL_OPTION_NO = O.TRAVEL_OPTION_NO
+        WHERE B.TRAVEL_NO = #{travelNo}
+      </select>
+
+      <!-- 여행지 테마 리스트  조회-->
+      <select id="selectTravelThemaList" resultType="TravelThemaDTO">
+        SELECT 
+          T.TRAVEL_THEMA_NO AS themaNo, 
+          T.TRAVEL_THEMA_NAME AS themaName
+        FROM 
+          TB_TRAVEL_THEMA_BRIDGE B
+        JOIN TB_TRAVEL_THEMA T ON B.TRAVEL_THEMA_NO = T.TRAVEL_THEMA_NO
+        WHERE B.TRAVEL_NO = #{travelNo}
+      </select>
+
+      <!-- 관리자 여행지 전체 목록 조회 -->
+      <select id="selectAdminTravelList" resultType="TravelDTO">
+          SELECT
+              T.TRAVEL_NO AS travelNo,
+              T.GU_NO AS guNo,
+              T.TRAVEL_CATEGORY_NO AS categoryNo,
+              T.TRAVEL_TITLE AS title,
+              T.TRAVEL_EXPLAIN AS explain,
+              T.TRAVEL_DISCRIPTION AS description,
+              T.TRAVEL_ADDRESS AS address,
+              T.TRAVEL_MAPY AS mapY,
+              T.TRAVEL_MAPX AS mapX,
+              T.TRAVEL_TEL AS tel,
+              T.TRAVEL_EMAIL AS email,
+              T.TRAVEL_WEBSITE AS website,
+              T.TRAVEL_STATUS AS status,
+              C.TRAVEL_CATEGORY_NAME As categoryName,
+              G.GU_NAME As guName
+          FROM TB_TRAVEL T
+          JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+          JOIN TB_GU G ON T.GU_NO = G.GU_NO
+          ORDER BY T.TRAVEL_NO ASC
+      </select>
+
+      <!-- 관리자 여행지 전체 목록 조회 -->
+      <select id="selectPagedAdminTravelList" resultType="TravelDTO">
+          SELECT
+              T.TRAVEL_NO AS travelNo,
+              T.GU_NO AS guNo,
+              T.TRAVEL_CATEGORY_NO AS categoryNo,
+              T.TRAVEL_TITLE AS title,
+              T.TRAVEL_EXPLAIN AS explain,
+              T.TRAVEL_DISCRIPTION AS description,
+              T.TRAVEL_ADDRESS AS address,
+              T.TRAVEL_MAPY AS mapY,
+              T.TRAVEL_MAPX AS mapX,
+              T.TRAVEL_TEL AS tel,
+              T.TRAVEL_EMAIL AS email,
+              T.TRAVEL_WEBSITE AS website,
+              T.TRAVEL_STATUS AS status,
+              C.TRAVEL_CATEGORY_NAME As categoryName,
+              G.GU_NAME As guName
+          FROM TB_TRAVEL T
+          JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+          JOIN TB_GU G ON T.GU_NO = G.GU_NO
+          ORDER BY T.TRAVEL_NO ASC
+          OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+      </select>
+
+      <!-- 여행지 전체 목록 조회 -->
+      <select id="selectTravelList" resultType="TravelDTO">
+          SELECT
+              T.TRAVEL_NO AS travelNo,
+              T.GU_NO AS guNo,
+              T.TRAVEL_CATEGORY_NO AS categoryNo,
+              T.TRAVEL_TITLE AS title,
+              T.TRAVEL_EXPLAIN AS explain,
+              T.TRAVEL_DISCRIPTION AS description,
+              T.TRAVEL_ADDRESS AS address,
+              T.TRAVEL_MAPY AS mapY,
+              T.TRAVEL_MAPX AS mapX,
+              T.TRAVEL_TEL AS tel,
+              T.TRAVEL_EMAIL AS email,
+              T.TRAVEL_WEBSITE AS website,
+              T.TRAVEL_STATUS AS status,
+              C.TRAVEL_CATEGORY_NAME As categoryName,
+              G.GU_NAME As guName
+          FROM TB_TRAVEL T
+          JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+          JOIN TB_GU G ON T.GU_NO = G.GU_NO
+          WHERE T.TRAVEL_STATUS = 'Y'
+          ORDER BY T.TRAVEL_NO ASC
+      </select>
+
+      <!-- 여행지 수정 (Update) -->
+      <update id="updateTravel" parameterType="TravelDTO">
+          UPDATE TB_TRAVEL
+          SET
+              GU_NO = #{guNo},
+              TRAVEL_CATEGORY_NO = #{categoryNo},
+              TRAVEL_TITLE = #{title},
+              TRAVEL_EXPLAIN = #{explain},
+              TRAVEL_DISCRIPTION = #{description},
+              TRAVEL_ADDRESS = #{address},
+              TRAVEL_MAPY = #{mapY},
+              TRAVEL_MAPX = #{mapX},
+              TRAVEL_TEL = #{tel},
+              TRAVEL_EMAIL = #{email},
+              TRAVEL_WEBSITE = #{website},
+              TRAVEL_MODIFIED_DATE = SYSDATE
+          WHERE TRAVEL_NO = #{travelNo}
+      </update>
+
+      <!-- 여행지 삭제 -->
+      <delete id="deleteTravel" parameterType="TravelDTO">
+          UPDATE TB_TRAVEL
+          SET TRAVEL_STATUS = #{status},
+              TRAVEL_MODIFIED_DATE = SYSDATE
+          WHERE TRAVEL_NO = #{travelNo}
+      </delete>
+
+      <!-- 태그명으로 조회 -->
+      <select id="selectTagByName" parameterType="String" resultType="Long">
+          SELECT TAG_NO FROM TB_TRAVEL_TAG WHERE TAG_NAME = #{tagName}
+      </select>
+
+      <!-- 특정 구에 속한 여행지 목록 조회 -->
+      <select id="selectTravelListByGuName"
+              parameterType="string"
+              resultType="com.kh.avengers.admin.travels.model.dto.TravelDTO">
+          SELECT
+              T.TRAVEL_NO AS travelNo,
+              T.GU_NO AS guNo,
+              T.TRAVEL_CATEGORY_NO AS categoryNo,
+              T.TRAVEL_TITLE AS title,
+              T.TRAVEL_EXPLAIN AS explain,
+              T.TRAVEL_DISCRIPTION AS description,
+              T.TRAVEL_ADDRESS AS address,
+              T.TRAVEL_MAPY AS mapY,
+              T.TRAVEL_MAPX AS mapX,
+              T.TRAVEL_TEL AS tel,
+              T.TRAVEL_EMAIL AS email,
+              T.TRAVEL_WEBSITE AS website,
+              T.TRAVEL_STATUS AS status,
+              C.TRAVEL_CATEGORY_NAME AS categoryName,
+              G.GU_NAME AS guName,
+
+              (SELECT
+                  IMG.TRAVEL_IMAGE_URL
+              FROM
+                  TB_TRAVEL_IMAGE IMG
+              WHERE
+                  IMG.TRAVEL_NO = T.TRAVEL_NO
+              ORDER BY IMG.IMAGE_NO ASC
+                  FETCH FIRST 1 ROWS ONLY) AS travelImage
+
+          FROM
+              TB_TRAVEL T
+                  JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+                  JOIN TB_GU G ON T.GU_NO = G.GU_NO
+          WHERE
+              T.TRAVEL_STATUS = 'Y'
+              AND G.GU_NAME = #{guName}
+              ORDER BY
+              T.TRAVEL_NO DESC
+      </select>
+
+      <!-- 태그 등록 -->
+      <insert id="insertTag" parameterType="TravelTagDTO" keyProperty="tagNo">
+        <selectKey keyProperty="tagNo" resultType="long" order="BEFORE">
+          SELECT SEQ_TB_TRAVEL_TAG_TAG_NO.NEXTVAL FROM DUAL
         </selectKey>
-        INSERT INTO TB_TRAVEL (
-            TRAVEL_NO,
-            GU_NO, 
-            TRAVEL_CATEGORY_NO, 
-            TRAVEL_TITLE, 
-            TRAVEL_EXPLAIN, 
-            TRAVEL_DISCRIPTION,
-            TRAVEL_ADDRESS, 
-            TRAVEL_MAPY, 
-            TRAVEL_MAPX, 
-            TRAVEL_TEL, 
-            TRAVEL_EMAIL,
-            TRAVEL_WEBSITE
-        ) VALUES (
-            #{travelNo},
-            #{guNo}, 
-            #{categoryNo}, 
-            #{title}, 
-            #{explain}, 
-            #{description},
-            #{address}, 
-            #{mapY}, 
-            #{mapX}, 
-            #{tel}, 
-            #{email},
-            #{website}
-        )
-    </insert>
+        INSERT INTO TB_TRAVEL_TAG (TAG_NAME)
+        VALUES (#{tagName})
+      </insert>
 
-    <!-- 운영 시간 등록 -->
-    <insert id="insertTravelTime" parameterType="TravelTimeDTO">
-        INSERT INTO TB_TRAVEL_TIME (
-            TRAVEL_NO, 
-            TRAVEL_DAY_OF_WEEK, 
-            TRAVEL_START_TIME, 
-            TRAVEL_END_TIME
-        ) VALUES (
-            #{travelNo}, 
-            #{dayOfWeek}, 
-            #{startTime}, 
-            #{endTime}
-        )
-    </insert>
-
-    <!-- 운영 시간 삭제 -->
-    <delete id="deleteTravelTimeByTravelNo" parameterType="long">
-        DELETE FROM TB_TRAVEL_TIME WHERE TRAVEL_NO = #{travelNo}
-    </delete>
-
-    <!-- 이미지 등록 -->
-    <insert id="insertTravelImage" parameterType="TravelImageDTO">
-        INSERT INTO TB_TRAVEL_IMAGE (
-            TRAVEL_NO, 
-            TRAVEL_IMAGE_URL
-        ) VALUES (
-            #{travelNo}, 
-            #{imageUrl}
-        )
-    </insert>
-
-    <!-- 이미지 삭제 -->
-    <delete id="deleteTravelImageByTravelNo" parameterType="long">
-        DELETE FROM TB_TRAVEL_IMAGE WHERE TRAVEL_NO = #{travelNo}
-    </delete>
-
-    <!-- 태그 브릿지 등록 -->
-    <insert id="insertTravelTagBridge" parameterType="TravelTagBridgeDTO">
-        INSERT INTO TB_TRAVEL_TAG_BRIDGE (
-            TRAVEL_NO, 
-            TAG_NO
-        ) VALUES (
-            #{travelNo}, 
-            #{tagNo}
-        )
-    </insert>
-
-    <!-- 태그 브릿지 삭제 -->
-    <delete id="deleteTravelTagBridgeByTravelNo" parameterType="long">
-        DELETE FROM TB_TRAVEL_TAG_BRIDGE WHERE TRAVEL_NO = #{travelNo}
-    </delete>
-
-    <!-- 옵션 브릿지 등록 -->
-    <insert id="insertTravelOptionBridge" parameterType="TravelOptionBridgeDTO">
-        INSERT INTO TB_TRAVEL_OPTION_BRIDGE (
-            TRAVEL_NO, 
-            TRAVEL_OPTION_NO
-        ) VALUES (
-            #{travelNo}, 
-            #{travelOptionNo}
-        )
-    </insert>
-
-    <!-- 옵션 브릿지 삭제 -->
-    <delete id="deleteTravelOptionBridgeByTravelNo" parameterType="long">
-        DELETE FROM TB_TRAVEL_OPTION_BRIDGE WHERE TRAVEL_NO = #{travelNo}
-    </delete>
-
-    <!-- 테마 브릿지 등록 -->
-    <insert id="insertTravelThemaBridge" parameterType="TravelThemaBridgeDTO">
-        INSERT INTO TB_TRAVEL_THEMA_BRIDGE (
-            TRAVEL_NO, 
-            TRAVEL_THEMA_NO
-        ) VALUES (
-            #{travelNo}, 
-            #{travelThemaNo}
-        )
-    </insert>
-
-    <!-- 테마 브릿지 삭제 -->
-    <delete id="deleteTravelThemaBridgeByTravelNo" parameterType="long">
-        DELETE FROM TB_TRAVEL_THEMA_BRIDGE WHERE TRAVEL_NO = #{travelNo}
-    </delete>
-
-
-    <!-- 여행지 상세 조회 -->
-    <select id="selectTravelByNo" parameterType="long" resultType="TravelDTO">
+      <!-- 조건 기반 여행지 목록 조회 -->
+      <select id="selectFilteredTravelList" parameterType="map" resultType="TravelDTO">
         SELECT
-            T.TRAVEL_NO,
-            T.GU_NO,
-            T.TRAVEL_CATEGORY_NO AS categoryNo,
-            T.TRAVEL_TITLE AS title,
-            T.TRAVEL_EXPLAIN AS explain,
-            T.TRAVEL_DISCRIPTION AS description,
-            T.TRAVEL_ADDRESS AS address,
-            T.TRAVEL_MAPY AS mapY,
-            T.TRAVEL_MAPX AS mapX,
-            T.TRAVEL_TEL AS tel,
-            T.TRAVEL_EMAIL AS email,
-            T.TRAVEL_WEBSITE AS website,
-            T.TRAVEL_STATUS AS status,
-            C.TRAVEL_CATEGORY_NAME AS categoryName,
-            G.GU_NAME AS guName,
+          T.TRAVEL_NO AS travelNo,
+          T.TRAVEL_TITLE AS title,
+          T.TRAVEL_EXPLAIN AS explain,
+          T.TRAVEL_DISCRIPTION AS description,
+          T.TRAVEL_ADDRESS AS address,
+          T.TRAVEL_MAPY AS mapY,
+          T.TRAVEL_MAPX AS mapX,
+          T.TRAVEL_TEL AS tel,
+          T.TRAVEL_EMAIL AS email,
+          T.TRAVEL_WEBSITE AS website,
+          T.TRAVEL_CREATED_DATE AS createdDate,
+          T.TRAVEL_MODIFIED_DATE AS modifiedDate,
+          T.TRAVEL_STATUS AS status
         FROM TB_TRAVEL T
-        JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
-        JOIN TB_GU G ON T.GU_NO = G.GU_NO
-        WHERE T.TRAVEL_NO = #{travelNo}
-    </select>
+        <where>
+          T.TRAVEL_STATUS != 'D'
+          <if test="search != null and search != ''">
+            AND LOWER(T.TRAVEL_TITLE) LIKE '%' || LOWER(#{search}) || '%'
+          </if>
+          <if test="status == 'active'">
+            AND T.TRAVEL_STATUS = 'Y'
+          </if>
+          <if test="status == 'inactive'">
+            AND T.TRAVEL_STATUS = 'N'
+          </if>
+          <if test="period == '오늘'">
+            AND TRUNC(T.TRAVEL_CREATED_DATE) = TRUNC(SYSDATE)
+          </if>
+          <if test="period == '최근 7일'">
+            AND T.TRAVEL_CREATED_DATE >= SYSDATE - 7
+          </if>
+          <if test="period == '최근 30일'">
+            AND T.TRAVEL_CREATED_DATE >= SYSDATE - 30
+          </if>
+          <if test="thema != null and thema != ''">
+            AND EXISTS (
+              SELECT 1
+              FROM TB_TRAVEL_THEMA_BRIDGE B
+              JOIN TB_TRAVEL_THEMA TM ON B.TRAVEL_THEMA_NO = TM.TRAVEL_THEMA_NO
+              WHERE B.TRAVEL_NO = T.TRAVEL_NO
+              AND TM.TRAVEL_THEMA_NAME = #{thema}
+            )
+          </if>
+        </where>
+        ORDER BY T.TRAVEL_CREATED_DATE ASC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+      </select>
 
-    <!-- 여행지 운영 시간 -->
-    <select id="selectTravelTimeList" resultType="TravelTimeDTO">
-      SELECT
-        TRAVEL_DAY_OF_WEEK AS dayOfWeek, 
-        TRAVEL_START_TIME AS startTime, 
-        TRAVEL_END_TIME AS endTime
-      FROM 
-        TB_TRAVEL_TIME 
-      WHERE 
-        TRAVEL_NO = #{travelNo}
-    </select>
 
-    <!-- 여행지 이미지 조회 -->
-    <select id="selectTravelImageList" resultType="TravelImageDTO">
-      SELECT 
-        TRAVEL_IMAGE_NO AS imageNo, 
-        TRAVEL_IMAGE_URL AS imageUrl
-      FROM 
-        TB_TRAVEL_IMAGE 
-      WHERE 
-        TRAVEL_NO = #{travelNo}
-    </select>
+      <select id="countFilteredTravelList" parameterType="map" resultType="long">
+        SELECT COUNT(*)
+        FROM TB_TRAVEL T
+        <where>
+          T.TRAVEL_STATUS != 'D'
+          <if test="search != null and search != ''">
+            AND LOWER(T.TRAVEL_TITLE) LIKE '%' || LOWER(#{search}) || '%'
+          </if>
+          <if test="status == 'active'">
+            AND T.TRAVEL_STATUS = 'Y'
+          </if>
+          <if test="status == 'inactive'">
+            AND T.TRAVEL_STATUS = 'N'
+          </if>
+          <if test="period == '오늘'">
+            AND TRUNC(T.TRAVEL_CREATED_DATE) = TRUNC(SYSDATE)
+          </if>
+          <if test="period == '최근 7일'">
+            AND T.TRAVEL_CREATED_DATE >= SYSDATE - 7
+          </if>
+          <if test="period == '최근 30일'">
+            AND T.TRAVEL_CREATED_DATE >= SYSDATE - 30
+          </if>
+          <if test="thema != null and thema != ''">
+            AND EXISTS (
+              SELECT 1
+              FROM TB_TRAVEL_THEMA_BRIDGE B
+              JOIN TB_TRAVEL_THEMA TM ON B.TRAVEL_THEMA_NO = TM.TRAVEL_THEMA_NO
+              WHERE B.TRAVEL_NO = T.TRAVEL_NO
+              AND TM.TRAVEL_THEMA_NAME = #{thema}
+            )
+          </if>
+        </where>
+      </select>
 
-    <!-- 여행지 태그 리스트  조회-->
-    <select id="selectTravelTagList" resultType="TravelTagDTO">
-      SELECT 
-        TT.TAG_NO AS tagNo, 
-        TT.TAG_NAME AS tagName
-      FROM 
-        TB_TRAVEL_TAG_BRIDGE B
-      JOIN TB_TRAVEL_TAG TT ON B.TAG_NO = TT.TAG_NO
-      WHERE B.TRAVEL_NO = #{travelNo}
-    </select>
 
-    <!-- 여행지 옵션 리스트  조회-->
-    <select id="selectTravelOptionList" resultType="TravelOptionDTO">
-      SELECT 
-        O.TRAVEL_OPTION_NO AS optionNo, 
-        O.TRAVEL_OPTION_NAME AS optionName
-      FROM 
-        TB_TRAVEL_OPTION_BRIDGE B
-      JOIN 
-        TB_TRAVEL_OPTION O ON B.TRAVEL_OPTION_NO = O.TRAVEL_OPTION_NO
-      WHERE B.TRAVEL_NO = #{travelNo}
-    </select>
-
-    <!-- 여행지 테마 리스트  조회-->
-    <select id="selectTravelThemaList" resultType="TravelThemaDTO">
-      SELECT 
-        T.TRAVEL_THEMA_NO AS themaNo, 
-        T.TRAVEL_THEMA_NAME AS themaName
-      FROM 
-        TB_TRAVEL_THEMA_BRIDGE B
-      JOIN TB_TRAVEL_THEMA T ON B.TRAVEL_THEMA_NO = T.TRAVEL_THEMA_NO
-      WHERE B.TRAVEL_NO = #{travelNo}
-    </select>
-
-    <!-- 관리자 여행지 전체 목록 조회 -->
-    <select id="selectAdminTravelList" resultType="TravelDTO">
+      <!-- 즐겨찾기 확인 여부-->
+      <select id="checkedBook" parameterType="map" resultType="long">
         SELECT
-            T.TRAVEL_NO AS travelNo,
-            T.GU_NO AS guNo,
-            T.TRAVEL_CATEGORY_NO AS categoryNo,
-            T.TRAVEL_TITLE AS title,
-            T.TRAVEL_EXPLAIN AS explain,
-            T.TRAVEL_DISCRIPTION AS description,
-            T.TRAVEL_ADDRESS AS address,
-            T.TRAVEL_MAPY AS mapY,
-            T.TRAVEL_MAPX AS mapX,
-            T.TRAVEL_TEL AS tel,
-            T.TRAVEL_EMAIL AS email,
-            T.TRAVEL_WEBSITE AS website,
-            T.TRAVEL_STATUS AS status,
-            C.TRAVEL_CATEGORY_NAME As categoryName,
-            G.GU_NAME As guName
-        FROM TB_TRAVEL T
-        JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
-        JOIN TB_GU G ON T.GU_NO = G.GU_NO
-        ORDER BY T.TRAVEL_NO DESC
-    </select>
+              COUNT(*)
+          FROM
+              TB_TRAVEL_BOOKMARK
+        WHERE
+              TRAVEL_NO = #{travelNo} 
+          AND
+              MEMBER_NO = #{memberNo}
+      </select>
 
-    <!-- 여행지 전체 목록 조회 -->
-    <select id="selectTravelList" resultType="TravelDTO">
-        SELECT
-            T.TRAVEL_NO AS travelNo,
-            T.GU_NO AS guNo,
-            T.TRAVEL_CATEGORY_NO AS categoryNo,
-            T.TRAVEL_TITLE AS title,
-            T.TRAVEL_EXPLAIN AS explain,
-            T.TRAVEL_DISCRIPTION AS description,
-            T.TRAVEL_ADDRESS AS address,
-            T.TRAVEL_MAPY AS mapY,
-            T.TRAVEL_MAPX AS mapX,
-            T.TRAVEL_TEL AS tel,
-            T.TRAVEL_EMAIL AS email,
-            T.TRAVEL_WEBSITE AS website,
-            T.TRAVEL_STATUS AS status,
-            C.TRAVEL_CATEGORY_NAME As categoryName,
-            G.GU_NAME As guName
-        FROM TB_TRAVEL T
-        JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
-        JOIN TB_GU G ON T.GU_NO = G.GU_NO
-        WHERE T.TRAVEL_STATUS = 'Y'
-        ORDER BY T.TRAVEL_NO DESC
-    </select>
+      <!--즐겨찾기 올리기-->
+      <insert id="insertBookCount" parameterType="map" >
+        INSERT
+          INTO
+              TB_TRAVEL_BOOKMARK
+            (
+              TRAVEL_NO
+            , MEMBER_NO
+            )
+        VALUES
+            (
+              #{travelNo}
+            , #{memberNo}
+            )
+      </insert>
 
-    <!-- 여행지 수정 (Update) -->
-    <update id="updateTravel" parameterType="TravelDTO">
-        UPDATE TB_TRAVEL
-        SET
-            GU_NO = #{guNo},
-            TRAVEL_CATEGORY_NO = #{categoryNo},
-            TRAVEL_TITLE = #{title},
-            TRAVEL_EXPLAIN = #{explain},
-            TRAVEL_DISCRIPTION = #{description},
-            TRAVEL_ADDRESS = #{address},
-            TRAVEL_MAPY = #{mapY},
-            TRAVEL_MAPX = #{mapX},
-            TRAVEL_TEL = #{tel},
-            TRAVEL_EMAIL = #{email},
-            TRAVEL_WEBSITE = #{website},
-            TRAVEL_STATUS = #{status},
-            TRAVEL_MODIFIED_DATE = SYSDATE
-        WHERE TRAVEL_NO = #{travelNo}
-    </update>
-
-    <!-- 여행지 삭제 -->
-    <delete id="deleteTravel" parameterType="long">
-        UPDATE TB_TRAVEL
-        SET TRAVEL_STATUS = 'N'
-        WHERE TRAVEL_NO = #{travelNo}
-    </delete>
-
-    <!-- 태그명으로 조회 -->
-    <select id="selectTagByName" parameterType="String" resultType="long">
-        SELECT TAG_NO FROM TB_TRAVEL_TAG WHERE TAG_NAME = #{tagName}
-    </select>
-
-
-    <!-- 태그 등록 -->
-    <insert id="insertTag" parameterType="TravelTagDTO" keyProperty="tagNo">
-      <selectKey keyProperty="tagNo" resultType="long" order="BEFORE">
-        SELECT SEQ_TB_TRAVEL_TAG_TAG_NO.NEXTVAL FROM DUAL
-      </selectKey>
-      INSERT INTO TB_TRAVEL_TAG (TAG_NAME)
-      VALUES (#{tagName})
-    </insert>
-
-    <!-- 즐겨찾기 확인 여부-->
-	<select id="checkedBook" parameterType="map" resultType="long">
-    SELECT
-           COUNT(*)
-      FROM
-           TB_TRAVEL_BOOKMARK
-     WHERE
-           TRAVEL_NO = #{travelNo} 
-       AND
-           MEMBER_NO = #{memberNo}
-	</select>
-
-  <!--즐겨찾기 올리기-->
-	<insert id="insertBookCount" parameterType="map" >
-		INSERT
-      INTO
-           TB_TRAVEL_BOOKMARK
-         (
-           TRAVEL_NO
-         , MEMBER_NO
-         )
-    VALUES
-         (
-           #{travelNo}
-         , #{memberNo}
-         )
-	</insert>
-
-	<!-- 즐겨찾기 취소-->
-	<delete id="deleteBookCount" parameterType="map">
-	   DELETE 
-	     FROM 
-            TB_TRAVEL_BOOKMARK
-      WHERE
-            TRAVEL_NO = #{travelNo} 
-        AND
-            MEMBER_NO = #{memberNo}
-
-	</delete> 
-	
+      <!-- 즐겨찾기 취소-->
+      <delete id="deleteBookCount" parameterType="map">
+        DELETE 
+          FROM 
+                TB_TRAVEL_BOOKMARK
+          WHERE
+                TRAVEL_NO = #{travelNo} 
+            AND
+                MEMBER_NO = #{memberNo}
+      </delete> 
 	
 </mapper>
