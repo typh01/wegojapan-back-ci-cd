@@ -5,10 +5,12 @@ import java.util.Map;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.avengers.auth.model.dto.UpdatePasswordDTO;
@@ -36,12 +38,21 @@ public class MemberController {
     return ResponseEntity.ok(result);
   }
 
+  @GetMapping("/checkedMemberName")
+  public ResponseEntity<RequestData> checkName(@RequestParam(name="newMemberName") String member){
+     log.info(" 닉네임 중복 확인 요청: {}", member);
+    RequestData result = memberService.checkName(member);
+    return ResponseEntity.ok(result);
+  }
+
   @PatchMapping("/changeName")
   public ResponseEntity<RequestData> updateMember(@RequestBody @Valid ChangeMemberNameDTO member){
 
     RequestData result = memberService.updateMember(member);
     return ResponseEntity.ok(result);
   }
+
+  
 
   @PatchMapping("/changePassword")
   public ResponseEntity<RequestData> updatePassword(@RequestBody Map<String, String> member){

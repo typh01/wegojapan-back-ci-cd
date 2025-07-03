@@ -51,14 +51,20 @@ public class MemberServiceImpl implements MemberService{
   }
 
   @Override
-  public RequestData updateMember(ChangeMemberNameDTO member) {
-
-    
-    ChangeMemberNameDTO searchName = memberMapper.getMemberByMemberName(member.getNewMemberName());
-    
+  public RequestData checkName(String member){
+     log.info("닉네임 중복 확인 : {}", member);
+    ChangeMemberNameDTO searchName = memberMapper.getMemberByMemberName(member);
+     log.info("닉네임 검색 결과: {}", searchName);
     if(searchName != null){
+      log.info("중복된 닉네임 감지: {}", member);
       throw new InvalidException(("중복된 닉네임입니다."));
     }
+    return responseUtil.rd("200",null, "중복 확인되었습니다.");
+  }
+
+  @Override
+  public RequestData updateMember(ChangeMemberNameDTO member) {
+    
     Long searchMember = memberMapper.updateMemberName(member);
 
     if(searchMember == 0){

@@ -73,6 +73,7 @@ public interface TravelMapper {
     // 관리자 여행지 전체 목록 조회
     List<TravelDTO> selectAdminTravelList();
 
+<<<<<<< HEAD
     List<TravelDTO> selectPagedAdminTravelList(@Param("offset") int offset, @Param("limit") int limit);
     long countAllTravels();
     int deleteTravelThemaBridgeByTravelNoAndThemaNo(TravelThemaBridgeDTO dto);
@@ -83,3 +84,19 @@ public interface TravelMapper {
 
 }
 
+=======
+
+
+    // 즐겨찾기 중복 확인
+    Long checkedBook(Map<String, String> book);
+
+    // 즐겨찾기 올리기
+    Long insertBookCount(Map<String, String> book);
+  
+    // 즐겨찾기 취소하기
+    Long deleteBookCount(Map<String, String> book);
+
+}
+
+    
+>>>>>>> bd8140963f14b365e9233d051ef181b0aa187b66

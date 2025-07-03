@@ -6,8 +6,9 @@ public interface AdminService {
 
   RequestData selectMembers(int page, String status, String role);
 
-  RequestData updateMemberStatus(Long memberNo, String status);
 
   RequestData updateMemberRole(Long memberNo, String role);
+
+  RequestData reportMember(int page);
 
 }
