@@ -12,6 +12,8 @@ import com.kh.avengers.member.model.dto.MemberDTO;
 
 
 
+
+
 public interface MemberService {
 
   RequestData signUp(MemberDTO member);
@@ -21,6 +23,8 @@ public interface MemberService {
   RequestData updatePassword(Map<String, String> member);
 
   RequestData deleteMember(Map<String, String> member);
+
+  RequestData checkName(String member);
 
 
 
