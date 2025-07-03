@@ -310,7 +310,6 @@
           JOIN TB_GU G ON T.GU_NO = G.GU_NO
           WHERE T.TRAVEL_STATUS = 'Y'
           ORDER BY T.TRAVEL_NO ASC
-          OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
       </select>
 
       <!-- 여행지 수정 (Update) -->
@@ -443,47 +442,45 @@
       </select>
 
 
+      <!-- 즐겨찾기 확인 여부-->
+      <select id="checkedBook" parameterType="map" resultType="long">
+        SELECT
+              COUNT(*)
+          FROM
+              TB_TRAVEL_BOOKMARK
+        WHERE
+              TRAVEL_NO = #{travelNo} 
+          AND
+              MEMBER_NO = #{memberNo}
+      </select>
 
-  </mapper>
-    <!-- 즐겨찾기 확인 여부-->
-	<select id="checkedBook" parameterType="map" resultType="long">
-    SELECT
-           COUNT(*)
-      FROM
-           TB_TRAVEL_BOOKMARK
-     WHERE
-           TRAVEL_NO = #{travelNo} 
-       AND
-           MEMBER_NO = #{memberNo}
-	</select>
+      <!--즐겨찾기 올리기-->
+      <insert id="insertBookCount" parameterType="map" >
+        INSERT
+          INTO
+              TB_TRAVEL_BOOKMARK
+            (
+              TRAVEL_NO
+            , MEMBER_NO
+            )
+        VALUES
+            (
+              #{travelNo}
+            , #{memberNo}
+            )
+      </insert>
 
-  <!--즐겨찾기 올리기-->
-	<insert id="insertBookCount" parameterType="map" >
-		INSERT
-      INTO
-           TB_TRAVEL_BOOKMARK
-         (
-           TRAVEL_NO
-         , MEMBER_NO
-         )
-    VALUES
-         (
-           #{travelNo}
-         , #{memberNo}
-         )
-	</insert>
+      <!-- 즐겨찾기 취소-->
+      <delete id="deleteBookCount" parameterType="map">
+        DELETE 
+          FROM 
+                TB_TRAVEL_BOOKMARK
+          WHERE
+                TRAVEL_NO = #{travelNo} 
+            AND
+                MEMBER_NO = #{memberNo}
 
-	<!-- 즐겨찾기 취소-->
-	<delete id="deleteBookCount" parameterType="map">
-	   DELETE 
-	     FROM 
-            TB_TRAVEL_BOOKMARK
-      WHERE
-            TRAVEL_NO = #{travelNo} 
-        AND
-            MEMBER_NO = #{memberNo}
-
-	</delete> 
-	
+      </delete> 
+      
 	
 </mapper>
