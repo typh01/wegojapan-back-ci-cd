@@ -38,4 +38,5 @@ public class TravelDTO {
     private List<TravelOptionBridgeDTO> optionList;
     private List<TravelThemaDTO> themaListForView;
     private List<TravelThemaBridgeDTO> themaList;
+    private String travelImage;
 }
