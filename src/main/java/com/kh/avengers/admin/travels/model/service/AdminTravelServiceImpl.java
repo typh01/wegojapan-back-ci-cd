@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 
         @Override
         public RequestData getTravelList() {
-            List<TravelDTO> travelList = travelMapper.selectAdminTravelList();
+            List<TravelDTO> travelList = travelMapper.selectTravelList();
 
         for (TravelDTO t : travelList) {
             List<TravelTimeDTO> timeList = travelMapper.selectTravelTimeList(t.getTravelNo());
