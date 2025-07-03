@@ -74,51 +74,10 @@ public class TravelPlannerController {
     return ResponseEntity.ok(result);
   }
 
-//  @PutMapping("/step3")
-//  public ResponseEntity<RequestData> updateStep3Plan(
-//          @RequestBody @Valid TravelPlannerStep3Request request,
-//          @AuthenticationPrincipal CustomUserDetails userDetails) {
-//
-//    log.info("여행 플래너 step3 업데이트 요청 >> 사용자: {}, 플랜번호: {}, 선택된 여행지 개수: {}",
-//            userDetails.getUsername(), request.getPlanNo(), request.getSelectedPlaces().size());
-//
-//    TravelPlannerStep3Response response = travelPlannerStep3Service.updateStep3Plan(request, userDetails);
-//
-//    log.info("여행 플래너 step3 업데이트 완료!! >> 플랜번호: {}, 선택된 여행지 개수: {}",
-//            response.getPlanNo(), response.getTotalSelectedCount());
-//
-//    RequestData result = responseUtil.rd("200", response, "여행지 선택 완료!!!");
-//
-//    return ResponseEntity.ok(result);
-//  }
-
-  // TravelPlannerController.java의 updateStep3Plan 메서드에 추가할 디버깅 코드
-
   @PutMapping("/step3")
   public ResponseEntity<RequestData> updateStep3Plan(
           @RequestBody @Valid TravelPlannerStep3Request request,
           @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-    // 🔍 디버깅: 받은 요청 데이터 전체 출력
-    log.info("=== Step3 요청 데이터 디버깅 시작 ===");
-    log.info("플랜번호: {}", request.getPlanNo());
-    log.info("선택된 여행지 리스트 크기: {}",
-            request.getSelectedPlaces() != null ? request.getSelectedPlaces().size() : "NULL");
-
-    // 각 여행지 정보를 상세히 출력
-    if (request.getSelectedPlaces() != null) {
-      for (int i = 0; i < request.getSelectedPlaces().size(); i++) {
-        SelectedPlaceDto place = request.getSelectedPlaces().get(i);
-        log.info("여행지 [{}] - ID: {}, 이름: {}, 위도: {}, 경도: {}, 설명: {}",
-                i + 1,
-                place.getTravelId(),
-                place.getTravelName(),
-                place.getMapY(),
-                place.getMapX(),
-                place.getTravelDescription());
-      }
-    }
-    log.info("=== Step3 요청 데이터 디버깅 끝 ===");
 
     log.info("여행 플래너 step3 업데이트 요청 >> 사용자: {}, 플랜번호: {}, 선택된 여행지 개수: {}",
             userDetails.getUsername(), request.getPlanNo(), request.getSelectedPlaces().size());
