@@ -9,12 +9,14 @@
             INTO
                 TB_CHOICE
             (
+                CHOICE_NO,
                 TRAVEL_NO,
                 PLAN_NO,
                 CHOICE_ORDER
             )
             VALUES
             (
+                SEQ_TRAVEL_CHOICE.NEXTVAL,
                 #{travelNo},
                 #{planNo},
                 #{choiceOrder}

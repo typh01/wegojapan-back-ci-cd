@@ -150,4 +150,18 @@
 
             return responseUtil.rd("200", travelNo, "여행지 삭제 성공");
         }
+
+
+        // 특정 구에 속한 여행지 목록 조회
+        @Override
+        public RequestData getTravelPlacesByGu(String guName) {
+            log.info("특정 구의 여행지 조회 서비스 시작 >> 구명: {}", guName);
+
+            // 구명으로 여행지 목록 조회
+            List<TravelDTO> travelList = travelMapper.selectTravelListByGuName(guName);
+
+            log.info("구별 여행지 조회 완료 >> 구명: {}, 여행지 개수: {}", guName, travelList.size());
+
+            return responseUtil.rd("200", travelList, guName + " 지역의 여행지 목록 조회 성공");
+        }
     }

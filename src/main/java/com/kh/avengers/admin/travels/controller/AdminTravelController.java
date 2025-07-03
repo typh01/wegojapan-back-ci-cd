@@ -48,4 +48,12 @@ public class AdminTravelController {
         log.info("[ADMIN] 여행지 삭제 요청 - travelNo: {}", travelNo);
         return ResponseEntity.ok(adminTravelService.deleteTravel(travelNo));
     }
+
+    // 특정 구에 속한 여행지 목록 조회
+    @GetMapping("/places")
+    public ResponseEntity<RequestData> getTravelPlacesByGu(@RequestParam("guName") String guName) {
+        log.info("특정 구의 여행지 조회 요청 >> 구명: {}", guName);
+        RequestData result = adminTravelService.getTravelPlacesByGu(guName);
+        return ResponseEntity.ok(result);
+    }
 }

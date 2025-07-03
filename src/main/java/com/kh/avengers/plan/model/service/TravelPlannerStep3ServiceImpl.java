@@ -1,7 +1,5 @@
 package com.kh.avengers.plan.model.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.avengers.auth.model.vo.CustomUserDetails;
 import com.kh.avengers.exception.commonexception.InvalidException;
 import com.kh.avengers.exception.util.ForbiddenException;
@@ -22,23 +20,22 @@ import java.util.stream.IntStream;
 
 @Service
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class TravelPlannerStep3ServiceImpl implements TravelPlannerStep3Service {
 
   private final TravelPlannerMapper travelPlannerMapper;
   private final TravelChoiceMapper travelChoiceMapper;
-  private final ObjectMapper objectMapper;
-
   /**
    * step3 플랜 업데이트
    * @param request step3에서 선택한 여행지 정보
    * @param userDetails 인증된 사용자의 정보
    * @return 응답 정보
    */
+  @Override
   public TravelPlannerStep3Response updateStep3Plan(TravelPlannerStep3Request request, CustomUserDetails userDetails){
 
-  log.info("여행플랜 step3 업데이트 시작 >> 플랜번호 : {}, 사용자 : {}, 선택된 여행지 개수 : {}", request.getPlanNo(), userDetails.getMemberName(), request.getSelectedPlaces().size());
+    log.info("여행플랜 step3 업데이트 시작 >> 플랜번호 : {}, 사용자 : {}, 선택된 여행지 개수 : {}", request.getPlanNo(), userDetails.getMemberName(), request.getSelectedPlaces().size());
 
     // 1. 플랜번호로 기존의 여행 플랜 조회
     TravelPlannerDto existingPlan = travelPlannerMapper.selectTravelPlanByPlanNo(request.getPlanNo());
@@ -49,7 +46,7 @@ public class TravelPlannerStep3ServiceImpl implements TravelPlannerStep3Service 
       throw new InvalidException("해당 플랜을 찾을 수 없습니다.");
     }
 
-    // 3. 플랜의 소유저 확인( >> 본인의 플랜인지 확인)
+    // 3. 플랜의 소유자 확인( >> 본인의 플랜인지 확인)
     if(!existingPlan.getMemberNo().equals(userDetails.getMemberNo())){
       log.error("플랜의 소유자 불일치 >> 플랜 소유자 : {}, 요청자 : {}", existingPlan.getMemberNo(), userDetails.getMemberNo());
       throw new ForbiddenException("해당 플랜에 대한 접근 권한이 없습니다.");
@@ -61,71 +58,50 @@ public class TravelPlannerStep3ServiceImpl implements TravelPlannerStep3Service 
       throw new InvalidException("먼저 지역을 선택해주세요.");
     }
 
-    // 5. 입력 데이터 유효성 검사
-    validateStep3Request((request));
+    // 5. 입력 데이터 유효성 검사 (기존 로직 유지)
+    validateStep3Request(request);
 
-    try{
-      // 6. 기존 선택된 여행지들 삭제(즉, 다시 돌아와서 수정하려고 할때?)
-      int deletedCount = travelChoiceMapper.deleteTravelChoices(request.getPlanNo());
-      log.info("기존의 선택된 여행지 삭제 완료 >> 삭제된 개수 : {}", deletedCount);
+    // 6. 기존 선택된 여행지들 삭제(즉, 다시 돌아와서 수정하려고 할때?)
+    int deletedCount = travelChoiceMapper.deleteTravelChoices(request.getPlanNo());
+    log.info("기존의 선택된 여행지 삭제 완료 >> 플랜번호 : {}, 삭제된 개수 : {}", request.getPlanNo(), deletedCount);
 
-      // 7. 새로운 여행지를 선택한 순서대로 저장
-      List<SelectedPlaceDto> selectedPlaces = request.getSelectedPlaces();
+    // 7. 새로운 여행지를 선택한 순서대로 저장
+    List<SelectedPlaceDto> selectedPlaces = request.getSelectedPlaces();
 
-      IntStream.range(0, selectedPlaces.size())
-              .forEach(index -> {
-                SelectedPlaceDto place = selectedPlaces.get(index);
+    IntStream.range(0, selectedPlaces.size())
+            .forEach(index -> {
+              SelectedPlaceDto place = selectedPlaces.get(index);
 
-                // TravelChoiceDto 생성 (순서는 1부터 시작)
-                TravelChoiceDto travelChoiceDto = TravelChoiceDto.builder()
-                                                                  .travelNo(place.getTravelId())
-                                                                  .planNo(request.getPlanNo())
-                                                                  .choiceOrder(index + 1)
-                                                                  .build();
+              // TravelChoiceDto 생성 (순서는 1부터 시작)
+              TravelChoiceDto travelChoiceDto = TravelChoiceDto.builder()
+                      .travelNo(place.getTravelId())
+                      .planNo(request.getPlanNo())
+                      .choiceOrder(index + 1)
+                      .build();
 
-                // DB에 저장
-                int insertResult = travelChoiceMapper.insertTravelChoice(travelChoiceDto);
+              // DB에 저장
+              int insertResult = travelChoiceMapper.insertTravelChoice(travelChoiceDto);
 
-                if (insertResult != 1) {
-                  log.error("여행지 선택 정보 저장 실패! >> 여행지 ID: {}, 순서: {}",
-                          place.getTravelId(), index + 1);
-                  throw new InvalidException("여행지 선택 정보 저장에 실패했습니다.");
-                }
+              if (insertResult != 1) {
+                log.error("여행지 선택 정보 저장 실패! >> 여행지 ID: {}, 순서: {}",
+                        place.getTravelId(), index + 1);
+                throw new InvalidException("여행지 선택 정보 저장에 실패했습니다.");
+              }
 
-                log.debug("여행지 선택 정보 저장 완료 >> 여행지: {}, 순서: {}",
-                        place.getTravelName(), index + 1);
-              });
+              log.debug("여행지 선택 정보 저장 완료 >> 여행지: {}, 순서: {}",
+                      place.getTravelName(), index + 1);
+            });
 
-      // 8. 선택된 여행지 정보를 JSON 형식으로 변환하여 TB_TRAVEL_PLANNER에도 저장..
-      String selectedPlacesJson = objectMapper.writeValueAsString(selectedPlaces);
+    // 8. 응답 생성
+    log.info("step3 여행 플랜 업데이트 완료!!!! >> 플랜번호: {}, 선택된 여행지 개수: {}",
+            request.getPlanNo(), selectedPlaces.size());
 
-      TravelPlannerDto updateDto = TravelPlannerDto.builder()
-                                                    .planNo(request.getPlanNo())
-                                                    .selectPlaces(selectedPlacesJson)
-                                                    .build();
-
-      int updateResult = travelPlannerMapper.updateTravelPlanStep3(updateDto);
-
-      if (updateResult != 1) {
-        log.error("여행플랜 step3 업데이트 실패 >> 플랜번호: {}", request.getPlanNo());
-        throw new InvalidException("여행 플랜 업데이트에 실패했습니다.");
-      }
-
-      // 9. 응답 생성
-      log.info("step3 여행 플랜 업데이트 완료!!!! >> 플랜번호: {}, 선택된 여행지 개수: {}",
-              request.getPlanNo(), selectedPlaces.size());
-
-      return TravelPlannerStep3Response.builder()
-                                        .planNo(request.getPlanNo())
-                                        .selectedPlaces(selectedPlaces)
-                                        .totalSelectedCount(selectedPlaces.size())
-                                        .message("여행지 선택이 완료되었습니다!!!!")
-                                        .build();
-    } catch(JsonProcessingException e){
-      log.error("JSON 변환 중 오류 발생!!", e);
-      throw new InvalidException("여행지 정보 처리 중 오류가 발생했습니다.");
-    }
-
+    return TravelPlannerStep3Response.builder()
+            .planNo(request.getPlanNo())
+            .selectedPlaces(selectedPlaces)
+            .totalSelectedCount(selectedPlaces.size())
+            .message("여행지 선택이 완료되었습니다!!!!")
+            .build();
   }
 
   /**
@@ -136,7 +112,7 @@ public class TravelPlannerStep3ServiceImpl implements TravelPlannerStep3Service 
 
     List<SelectedPlaceDto> selectedPlaces = request.getSelectedPlaces();
 
-    // 선택된 여행지의 개수 곰사
+    // 선택된 여행지의 개수 검사
     if(selectedPlaces == null || selectedPlaces.isEmpty()){
       log.warn("선택된 여행지가 없습니다. >> 플랜번호 : {}", request.getPlanNo());
       throw new InvalidException("최소 1개 이상의 여행지를 선택해주세요.");
@@ -152,8 +128,8 @@ public class TravelPlannerStep3ServiceImpl implements TravelPlannerStep3Service 
       SelectedPlaceDto place = selectedPlaces.get(i);
 
       if(place.getTravelId() == null || place.getTravelId() <= 0){
-        log.warn("선택된 여행지가 없습니다. >> 플랜번호 : {}", request.getPlanNo());
-        throw new InvalidException("최소 1개 이상의 여행지를 선택해주세요.");
+        log.warn("유효하지 않은 여행지 ID가 포함되어 있습니다. >> 플랜번호 : {}", request.getPlanNo());
+        throw new InvalidException("유효하지 않은 여행지 정보가 있습니다.");
       }
 
       if(place.getTravelName() == null || place.getTravelName().trim().isEmpty()){
@@ -165,10 +141,6 @@ public class TravelPlannerStep3ServiceImpl implements TravelPlannerStep3Service 
         log.warn("여행지에 대한 좌표 정보가 없습니다. >> 순서 : {}, ID : {}", i+1, place.getTravelId());
         throw new InvalidException("여행지의 위치정보가 없습니다.");
       }
-
     }
-
   }
-
-
 }
