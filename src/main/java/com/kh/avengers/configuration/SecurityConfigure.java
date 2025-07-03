@@ -63,9 +63,9 @@ public class SecurityConfigure {
 
 
                         requests.requestMatchers(HttpMethod.GET, "/api/members/checkedMemberName").authenticated();
-                        requests.requestMatchers(HttpMethod.POST, "/api/reports/review").authenticated();
+                        requests.requestMatchers(HttpMethod.POST, "/api/reports/review", "/api/bookMark/insert-book").authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
-                        requests.requestMatchers(HttpMethod.DELETE, "/api/members/deleteMember").authenticated();
+                        requests.requestMatchers(HttpMethod.DELETE, "/api/members/deleteMember", "/api/bookMark/delete-book").authenticated();
                         requests.anyRequest().authenticated();
                        })
                        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

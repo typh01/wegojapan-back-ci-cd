@@ -1,6 +1,7 @@
 package com.kh.avengers.admin.travels.model.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -68,4 +69,17 @@ public interface TravelMapper {
     // 관리자 여행지 전체 목록 조회
     List<TravelDTO> selectAdminTravelList();
 
+
+
+    // 즐겨찾기 중복 확인
+    Long checkedBook(Map<String, String> book);
+
+    // 즐겨찾기 올리기
+    Long insertBookCount(Map<String, String> book);
+  
+    // 즐겨찾기 취소하기
+    Long deleteBookCount(Map<String, String> book);
+
 }
+
+    
