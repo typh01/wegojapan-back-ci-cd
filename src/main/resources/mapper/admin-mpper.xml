@@ -26,7 +26,6 @@
     ORDER 
        BY 
           ENROLL_DATE DESC
-   OFFSET #{startIndex} ROWS FETCH NEXT #{size} ROWS ONLY
 </select>
 
  <select id="getMemberById" resultType="AdminMemberDTO">
@@ -61,5 +60,34 @@
          WHERE 
                 MEMBER_NO = #{memberNo}
     </update>
+
+    <select id="selectReportMembers" parameterType="map" resultType="AdminReviewReportDTO">
+  SELECT
+          RR.REVIEW_REPORT_NO reportNo,
+          R.REVIEW_CONTENT    reviewContent,
+          WRITER.MEMBER_NAME  memberName,
+          RR.REPORT_CONTENT   reportReason,
+          RR.CREATE_DATE      createDate,
+          CASE 
+              WHEN RR.STATUS = 'N' AND (SYSDATE - RR.CREATE_DATE) &gt; 3 THEN '반려'
+              WHEN RR.STATUS = 'N' THEN '대기중'
+              ELSE '처리완료'
+          END status
+
+    FROM 
+          TB_REVIEW_REPORT RR
+    JOIN 
+          TB_TRAVEL_REVIEW R 
+      ON 
+          RR.REVIEW_NO = R.REVIEW_NO
+    JOIN 
+          TB_MEMBER WRITER 
+      ON 
+          R.MEMBER_NO = WRITER.MEMBER_NO
+    ORDER 
+       BY 
+          RR.CREATE_DATE DESC
+</select>
+
 
 </mapper>
