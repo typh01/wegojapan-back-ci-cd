@@ -1,8 +1,10 @@
 package com.kh.avengers.admin.travels.model.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.kh.avengers.admin.travels.model.dto.TravelDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelImageDTO;
@@ -25,7 +27,7 @@ public interface TravelMapper {
     int updateTravel(TravelDTO travel);
 
     // 여행지 삭제 (소프트 딜리트)
-    int deleteTravel(Long travelNo);
+    int deleteTravel(TravelDTO travel);
 
     // 여행지 상세 조회
     TravelDTO selectTravelByNo(Long travelNo);
@@ -71,8 +73,13 @@ public interface TravelMapper {
     // 관리자 여행지 전체 목록 조회
     List<TravelDTO> selectAdminTravelList();
 
+    List<TravelDTO> selectPagedAdminTravelList(@Param("offset") int offset, @Param("limit") int limit);
+    long countAllTravels();
+    int deleteTravelThemaBridgeByTravelNoAndThemaNo(TravelThemaBridgeDTO dto);
+
+    List<TravelDTO> selectFilteredTravelList(Map<String, Object> filters);
     
-
-
+    long countFilteredTravelList(Map<String, Object> filters);
 
 }
+

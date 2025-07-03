@@ -1,6 +1,7 @@
 package com.kh.avengers.admin.travels.model.dto;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -30,6 +31,8 @@ public class TravelDTO {
     private String status;
     private String guName;
     private String categoryName;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
     private List<TravelTimeDTO> timeList;
     private List<TravelImageDTO> imageList;
     private List<TravelTagDTO> tagListForView;

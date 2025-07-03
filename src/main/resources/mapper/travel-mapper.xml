@@ -36,6 +36,10 @@
           )
       </insert>
 
+      <select id="countAllTravels" resultType="long">
+        SELECT COUNT(*) FROM TB_TRAVEL
+      </select>
+
       <!-- 운영 시간 등록 -->
       <insert id="insertTravelTime" parameterType="TravelTimeDTO">
           INSERT INTO TB_TRAVEL_TIME (
@@ -129,13 +133,17 @@
               TRAVEL_THEMA_NO
           ) VALUES (
               #{travelNo}, 
-              #{travelThemaNo}
+              #{themaNo}
           )
       </insert>
 
       <!-- 테마 브릿지 삭제 -->
       <delete id="deleteTravelThemaBridgeByTravelNo" parameterType="long">
           DELETE FROM TB_TRAVEL_THEMA_BRIDGE WHERE TRAVEL_NO = #{travelNo}
+      </delete>
+
+      <delete id="deleteTravelThemaBridgeByTravelNoAndThemaNo" parameterType="long">
+          DELETE FROM TB_TRAVEL_THEMA_BRIDGE WHERE TRAVEL_NO = #{travelNo} AND TRAVEL_THEMA_NO = #{themaNo}
       </delete>
 
       <!-- 테마 브릿지 다중 삭제 -->
@@ -163,6 +171,8 @@
               T.TRAVEL_EMAIL AS email,
               T.TRAVEL_WEBSITE AS website,
               T.TRAVEL_STATUS AS status,
+              T.TRAVEL_CREATED_DATE AS createdDate,
+              T.TRAVEL_MODIFIED_DATE AS modifiedDate,
               C.TRAVEL_CATEGORY_NAME AS categoryName,
               G.GU_NAME AS guName
           FROM TB_TRAVEL T
@@ -249,7 +259,32 @@
           FROM TB_TRAVEL T
           JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
           JOIN TB_GU G ON T.GU_NO = G.GU_NO
-          ORDER BY T.TRAVEL_NO DESC
+          ORDER BY T.TRAVEL_NO ASC
+      </select>
+
+      <!-- 관리자 여행지 전체 목록 조회 -->
+      <select id="selectPagedAdminTravelList" resultType="TravelDTO">
+          SELECT
+              T.TRAVEL_NO AS travelNo,
+              T.GU_NO AS guNo,
+              T.TRAVEL_CATEGORY_NO AS categoryNo,
+              T.TRAVEL_TITLE AS title,
+              T.TRAVEL_EXPLAIN AS explain,
+              T.TRAVEL_DISCRIPTION AS description,
+              T.TRAVEL_ADDRESS AS address,
+              T.TRAVEL_MAPY AS mapY,
+              T.TRAVEL_MAPX AS mapX,
+              T.TRAVEL_TEL AS tel,
+              T.TRAVEL_EMAIL AS email,
+              T.TRAVEL_WEBSITE AS website,
+              T.TRAVEL_STATUS AS status,
+              C.TRAVEL_CATEGORY_NAME As categoryName,
+              G.GU_NAME As guName
+          FROM TB_TRAVEL T
+          JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+          JOIN TB_GU G ON T.GU_NO = G.GU_NO
+          ORDER BY T.TRAVEL_NO ASC
+          OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
       </select>
 
       <!-- 여행지 전체 목록 조회 -->
@@ -297,9 +332,10 @@
       </update>
 
       <!-- 여행지 삭제 -->
-      <delete id="deleteTravel" parameterType="long">
+      <delete id="deleteTravel" parameterType="TravelDTO">
           UPDATE TB_TRAVEL
-          SET TRAVEL_STATUS = 'N'
+          SET TRAVEL_STATUS = #{status},
+              TRAVEL_MODIFIED_DATE = SYSDATE
           WHERE TRAVEL_NO = #{travelNo}
       </delete>
 
@@ -317,5 +353,94 @@
         INSERT INTO TB_TRAVEL_TAG (TAG_NAME)
         VALUES (#{tagName})
       </insert>
+
+      <!-- 조건 기반 여행지 목록 조회 -->
+      <select id="selectFilteredTravelList" parameterType="map" resultType="TravelDTO">
+        SELECT
+          T.TRAVEL_NO AS travelNo,
+          T.TRAVEL_TITLE AS title,
+          T.TRAVEL_EXPLAIN AS explain,
+          T.TRAVEL_DISCRIPTION AS description,
+          T.TRAVEL_ADDRESS AS address,
+          T.TRAVEL_MAPY AS mapY,
+          T.TRAVEL_MAPX AS mapX,
+          T.TRAVEL_TEL AS tel,
+          T.TRAVEL_EMAIL AS email,
+          T.TRAVEL_WEBSITE AS website,
+          T.TRAVEL_CREATED_DATE AS createdDate,
+          T.TRAVEL_MODIFIED_DATE AS modifiedDate,
+          T.TRAVEL_STATUS AS status
+        FROM TB_TRAVEL T
+        <where>
+          T.TRAVEL_STATUS != 'D'
+          <if test="search != null and search != ''">
+            AND LOWER(T.TRAVEL_TITLE) LIKE '%' || LOWER(#{search}) || '%'
+          </if>
+          <if test="status == 'active'">
+            AND T.TRAVEL_STATUS = 'Y'
+          </if>
+          <if test="status == 'inactive'">
+            AND T.TRAVEL_STATUS = 'N'
+          </if>
+          <if test="period == '오늘'">
+            AND TRUNC(T.TRAVEL_CREATED_DATE) = TRUNC(SYSDATE)
+          </if>
+          <if test="period == '최근 7일'">
+            AND T.TRAVEL_CREATED_DATE >= SYSDATE - 7
+          </if>
+          <if test="period == '최근 30일'">
+            AND T.TRAVEL_CREATED_DATE >= SYSDATE - 30
+          </if>
+          <if test="thema != null and thema != ''">
+            AND EXISTS (
+              SELECT 1
+              FROM TB_TRAVEL_THEMA_BRIDGE B
+              JOIN TB_TRAVEL_THEMA TM ON B.TRAVEL_THEMA_NO = TM.TRAVEL_THEMA_NO
+              WHERE B.TRAVEL_NO = T.TRAVEL_NO
+              AND TM.TRAVEL_THEMA_NAME = #{thema}
+            )
+          </if>
+        </where>
+        ORDER BY T.TRAVEL_CREATED_DATE ASC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+      </select>
+
+
+      <select id="countFilteredTravelList" parameterType="map" resultType="long">
+        SELECT COUNT(*)
+        FROM TB_TRAVEL T
+        <where>
+          T.TRAVEL_STATUS != 'D'
+          <if test="search != null and search != ''">
+            AND LOWER(T.TRAVEL_TITLE) LIKE '%' || LOWER(#{search}) || '%'
+          </if>
+          <if test="status == 'active'">
+            AND T.TRAVEL_STATUS = 'Y'
+          </if>
+          <if test="status == 'inactive'">
+            AND T.TRAVEL_STATUS = 'N'
+          </if>
+          <if test="period == '오늘'">
+            AND TRUNC(T.TRAVEL_CREATED_DATE) = TRUNC(SYSDATE)
+          </if>
+          <if test="period == '최근 7일'">
+            AND T.TRAVEL_CREATED_DATE >= SYSDATE - 7
+          </if>
+          <if test="period == '최근 30일'">
+            AND T.TRAVEL_CREATED_DATE >= SYSDATE - 30
+          </if>
+          <if test="thema != null and thema != ''">
+            AND EXISTS (
+              SELECT 1
+              FROM TB_TRAVEL_THEMA_BRIDGE B
+              JOIN TB_TRAVEL_THEMA TM ON B.TRAVEL_THEMA_NO = TM.TRAVEL_THEMA_NO
+              WHERE B.TRAVEL_NO = T.TRAVEL_NO
+              AND TM.TRAVEL_THEMA_NAME = #{thema}
+            )
+          </if>
+        </where>
+      </select>
+
+
 
   </mapper>

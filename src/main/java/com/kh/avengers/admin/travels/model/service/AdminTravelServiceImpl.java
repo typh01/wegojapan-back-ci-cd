@@ -1,8 +1,10 @@
     package com.kh.avengers.admin.travels.model.service;
 
+    import java.util.HashMap;
     import java.util.List;
+import java.util.Map;
 
-    import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
     import org.springframework.transaction.annotation.Transactional;
 
     import com.kh.avengers.admin.travels.model.dao.TravelMapper;
@@ -25,10 +27,12 @@
         private final TravelMapper travelMapper;
         private final ResponseUtil responseUtil;
 
-        private void checkTravelExists(Long travelNo) {
-            if (travelMapper.selectTravelByNo(travelNo) == null) {
+        private TravelDTO checkTravelExists(Long travelNo) {
+            TravelDTO result = travelMapper.selectTravelByNo(travelNo);
+            if (result == null) {
                 throw new NotFoundException("해당 여행지를 찾을 수 없습니다.");
             }
+            return result;
         }
 
         @Override
@@ -195,12 +199,66 @@
         }
 
         @Override
-        public RequestData deleteTravel(Long travelNo) {
-            checkTravelExists(travelNo);
+        public RequestData deleteTravel(Long travelNo, String status) {
+            TravelDTO existing = checkTravelExists(travelNo);
 
-            int result = travelMapper.deleteTravel(travelNo);
-            if (result <= 0) throw new DeleteException("여행지 삭제 실패");
+            if (!status.equals("Y") && !status.equals("N")) {
+                throw new InvalidException("잘못된 상태 값입니다. (Y/N만 허용)");
+            }
 
-            return responseUtil.rd("200", travelNo, "여행지 삭제 성공");
+            existing.setStatus(status);
+            int result = travelMapper.deleteTravel(existing);
+            if (result <= 0) throw new UpdateException("여행지 상태 변경 실패");
+
+            return responseUtil.rd("200", travelNo, status.equals("Y") ? "활성화 성공" : "비활성화 성공");
+        }
+
+        @Override
+        public RequestData getPagedTravelList(int page, int size) {
+            int offset = (page - 1) * size;
+            List<TravelDTO> list = travelMapper.selectPagedAdminTravelList(offset, size);
+            long total = travelMapper.countAllTravels();
+            PageResponse<TravelDTO> response = new PageResponse<>(list, page, size, total);
+            return responseUtil.rd("200", response, "페이징 여행지 목록 조회 성공");
+        }
+
+        @Override
+        public RequestData getFilteredTravelList(int page, int size, String search, String status, String period, String thema) {
+            int offset = (page - 1) * size;
+
+            Map<String, Object> filters = new HashMap<>();
+            filters.put("search", search);
+            filters.put("status", status);
+            filters.put("period", period);
+            filters.put("thema", thema);
+            filters.put("offset", offset);
+            filters.put("limit", size);
+
+            List<TravelDTO> list = travelMapper.selectFilteredTravelList(filters);
+            long total = travelMapper.countFilteredTravelList(filters);
+            PageResponse<TravelDTO> response = new PageResponse<>(list, page, size, total);
+
+            return responseUtil.rd("200", response, "조건 검색 완료");
+        }
+
+
+        @Override
+        public RequestData getTravelThemas(Long travelNo) {
+            List<TravelThemaDTO> themas = travelMapper.selectTravelThemaList(travelNo);
+            return responseUtil.rd("200", themas, "여행지 테마 조회 성공");
+        }
+
+        @Override
+        public RequestData addTravelThemaBridge(TravelThemaBridgeDTO dto) {
+            int result = travelMapper.insertTravelThemaBridge(dto);
+            if (result <= 0) throw new InvalidException("테마 추가 실패");
+            return responseUtil.rd("200", dto, "테마 추가 성공");
+        }
+
+        @Override
+        public RequestData deleteTravelThemaBridge(TravelThemaBridgeDTO dto) {
+            int result = travelMapper.deleteTravelThemaBridgeByTravelNoAndThemaNo(dto);
+            if (result <= 0) throw new DeleteException("테마 삭제 실패");
+            return responseUtil.rd("200", dto, "테마 삭제 성공");
         }
     }
