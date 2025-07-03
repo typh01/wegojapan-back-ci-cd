@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.avengers.admin.travels.model.dao.TravelMapper;
 import com.kh.avengers.admin.travels.model.dao.TravelOptionMapper;
 import com.kh.avengers.admin.travels.model.dto.TravelOptionDTO;
 import com.kh.avengers.common.dto.RequestData;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminTravelOptionServiceImpl implements AdminTravelOptionService {
 
     private final TravelOptionMapper travelOptionMapper;
+    private final TravelMapper travelMapper;
     private final ResponseUtil responseUtil;
     
     private void checkOptionExists(long optionNo) {
@@ -63,8 +65,9 @@ public class AdminTravelOptionServiceImpl implements AdminTravelOptionService {
 
     @Override
     public RequestData deleteAdminOptions(List<Long> optionNos) {
+        int bridge = travelMapper.deleteTravelOptionBridgeByOptionNo(optionNos);
         int result = travelOptionMapper.deleteOptions(optionNos);
-        if (result <= 0) {
+        if (result <= 0 & bridge <= 0) {
             throw new DeleteException("Option 삭제 실패");
         }
         return responseUtil.rd("200", optionNos, "Option 삭제 성공");

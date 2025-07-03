@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.avengers.admin.travels.model.dao.TravelMapper;
 import com.kh.avengers.admin.travels.model.dao.TravelThemaMapper;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaDTO;
 import com.kh.avengers.common.dto.RequestData;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminTravelThemaServiceImpl implements AdminTravelThemaService {
   
   private final TravelThemaMapper travelThemaMapper;
+  private final TravelMapper travelMapper;
   private final ResponseUtil responseUtil;
 
   private void checkThemaExists(long themaNo) {
@@ -63,8 +65,9 @@ public class AdminTravelThemaServiceImpl implements AdminTravelThemaService {
 
     @Override
     public RequestData deleteAdminThemes(List<Long> themaNos) {
+        int bridge = travelMapper.deleteTravelThemaBridgeByThemaNo(themaNos);
         int result = travelThemaMapper.deleteThemas(themaNos);
-        if (result <= 0) {
+        if (result <= 0 & bridge <= 0) {
             throw new DeleteException("Thema 삭제 실패");
         }
         return responseUtil.rd("200", themaNos, "Thema 삭제 성공");

@@ -1,8 +1,10 @@
     package com.kh.avengers.admin.travels.model.service;
 
+    import java.util.HashMap;
     import java.util.List;
+import java.util.Map;
 
-    import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
     import org.springframework.transaction.annotation.Transactional;
 
     import com.kh.avengers.admin.travels.model.dao.TravelMapper;
@@ -25,17 +27,23 @@
         private final TravelMapper travelMapper;
         private final ResponseUtil responseUtil;
 
-        private void checkTravelExists(Long travelNo) {
-            if (travelMapper.selectTravelByNo(travelNo) == null) {
+        private TravelDTO checkTravelExists(Long travelNo) {
+            TravelDTO result = travelMapper.selectTravelByNo(travelNo);
+            if (result == null) {
                 throw new NotFoundException("해당 여행지를 찾을 수 없습니다.");
             }
+            return result;
         }
 
         @Override
         public RequestData getTravelList() {
-            List<TravelDTO> travelList = travelMapper.selectAdminTravelList();
+            List<TravelDTO> travelList = travelMapper.selectTravelList();
 
         for (TravelDTO t : travelList) {
+            List<TravelTimeDTO> timeList = travelMapper.selectTravelTimeList(t.getTravelNo());
+            t.setTimeList(timeList);
+            List<TravelImageDTO> imageList = travelMapper.selectTravelImageList(t.getTravelNo());
+            t.setImageList(imageList);
             List<TravelTagDTO> tagList = travelMapper.selectTravelTagList(t.getTravelNo());
             t.setTagListForView(tagList);
             List<TravelThemaDTO> themaList = travelMapper.selectTravelThemaList(t.getTravelNo());
@@ -51,6 +59,7 @@
         public RequestData getTravelDetail(Long travelNo) {
             TravelDTO travel = travelMapper.selectTravelByNo(travelNo);
             if (travel == null) throw new NotFoundException("해당 여행지를 찾을 수 없습니다.");
+
 
             travel.setTimeList(travelMapper.selectTravelTimeList(travelNo));
             travel.setImageList(travelMapper.selectTravelImageList(travelNo));
@@ -89,12 +98,13 @@
                     tagBridge.setTravelNo(travelNo);
 
                     // tagNo가 없으면 tagName으로 태그 생성 후 tagNo 받아오기
+                    
                     if (tagBridge.getTagNo() == null ) {
                         String tagName = tagBridge.getTagName();
 
                         // 기존 태그 먼저 조회
                         Long getTagNo = travelMapper.selectTagByName(tagName);
-                        System.out.println("ㅣ여기에요 여기 " + getTagNo);
+                        System.out.println("여기에요 여기 " + getTagNo);
                         if (getTagNo != null) {
                             // 이미 있으면 기존 tagNo 사용
                             tagBridge.setTagNo(getTagNo);
@@ -127,28 +137,129 @@
         public RequestData updateTravel(TravelDTO travelDTO) {
             checkTravelExists(travelDTO.getTravelNo());
 
+            // 1) 여행지 기본 정보 수정
             int result = travelMapper.updateTravel(travelDTO);
             if (result <= 0) throw new UpdateException("여행지 수정 실패");
 
             Long travelNo = travelDTO.getTravelNo();
+            // 2) 기존 연관 데이터 삭제
             travelMapper.deleteTravelTimeByTravelNo(travelNo);
             travelMapper.deleteTravelImageByTravelNo(travelNo);
             travelMapper.deleteTravelTagBridgeByTravelNo(travelNo);
             travelMapper.deleteTravelOptionBridgeByTravelNo(travelNo);
 
-            postTravel(travelDTO); // insert로 재등록
+            // 3) 시간 재등록
+            if (travelDTO.getTimeList() != null) {
+                for (TravelTimeDTO t : travelDTO.getTimeList()) {
+                    t.setTravelNo(travelNo);
+                    travelMapper.insertTravelTime(t);
+                }
+            }
+
+            // 4) 이미지 재등록
+            if (travelDTO.getImageList() != null) {
+                for (TravelImageDTO img : travelDTO.getImageList()) {
+                    img.setTravelNo(travelNo);
+                    travelMapper.insertTravelImage(img);
+                }
+            }
+
+            // 5) 태그 재등록 (postTravel과 동일하게 tagNo null 처리)
+            if (travelDTO.getTagList() != null) {
+                for (TravelTagBridgeDTO tb : travelDTO.getTagList()) {
+                    tb.setTravelNo(travelNo);
+
+                    if (tb.getTagNo() == null) {
+                        String tagName = tb.getTagName();
+                        Long existing = travelMapper.selectTagByName(tagName);
+                        if (existing != null) {
+                            tb.setTagNo(existing);
+                        } else {
+                            TravelTagDTO newTag = new TravelTagDTO();
+                            newTag.setTagName(tagName);
+                            travelMapper.insertTag(newTag);
+                            // insertTag 호출 시 tagNo가 DTO에 셋팅되지 않으면 아래처럼 조회
+                            tb.setTagNo(travelMapper.selectTagByName(tagName));
+                        }
+                    }
+
+                    travelMapper.insertTravelTagBridge(tb);
+                }
+            }
+
+            // 6) 옵션 재등록
+            if (travelDTO.getOptionList() != null) {
+                for (TravelOptionBridgeDTO ob : travelDTO.getOptionList()) {
+                    ob.setTravelNo(travelNo);
+                    travelMapper.insertTravelOptionBridge(ob);
+                }
+            }
 
             return responseUtil.rd("200", travelDTO, "여행지 수정 성공");
         }
 
         @Override
-        public RequestData deleteTravel(Long travelNo) {
-            checkTravelExists(travelNo);
+        public RequestData deleteTravel(Long travelNo, String status) {
+            TravelDTO existing = checkTravelExists(travelNo);
 
-            int result = travelMapper.deleteTravel(travelNo);
-            if (result <= 0) throw new DeleteException("여행지 삭제 실패");
+            if (!status.equals("Y") && !status.equals("N")) {
+                throw new InvalidException("잘못된 상태 값입니다. (Y/N만 허용)");
+            }
 
-            return responseUtil.rd("200", travelNo, "여행지 삭제 성공");
+            existing.setStatus(status);
+            int result = travelMapper.deleteTravel(existing);
+            if (result <= 0) throw new UpdateException("여행지 상태 변경 실패");
+
+            return responseUtil.rd("200", travelNo, status.equals("Y") ? "활성화 성공" : "비활성화 성공");
+        }
+
+        @Override
+        public RequestData getPagedTravelList(int page, int size) {
+            int offset = (page - 1) * size;
+            List<TravelDTO> list = travelMapper.selectPagedAdminTravelList(offset, size);
+            long total = travelMapper.countAllTravels();
+            PageResponse<TravelDTO> response = new PageResponse<>(list, page, size, total);
+            return responseUtil.rd("200", response, "페이징 여행지 목록 조회 성공");
+        }
+
+        @Override
+        public RequestData getFilteredTravelList(int page, int size, String search, String status, String period, String thema) {
+            int offset = (page - 1) * size;
+
+            Map<String, Object> filters = new HashMap<>();
+            filters.put("search", search);
+            filters.put("status", status);
+            filters.put("period", period);
+            filters.put("thema", thema);
+            filters.put("offset", offset);
+            filters.put("limit", size);
+
+            List<TravelDTO> list = travelMapper.selectFilteredTravelList(filters);
+            long total = travelMapper.countFilteredTravelList(filters);
+            PageResponse<TravelDTO> response = new PageResponse<>(list, page, size, total);
+
+            return responseUtil.rd("200", response, "조건 검색 완료");
+        }
+
+
+        @Override
+        public RequestData getTravelThemas(Long travelNo) {
+            List<TravelThemaDTO> themas = travelMapper.selectTravelThemaList(travelNo);
+            return responseUtil.rd("200", themas, "여행지 테마 조회 성공");
+        }
+
+        @Override
+        public RequestData addTravelThemaBridge(TravelThemaBridgeDTO dto) {
+            int result = travelMapper.insertTravelThemaBridge(dto);
+            if (result <= 0) throw new InvalidException("테마 추가 실패");
+            return responseUtil.rd("200", dto, "테마 추가 성공");
+        }
+
+        @Override
+        public RequestData deleteTravelThemaBridge(TravelThemaBridgeDTO dto) {
+            int result = travelMapper.deleteTravelThemaBridgeByTravelNoAndThemaNo(dto);
+            if (result <= 0) throw new DeleteException("테마 삭제 실패");
+            return responseUtil.rd("200", dto, "테마 삭제 성공");
         }
 
 
