@@ -195,13 +195,16 @@
 
       <!-- 여행지 이미지 조회 -->
       <select id="selectTravelImageList" resultType="TravelImageDTO">
-        SELECT 
-          IMAGE_NO AS imageNo, 
-          TRAVEL_IMAGE_URL AS imageUrl
-        FROM 
-          TB_TRAVEL_IMAGE 
-        WHERE 
-          TRAVEL_NO = #{travelNo}
+          SELECT
+              IMAGE_NO as imageNo,
+              TRAVEL_NO as travelNo,
+              TRAVEL_IMAGE_URL as imageUrl,
+              TRAVEL_IMAGE_URL as travelImageUrl
+          FROM
+              TB_TRAVEL_IMAGE
+          WHERE
+              TRAVEL_NO = #{travelNo}
+          ORDER BY IMAGE_NO ASC
       </select>
 
       <!-- 여행지 태그 리스트  조회-->
@@ -344,6 +347,46 @@
           SELECT TAG_NO FROM TB_TRAVEL_TAG WHERE TAG_NAME = #{tagName}
       </select>
 
+      <!-- 특정 구에 속한 여행지 목록 조회 -->
+      <select id="selectTravelListByGuName"
+              parameterType="string"
+              resultType="com.kh.avengers.admin.travels.model.dto.TravelDTO">
+          SELECT
+              T.TRAVEL_NO AS travelNo,
+              T.GU_NO AS guNo,
+              T.TRAVEL_CATEGORY_NO AS categoryNo,
+              T.TRAVEL_TITLE AS title,
+              T.TRAVEL_EXPLAIN AS explain,
+              T.TRAVEL_DISCRIPTION AS description,
+              T.TRAVEL_ADDRESS AS address,
+              T.TRAVEL_MAPY AS mapY,
+              T.TRAVEL_MAPX AS mapX,
+              T.TRAVEL_TEL AS tel,
+              T.TRAVEL_EMAIL AS email,
+              T.TRAVEL_WEBSITE AS website,
+              T.TRAVEL_STATUS AS status,
+              C.TRAVEL_CATEGORY_NAME AS categoryName,
+              G.GU_NAME AS guName,
+
+              (SELECT
+                  IMG.TRAVEL_IMAGE_URL
+              FROM
+                  TB_TRAVEL_IMAGE IMG
+              WHERE
+                  IMG.TRAVEL_NO = T.TRAVEL_NO
+              ORDER BY IMG.IMAGE_NO ASC
+                  FETCH FIRST 1 ROWS ONLY) AS travelImage
+
+          FROM
+              TB_TRAVEL T
+                  JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+                  JOIN TB_GU G ON T.GU_NO = G.GU_NO
+          WHERE
+              T.TRAVEL_STATUS = 'Y'
+              AND G.GU_NAME = #{guName}
+              ORDER BY
+              T.TRAVEL_NO DESC
+      </select>
 
       <!-- 태그 등록 -->
       <insert id="insertTag" parameterType="TravelTagDTO" keyProperty="tagNo">
@@ -479,8 +522,6 @@
                 TRAVEL_NO = #{travelNo} 
             AND
                 MEMBER_NO = #{memberNo}
-
       </delete> 
-      
 	
 </mapper>

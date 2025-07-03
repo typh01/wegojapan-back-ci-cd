@@ -29,6 +29,7 @@ public interface AdminTravelService {
 
     // 여행지 삭제 (소프트 딜리트)
     RequestData deleteTravel(Long travelNo, String status);
-
-
+    
+    // 특정 구에 속한 여행지 목록 조회
+    RequestData getTravelPlacesByGu(String guName);
 }

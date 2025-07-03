@@ -15,6 +15,7 @@ import com.kh.avengers.admin.travels.model.dto.TravelTagDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaBridgeDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelTimeDTO;
+import org.apache.ibatis.annotations.Param;
 
 
 @Mapper
@@ -72,6 +73,9 @@ public interface TravelMapper {
 
     // 관리자 여행지 전체 목록 조회
     List<TravelDTO> selectAdminTravelList();
+    
+    // 특정 구에 속한 여행지 목록 조회
+    List<TravelDTO> selectTravelListByGuName(@Param("guName") String guName);
 
     List<TravelDTO> selectPagedAdminTravelList(@Param("offset") int offset, @Param("limit") int limit);
     long countAllTravels();

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "com.kh.avengers.plan.model.dao.TravelChoiceMapper">
+
+    <!--선택된 여행지 정보를 DB에 삽입-->
+    <insert id="insertTravelChoice"
+            parameterType="com.kh.avengers.plan.model.dto.TravelChoiceDto">
+        INSERT
+            INTO
+                TB_CHOICE
+            (
+                CHOICE_NO,
+                TRAVEL_NO,
+                PLAN_NO,
+                CHOICE_ORDER
+            )
+            VALUES
+            (
+                SEQ_TRAVEL_CHOICE.NEXTVAL,
+                #{travelNo},
+                #{planNo},
+                #{choiceOrder}
+            )
+    </insert>
+
+    <!--플랜 번호에 해당하는 모든 선택된 여행지 정보 삭제-->
+    <delete id="deleteTravelChoices"
+            parameterType="long">
+        DELETE
+            FROM
+                TB_CHOICE
+            WHERE
+                PLAN_NO = #{planNo}
+    </delete>
+
+</mapper>
