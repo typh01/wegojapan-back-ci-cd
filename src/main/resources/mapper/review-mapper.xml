@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.avengers.reviews.model.dao.ReviewMapper">
+   <!-- 좋아요 확인 여부-->
+      <select id="checkedLike" parameterType="map" resultType="long">
+        SELECT
+              COUNT(*)
+          FROM
+              TB_REVIEW_LIKE
+        WHERE
+              REVIEW_NO = #{reviewNo} 
+          AND
+              MEMBER_NO = #{memberNo}
+      </select>
+
+      <!--좋아요 올리기-->
+      <insert id="insertLikeCount" parameterType="map">
+        INSERT 
+          INTO 
+               TB_REVIEW_LIKE 
+             (
+               REVIEW_NO
+             , MEMBER_NO
+             )
+        VALUES 
+             (
+               #{reviewNo}
+             , #{memberNo}
+        )
+      </insert>
+
+
+      <!-- 좋아요 취소-->
+  <delete id="deleteLikeCount" parameterType="map">
+    DELETE 
+      FROM 
+           TB_REVIEW_LIKE
+     WHERE
+           REVIEW_NO = #{reviewNo} 
+       AND
+           MEMBER_NO = #{memberNo}
+  </delete> 
+
+
+</mapper>

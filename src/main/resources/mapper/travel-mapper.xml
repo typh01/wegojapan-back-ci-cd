@@ -524,4 +524,46 @@
                 MEMBER_NO = #{memberNo}
       </delete> 
 	
+
+  <select id="selectBookList" resultType="TravelDTO">
+          SELECT
+                 T.TRAVEL_NO AS travelNo,
+                 T.GU_NO AS guNo,
+                 T.TRAVEL_CATEGORY_NO AS categoryNo,
+                 T.TRAVEL_TITLE AS title,
+                 T.TRAVEL_EXPLAIN AS explain,
+                 T.TRAVEL_DISCRIPTION AS description,
+                 T.TRAVEL_ADDRESS AS address,
+                 T.TRAVEL_MAPY AS mapY,
+                 T.TRAVEL_MAPX AS mapX,
+                 T.TRAVEL_TEL AS tel,
+                 T.TRAVEL_EMAIL AS email,
+                 T.TRAVEL_WEBSITE AS website,
+                 T.TRAVEL_STATUS AS status,
+                 C.TRAVEL_CATEGORY_NAME As categoryName,
+                 G.GU_NAME As guName
+            FROM 
+                 TB_TRAVEL T
+            JOIN 
+                 TB_TRAVEL_CATEGORY C 
+              ON 
+                 T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+            JOIN 
+                 TB_GU G ON T.GU_NO = G.GU_NO
+           WHERE 
+                 T.TRAVEL_STATUS = 'Y'
+             AND
+                 T.TRAVEL_NO 
+              IN 
+               (
+                 SELECT TRAVEL_NO
+            FROM 
+                 TB_TRAVEL_BOOKMARK
+           WHERE 
+                 MEMBER_NO = #{memberNo} 
+               )
+           ORDER 
+              BY 
+                 T.TRAVEL_NO ASC
+      </select>
 </mapper>
