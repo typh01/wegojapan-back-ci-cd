@@ -20,6 +20,7 @@ public class CustomUserDetails  implements UserDetails{
   private final String password; // MEMBER_PW
   private final String email;
   private final String memberName;
+  private final String memberRole;
   private final char isActive;
   private final Collection<? extends GrantedAuthority> authorities;
 

@@ -1,6 +1,7 @@
 package com.kh.avengers.auth.model.service;
 
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.kh.avengers.auth.model.dto.FindIdRequestDTO;
@@ -53,6 +55,7 @@ public class AuthServiceImpl implements AuthService{
                                     .memberName(loginMember.getMemberName())
                                     .email(loginMember.getEmail())  
                                     .isActive(loginMember.getIsActive())
+                                    .authorities(loginMember.getAuthorities())
                                     .build();
     log.info("머임");
     loginResponse.put("loginInfo", loginInfo);
