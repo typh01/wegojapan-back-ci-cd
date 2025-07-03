@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
+
 public class SecurityConfigure {
 
     private final JwtFilter jwtFilter;
@@ -42,13 +44,14 @@ public class SecurityConfigure {
                         "/api/members", 
                         "/api/emails/send-email",
                         "/api/emails/verify-code",
-                        "/api/emails/find-id",
+                        "/api/emails/find-id",             
                         "/api/emails/findVerify-code",
                         "/api/emails/find-password",
                         "/api/emails/findPassword-code",
                         "/api/emails/new-password",
                         "/api/upload/s3",
-                        "/api/admin/**").permitAll();
+                        "/api/admin/**"
+                        ).permitAll();
 
 
                         requests.requestMatchers(HttpMethod.PATCH, "/api/members/changeName",
@@ -56,9 +59,11 @@ public class SecurityConfigure {
                         ).authenticated();
                         requests.requestMatchers(HttpMethod.GET).permitAll();
 
-                        requests.requestMatchers(HttpMethod.GET, "/api/admin/**", "/api/travels/**").permitAll();
+                        requests.requestMatchers(HttpMethod.GET,"/api/admin/**", "/api/travels/**").permitAll();
 
-                        requests.requestMatchers(HttpMethod.POST).authenticated();
+
+                        requests.requestMatchers(HttpMethod.GET, "/api/members/checkedMemberName").authenticated();
+                        requests.requestMatchers(HttpMethod.POST, "/api/reports/review").authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
                         requests.requestMatchers(HttpMethod.DELETE, "/api/members/deleteMember").authenticated();
                         requests.anyRequest().authenticated();
