@@ -24,6 +24,8 @@ public class TravelBookListServiceImpl implements TravelBookListService {
   @Override
   public RequestData getBookMarks(Long memberNo) {
 
+    
+
     MemberDTO member = memberMapper.findByMemberNo(memberNo);
     if (member == null) {
         throw new InvalidException("존재하지 않는 회원입니다.");
