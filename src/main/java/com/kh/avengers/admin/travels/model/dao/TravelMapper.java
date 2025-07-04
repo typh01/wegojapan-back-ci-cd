@@ -94,14 +94,14 @@ public interface TravelMapper {
     // 즐겨찾기 취소하기
     Long deleteBookCount(Map<String, String> book);
 
-<<<<<<< HEAD
+
     List<TravelDTO> selectBookList(Long memberNo);
-=======
+
     int incrementViewCount(Long travelNo);
 
     List<TravelDTO> selectPagedTravelList(@Param("offset") int offset, @Param("limit") int limit);
     int selectTotalTravelCount();
->>>>>>> d1560804b674571ca8864ebb7ea59a46b7a18802
+
 
 }
 
