@@ -94,6 +94,8 @@ public interface TravelMapper {
     // 즐겨찾기 취소하기
     Long deleteBookCount(Map<String, String> book);
 
+    List<TravelDTO> selectBookList(Long memberNo);
+
 }
 
     

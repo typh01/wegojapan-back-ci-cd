@@ -27,11 +27,11 @@ public class BookMarkServiceImpl implements BookMarkService{
     if (bookCheck == 1) {
         throw new InvalidException("즐겨찾기를 이미 눌렀습니다.");
     }
-
     Long bookCount = travelMapper.insertBookCount(book);
     if (bookCount == 0) {
-        throw new InvalidAccessException("즐겨찾기 등록에 실패했습니다.");
+        throw new InvalidException("즐겨찾기 등록에 실패했습니다.");
     }
+
 
     return responseUtil.rd("200", book, "즐겨찾기 되었습니다.");
 }
@@ -45,7 +45,7 @@ public class BookMarkServiceImpl implements BookMarkService{
 
     Long bookCount = travelMapper.deleteBookCount(book);
     if (bookCount == 0) {
-        throw new InvalidAccessException("즐겨찾기 취소에 실패했습니다.");
+        throw new InvalidException("즐겨찾기 등록에 실패했습니다.");
     }
 
     return responseUtil.rd("200", null, "즐겨찾기를 취소했습니다.");
