@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class myPlanDetailDto {
+public class MyPlanDetailDto {
 
   private Long planNo;
   private String planTitle;
