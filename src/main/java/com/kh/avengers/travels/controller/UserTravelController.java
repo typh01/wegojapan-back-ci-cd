@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -51,9 +52,12 @@ public class UserTravelController {
 
     // 여행지 전체 목록 조회
     @GetMapping
-    public ResponseEntity<RequestData> getTravelList() {
-        log.info("여행지 전체 목록 조회 요청");
-        return ResponseEntity.ok(adminTravelService.getTravelList());
+    public ResponseEntity<RequestData> getTravelList(    
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "8") int size
+      ) {
+      log.info("여행지 페이지네이션 조회 요청 - page: {}, size: {}", page, size);
+      return ResponseEntity.ok(adminTravelService.getTravelList(page, size));
     }
 
     // 여행지 상세 조회

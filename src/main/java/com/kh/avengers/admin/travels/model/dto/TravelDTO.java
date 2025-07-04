@@ -42,4 +42,5 @@ public class TravelDTO {
     private List<TravelThemaDTO> themaListForView;
     private List<TravelThemaBridgeDTO> themaList;
     private String travelImage;
+    private Long viewCount;
 }
