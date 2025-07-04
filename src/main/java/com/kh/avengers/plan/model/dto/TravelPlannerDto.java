@@ -1,6 +1,7 @@
 package com.kh.avengers.plan.model.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,5 +37,8 @@ public class TravelPlannerDto {
     private Integer maxBudget;
     private String transportReservationLink;
     private String accommodationLink;
+
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
 
 }
