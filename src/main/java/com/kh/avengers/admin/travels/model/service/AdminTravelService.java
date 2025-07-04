@@ -6,7 +6,7 @@ import com.kh.avengers.common.dto.RequestData;
 public interface AdminTravelService {
 
     // 페이징 처리된 여행지 목록 조회
-    RequestData getTravelList();
+    RequestData getTravelList(int page, int size);
 
     RequestData getFilteredTravelList(int page, int size, String search, String status, String period, String thema);
 
