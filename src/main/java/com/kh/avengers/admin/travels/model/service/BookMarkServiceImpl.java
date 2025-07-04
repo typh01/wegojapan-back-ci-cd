@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookMarkServiceImpl implements BookMarkService{
 
-    private final ResponseUtil responseUtil;
+  private final ResponseUtil responseUtil;
 
 
   private final TravelMapper travelMapper;
@@ -23,34 +23,33 @@ public class BookMarkServiceImpl implements BookMarkService{
   @Override
   public RequestData insertBookMark(Map<String, String> book) {
     Long bookCheck = travelMapper.checkedBook(book);
-    if(bookCheck == 1){
-      throw new InvalidException("즐겨찾기를 이미 눌렀습니다.");
+    if (bookCheck == 1) {
+        throw new InvalidException("즐겨찾기를 이미 눌렀습니다.");
     }
-    
+
     Long bookCount = travelMapper.insertBookCount(book);
-    if(bookCount == 0){
-      travelMapper.insertBookCount(book);
+    if (bookCount == 0) {
+        throw new InvalidAccessException("즐겨찾기 등록에 실패했습니다.");
     }
 
     return responseUtil.rd("200", book, "즐겨찾기 되었습니다.");
-  }
+}
 
   @Override
   public RequestData deleteBookMark(Map<String, String> book) {
     Long bookCheck = travelMapper.checkedBook(book);
-    
-    if(bookCheck == 0){
-      throw new InvalidException("즐겨찾기를 이미 취소했습니다.");
+    if (bookCheck == 0) {
+        throw new InvalidException("즐겨찾기를 이미 취소했습니다.");
     }
-    
+
     Long bookCount = travelMapper.deleteBookCount(book);
-    if(bookCount == 1){
-      travelMapper.deleteBookCount(book);
+    if (bookCount == 0) {
+        throw new InvalidAccessException("즐겨찾기 취소에 실패했습니다.");
     }
 
     return responseUtil.rd("200", null, "즐겨찾기를 취소했습니다.");
+}
 
-  }
 
 
   
