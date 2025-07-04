@@ -36,27 +36,35 @@ import org.springframework.stereotype.Service;
         }
 
         @Override
-        public RequestData getTravelList() {
-            List<TravelDTO> travelList = travelMapper.selectTravelList();
+        public RequestData getTravelList(int page, int size) {
+            int offset = (page - 1) * size;
+            List<TravelDTO> travelList = travelMapper.selectPagedTravelList(offset, size);
+            int total = travelMapper.selectTotalTravelCount();
 
-        for (TravelDTO t : travelList) {
-            List<TravelTimeDTO> timeList = travelMapper.selectTravelTimeList(t.getTravelNo());
-            t.setTimeList(timeList);
-            List<TravelImageDTO> imageList = travelMapper.selectTravelImageList(t.getTravelNo());
-            t.setImageList(imageList);
-            List<TravelTagDTO> tagList = travelMapper.selectTravelTagList(t.getTravelNo());
-            t.setTagListForView(tagList);
-            List<TravelThemaDTO> themaList = travelMapper.selectTravelThemaList(t.getTravelNo());
-            t.setThemaListForView(themaList);
-            List<TravelOptionDTO> optionList = travelMapper.selectTravelOptionList(t.getTravelNo());
-            t.setOptionListForView(optionList);
+            for (TravelDTO t : travelList) {
+                List<TravelTimeDTO> timeList = travelMapper.selectTravelTimeList(t.getTravelNo());
+                t.setTimeList(timeList);
+                List<TravelImageDTO> imageList = travelMapper.selectTravelImageList(t.getTravelNo());
+                t.setImageList(imageList);
+                List<TravelTagDTO> tagList = travelMapper.selectTravelTagList(t.getTravelNo());
+                t.setTagListForView(tagList);
+                List<TravelThemaDTO> themaList = travelMapper.selectTravelThemaList(t.getTravelNo());
+                t.setThemaListForView(themaList);
+                List<TravelOptionDTO> optionList = travelMapper.selectTravelOptionList(t.getTravelNo());
+                t.setOptionListForView(optionList);
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("data", travelList);
+            result.put("total", total);
+
+            return responseUtil.rd("200", result, "여행지 목록 조회 완료");
         }
 
-            return responseUtil.rd("200", travelList, "여행지 목록 조회 완료");
-        }
 
         @Override
         public RequestData getTravelDetail(Long travelNo) {
+            travelMapper.incrementViewCount(travelNo);
             TravelDTO travel = travelMapper.selectTravelByNo(travelNo);
             if (travel == null) throw new NotFoundException("해당 여행지를 찾을 수 없습니다.");
 
@@ -275,4 +283,5 @@ import org.springframework.stereotype.Service;
 
             return responseUtil.rd("200", travelList, guName + " 지역의 여행지 목록 조회 성공");
         }
+        
     }

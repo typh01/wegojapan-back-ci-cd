@@ -173,6 +173,7 @@
               T.TRAVEL_STATUS AS status,
               T.TRAVEL_CREATED_DATE AS createdDate,
               T.TRAVEL_MODIFIED_DATE AS modifiedDate,
+              T.VIEW_COUNT AS viewCount,
               C.TRAVEL_CATEGORY_NAME AS categoryName,
               G.GU_NAME AS guName
           FROM TB_TRAVEL T
@@ -265,7 +266,7 @@
           ORDER BY T.TRAVEL_NO ASC
       </select>
 
-      <!-- 관리자 여행지 전체 목록 조회 -->
+      <!-- 관리자 페이징 여행지 전체 목록 조회 -->
       <select id="selectPagedAdminTravelList" resultType="TravelDTO">
           SELECT
               T.TRAVEL_NO AS travelNo,
@@ -290,6 +291,41 @@
           OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
       </select>
 
+      <select id="selectPagedTravelList" resultType="TravelDTO">
+        SELECT
+            T.TRAVEL_NO AS travelNo,
+            T.GU_NO AS guNo,
+            T.TRAVEL_CATEGORY_NO AS categoryNo,
+            T.TRAVEL_TITLE AS title,
+            T.TRAVEL_EXPLAIN AS explain,
+            T.TRAVEL_DISCRIPTION AS description,
+            T.TRAVEL_ADDRESS AS address,
+            T.TRAVEL_MAPY AS mapY,
+            T.TRAVEL_MAPX AS mapX,
+            T.TRAVEL_TEL AS tel,
+            T.TRAVEL_EMAIL AS email,
+            T.TRAVEL_WEBSITE AS website,
+            T.TRAVEL_STATUS AS status,
+            T.VIEW_COUNT AS viewCount,
+            C.TRAVEL_CATEGORY_NAME AS categoryName,
+            G.GU_NAME AS guName
+        FROM TB_TRAVEL T
+        JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+        JOIN TB_GU G ON T.GU_NO = G.GU_NO
+        WHERE T.TRAVEL_STATUS = 'Y'
+        ORDER BY T.VIEW_COUNT DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+      <!-- 전체 여행지 개수 조회 -->
+      <select id="selectTotalTravelCount" resultType="int">
+          SELECT COUNT(*) 
+          FROM TB_TRAVEL 
+          WHERE TRAVEL_STATUS = 'Y'
+      </select>
+
+
+
       <!-- 여행지 전체 목록 조회 -->
       <select id="selectTravelList" resultType="TravelDTO">
           SELECT
@@ -306,13 +342,14 @@
               T.TRAVEL_EMAIL AS email,
               T.TRAVEL_WEBSITE AS website,
               T.TRAVEL_STATUS AS status,
+              T.VIEW_COUNT AS viewCount,
               C.TRAVEL_CATEGORY_NAME As categoryName,
               G.GU_NAME As guName
           FROM TB_TRAVEL T
           JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
           JOIN TB_GU G ON T.GU_NO = G.GU_NO
           WHERE T.TRAVEL_STATUS = 'Y'
-          ORDER BY T.TRAVEL_NO ASC
+          ORDER BY T.VIEWcOUNT DESC
       </select>
 
       <!-- 여행지 수정 (Update) -->
@@ -566,4 +603,11 @@
               BY 
                  T.TRAVEL_NO ASC
       </select>
+
+      <update id="incrementViewCount" parameterType="long">
+        UPDATE TB_TRAVEL
+        SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
+        WHERE TRAVEL_NO = #{travelNo}
+      </update>
+      
 </mapper>
