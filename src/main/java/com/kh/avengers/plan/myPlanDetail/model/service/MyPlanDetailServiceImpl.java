@@ -89,4 +89,34 @@ public class MyPlanDetailServiceImpl implements MyPlanDetailService{
 
   }
 
+  /**
+   * 플랜 삭제
+   * @param planNo 삭제할 플랜의 고유 식별 번호
+   * @param userDetails 인증된 사용자의 정보
+   * @return 삭제 성공 여부
+   */
+  @Override
+  public boolean deletePlanDetail(Long planNo, CustomUserDetails userDetails){
+
+    log.info("플랜 삭제 요청 >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
+
+    // 1. 플랜 존재 및 플랜의 소유자 확인
+
+
+    // 2. 플랜이 존재하지 않고나 소유자X => 예외 발생
+
+
+    // 3. 선택한 여행지 데이터 삭제
+
+
+    // 4. 플랜 삭제
+
+
+    // 5. 결과 확인
+
+
+    return true;
+
+  }
+
 }

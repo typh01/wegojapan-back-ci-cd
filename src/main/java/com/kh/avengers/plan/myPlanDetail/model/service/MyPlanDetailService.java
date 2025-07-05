@@ -21,4 +21,12 @@ public interface MyPlanDetailService {
    */
   MyPlanDetailDto updatePlanDetail(MyPlanDetailDto planDetailDto, CustomUserDetails userDetails);
 
+  /**
+   * 플랜 삭제
+   * @param planNo 삭제할 플랜의 고유 식별 번호
+   * @param userDetails 인증된 사용자의 정보
+   * @return 삭제 성공 여부
+   */
+  boolean deletePlanDetail(Long planNo, CustomUserDetails userDetails);
+
 }
