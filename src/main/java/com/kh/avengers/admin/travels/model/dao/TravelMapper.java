@@ -86,13 +86,13 @@ public interface TravelMapper {
     long countFilteredTravelList(Map<String, Object> filters);
 
     // 즐겨찾기 중복 확인
-    Long checkedBook(Map<String, String> book);
+    Long checkedBook(Map<String,Long> book);
 
     // 즐겨찾기 올리기
-    Long insertBookCount(Map<String, String> book);
+    Long insertBookCount(Map<String, Long> book);
   
     // 즐겨찾기 취소하기
-    Long deleteBookCount(Map<String, String> book);
+    Long deleteBookCount(Map<String, Long> book);
 
 
     List<TravelDTO> selectBookList(Long memberNo);
@@ -101,6 +101,8 @@ public interface TravelMapper {
 
     List<TravelDTO> selectPagedTravelList(@Param("offset") int offset, @Param("limit") int limit);
     int selectTotalTravelCount();
+
+    Long selectBookMark(Map<String,String> book);
 
 
 }
