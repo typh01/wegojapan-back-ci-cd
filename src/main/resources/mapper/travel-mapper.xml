@@ -576,6 +576,7 @@
                  T.TRAVEL_TEL tel,
                  T.TRAVEL_EMAIL email,
                  T.TRAVEL_WEBSITE website,
+                 T.VIEW_COUNT viewCount,
                  T.TRAVEL_STATUS status,
                  C.TRAVEL_CATEGORY_NAME categoryName,
                  G.GU_NAME guName
