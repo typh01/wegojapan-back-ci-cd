@@ -51,4 +51,26 @@
             tc.CHOICE_ORDER ASC
     </select>
 
+    <!-- 플랜 정보 수정 -->
+    <update id="updatePlanDetail">
+        UPDATE
+            TB_TRAVEL_PLANNER
+        SET
+            PLAN_TITLE = #{planTitle},
+            PLAN_DESCRIPTION = #{planDescription},
+            SELECT_REGION = #{selectRegion},
+            TRAVEL_START_DATE = #{travelStartDate},
+            TRAVEL_END_DATE = #{travelEndDate},
+            GROUP_SIZE = #{groupSize},
+            MIN_BUDGET = #{minBudget},
+            MAX_BUDGET = #{maxBudget},
+            TRANSPORTRESERVATION_LINK = #{transportReservationLink},
+            ACCOMMODATION_LINK = #{accommodationLink},
+            MODIFIED_DATE = SYSDATE
+        WHERE
+            PLAN_NO = #{planNo}
+        AND
+            MEMBER_NO = #{memberNo}
+    </update>
+
 </mapper>

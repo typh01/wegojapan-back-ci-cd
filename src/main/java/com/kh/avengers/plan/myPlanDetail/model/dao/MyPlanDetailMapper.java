@@ -26,4 +26,11 @@ public interface MyPlanDetailMapper {
    */
   List<SelectedPlaceDto> selectSelectedPlacesByPlanNo(@Param("planNo") Long planNo);
 
+  /**
+   * 플랜 상세 정보 수정
+   * @param planDetailDto 플랜 상세 정보
+   * @return 수정된 행의 개수
+   */
+  int updatePlanDetail(MyPlanDetailDto planDetailDto);
+
 }

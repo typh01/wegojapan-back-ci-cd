@@ -62,22 +62,30 @@ public class MyPlanDetailServiceImpl implements MyPlanDetailService{
     log.info("플랜정보 수정 요청 >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo());
 
     // 1. 플랜 소유자 확인
-
+    MyPlanDetailDto existingPlan = myPlanDetailMapper.selectPlanDetailByPlanNoAndMemberNo(planDetailDto.getPlanNo(), userDetails.getMemberNo());
 
     // 2. 플랜 존재X || 플랜 소유자 X => 예외 발생
-
+    if(existingPlan == null){
+      log.warn("플랜 수정 실패!!! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo());
+      throw new ForbiddenException("해당 플랜을 찾을 수 없거나 접근권한이 없습니다.");
+    }
 
     // 3. 회원번호
-    
+    planDetailDto.setMemberNo(userDetails.getMemberNo());
     
     // 4. 플랜 상세정보 수정
-    
+    int updateResult = myPlanDetailMapper.updatePlanDetail(planDetailDto);
     
     // 5. 확인
-    
+    if (updateResult == 0) {
+      log.error("플랜 수정 실패! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo());
+      throw new RuntimeException("플랜 수정에 실패했습니다.");
+    }
+
+    log.info("플랜 수정 완료!! >> 사용자 : {}, 플랜번호 : {}, 플랜제목 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo(), planDetailDto.getPlanTitle());
     
     // 6. 수정된 상세정보 반환
-
+    return getPlanDetail(planDetailDto.getPlanNo(), userDetails);
 
   }
 
