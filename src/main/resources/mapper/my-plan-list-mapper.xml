@@ -49,8 +49,8 @@
                 WHEN TRAVEL_START_DATE > SYSDATE THEN '예정'
                 WHEN TRAVEL_END_DATE &lt; SYSDATE THEN '완료'
             ELSE '진행중'
-            END as PlanStatus,
-            SELECT_REGION as selectRegion,
+            END as planStatus,
+            SELECT_REGION as selectedRegion,
             TRAVEL_START_DATE as travelStartDate,
             TRAVEL_END_DATE as travelEndDate,
             GROUP_SIZE as groupSize,

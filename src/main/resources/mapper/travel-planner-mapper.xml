@@ -20,7 +20,7 @@
                 TRAVEL_END_DATE,
                 GROUP_SIZE,
                 CREATED_DATE,
-                MODIFIED_DATE,
+                MODIFIED_DATE
             )
             VALUES
             (
@@ -78,7 +78,7 @@
         UPDATE
             TB_TRAVEL_PLANNER
         SET
-            SELECT_PLACES = #{selectPlaces}
+            SELECT_PLACES = #{selectPlaces},
             MODIFIED_DATE = SYSDATE
         WHERE
             PLAN_NO = #{planNo}
@@ -95,7 +95,7 @@
             MIN_BUDGET = #{minBudget},
             MAX_BUDGET = #{maxBudget},
             TRANSPORTRESERVATION_LINK = #{transportReservationLink},
-            ACCOMMODATION_LINK = #{accommodationLink}
+            ACCOMMODATION_LINK = #{accommodationLink},
             MODIFIED_DATE = SYSDATE
         WHERE
             PLAN_NO = #{planNo}
