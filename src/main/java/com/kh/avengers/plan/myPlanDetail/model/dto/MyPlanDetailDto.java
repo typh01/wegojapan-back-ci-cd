@@ -15,6 +15,7 @@ import java.util.List;
 public class MyPlanDetailDto {
 
   private Long planNo;
+  private Long memberNo;
   private String planTitle;
   private String planDescription;
   private String planStatus;

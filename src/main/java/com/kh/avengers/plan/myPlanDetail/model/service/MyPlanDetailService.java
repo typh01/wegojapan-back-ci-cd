@@ -13,4 +13,12 @@ public interface MyPlanDetailService {
    */
   MyPlanDetailDto getPlanDetail(Long planNo, CustomUserDetails userDetails);
 
+  /**
+   * 플랜 상세정보 수정
+   * @param planDetailDto 플랜의 상세정보
+   * @param userDetails 인증된 사용자 정보
+   * @return 수정된 플랜
+   */
+  MyPlanDetailDto updatePlanDetail(MyPlanDetailDto planDetailDto, CustomUserDetails userDetails);
+
 }

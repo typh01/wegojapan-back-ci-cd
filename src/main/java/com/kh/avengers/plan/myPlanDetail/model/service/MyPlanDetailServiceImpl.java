@@ -50,4 +50,35 @@ public class MyPlanDetailServiceImpl implements MyPlanDetailService{
     return planDetail;
   }
 
+  /**
+   * 플랜 상세정보 수정
+   * @param planDetailDto 플랜의 상세정보
+   * @param userDetails 인증된 사용자 정보
+   * @return 수정된 플랜
+   */
+  @Override
+  public MyPlanDetailDto updatePlanDetail(MyPlanDetailDto planDetailDto, CustomUserDetails userDetails) {
+
+    log.info("플랜정보 수정 요청 >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo());
+
+    // 1. 플랜 소유자 확인
+
+
+    // 2. 플랜 존재X || 플랜 소유자 X => 예외 발생
+
+
+    // 3. 회원번호
+    
+    
+    // 4. 플랜 상세정보 수정
+    
+    
+    // 5. 확인
+    
+    
+    // 6. 수정된 상세정보 반환
+
+
+  }
+
 }
