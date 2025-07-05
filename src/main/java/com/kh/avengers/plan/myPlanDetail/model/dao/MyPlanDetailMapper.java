@@ -33,4 +33,19 @@ public interface MyPlanDetailMapper {
    */
   int updatePlanDetail(MyPlanDetailDto planDetailDto);
 
+  /**
+   * 플랜에 연결된 선택된 여행지 목록 삭제
+   * @param planNo 플랜 고유 식별 번호
+   * @return 삭제된 행의 개수
+   */
+  int deleteSelectedPlacesByPlanNo(@Param("planNo") Long planNo);
+
+  /**
+   * 플랜 삭제
+   * @param planNo 삭제할 플랜 고유 식별 번호
+   * @param memberNo 사용자 고유 식별 번호
+   * @return 삭제된 행의 개수
+   */
+  int deletePlan(@Param("planNo") Long planNo, @Param("memberNo") Long memberNo);
+
 }

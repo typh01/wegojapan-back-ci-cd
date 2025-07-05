@@ -73,4 +73,24 @@
             MEMBER_NO = #{memberNo}
     </update>
 
+    <!-- 플랜에 연결된 선택된 여행지 목록 삭제 -->
+    <delete id="deleteSelectedPlacesByPlanNo">
+        DELETE
+            FROM
+                TB_TRAVEL_CHOICE
+        WHERE
+            PLAN_NO = #{planNo}
+    </delete>
+
+    <!-- 플랜 삭제 -->
+    <delete id="deletePlan">
+        DELETE
+            FROM
+                TB_TRAVEL_PLANNER
+        WHERE
+            PLAN_NO = #{planNo}
+        AND
+            MEMBER_NO = #{memberNo}
+    </delete>
+
 </mapper>

@@ -96,26 +96,40 @@ public class MyPlanDetailServiceImpl implements MyPlanDetailService{
    * @return 삭제 성공 여부
    */
   @Override
-  public boolean deletePlanDetail(Long planNo, CustomUserDetails userDetails){
+  public boolean deletePlan(Long planNo, CustomUserDetails userDetails){
 
     log.info("플랜 삭제 요청 >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
 
     // 1. 플랜 존재 및 플랜의 소유자 확인
-
+    MyPlanDetailDto existingPlan = myPlanDetailMapper.selectPlanDetailByPlanNoAndMemberNo(planNo, userDetails.getMemberNo());
 
     // 2. 플랜이 존재하지 않고나 소유자X => 예외 발생
+    if (existingPlan == null) {
+      log.warn("플랜 삭제 실패! >> 사용자 : {}, 플랜번호 : {} - 플랜이 존재하지 않거나 접근권한이 없습니다.", userDetails.getMemberName(), planNo);
+      throw new ForbiddenException("해당 플랜을 찾을수 없거나 접근권한이 없습니다.");
+    }
 
+    try{
+      // 3. 선택한 여행지 데이터 삭제
+      int deletedPlaces = myPlanDetailMapper.deleteSelectedPlacesByPlanNo(planNo);
+      log.debug("연관된 여행지 선택 삭제 완료!! >> 삭제된 여행지 개수 : {}", deletedPlaces);
 
-    // 3. 선택한 여행지 데이터 삭제
+      // 4. 플랜 삭제
+      int deleteResult = myPlanDetailMapper.deletePlan(planNo, userDetails.getMemberNo());
 
+      // 5. 결과 확인
+      if (deleteResult == 0) {
+        log.error("플랜 삭제 실패! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
+        throw new RuntimeException("플랜 삭제에 실패했습니다.");
+      }
 
-    // 4. 플랜 삭제
+      log.info("플랜 삭제 완료!! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
+      return true;
 
-
-    // 5. 결과 확인
-
-
-    return true;
+    } catch (Exception e){
+      log.error("플랜 삭제 중 오류 발생!! >> 사용자 : {}, 플랜번호 : {}, 오류 : {}", userDetails.getMemberName(), planNo, e.getMessage());
+      throw new RuntimeException("플랜 삭제 중 오류가 발생했습니다: " + e.getMessage());
+    }
 
   }
 

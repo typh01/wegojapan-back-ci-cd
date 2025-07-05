@@ -63,4 +63,33 @@ public class MyPlanDetailController {
       return ResponseEntity.status(403).body(errorResult);
     }
   }
+
+  // 플랜 삭제
+  @DeleteMapping("/{planNo}")
+  public ResponseEntity<RequestData> deletePlanDetail(
+          @PathVariable Long planNo,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
+    log.info("플랜 삭제 요청! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
+
+    try {
+      boolean isDeleted = myPlanDetailService.deletePlan(planNo, userDetails);
+
+      if (isDeleted) {
+        log.info("플랜 삭제 성공!!!!! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
+
+        RequestData result = responseUtil.rd("200", null, "플랜 삭제 성공!!!!");
+        return ResponseEntity.ok(result);
+
+      } else {
+        log.warn("플랜 삭제 실패 >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
+        RequestData errorResult = responseUtil.rd("400", null, "플랜 삭제에 실패!");
+        return ResponseEntity.status(400).body(errorResult);
+      }
+
+    } catch (ForbiddenException e) {
+      log.warn("플랜 삭제 실패 >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
+      RequestData errorResult = responseUtil.rd("403", null, e.getMessage());
+      return ResponseEntity.status(403).body(errorResult);
+    }
+  }
 }

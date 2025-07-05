@@ -27,6 +27,6 @@ public interface MyPlanDetailService {
    * @param userDetails 인증된 사용자의 정보
    * @return 삭제 성공 여부
    */
-  boolean deletePlanDetail(Long planNo, CustomUserDetails userDetails);
+  boolean deletePlan(Long planNo, CustomUserDetails userDetails);
 
 }
