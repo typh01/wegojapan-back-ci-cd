@@ -1,0 +1,29 @@
+package com.kh.avengers.plan.myPlanDetail.model.dao;
+
+import com.kh.avengers.plan.model.dto.SelectedPlaceDto;
+import com.kh.avengers.plan.myPlanDetail.model.dto.MyPlanDetailDto;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+@Mapper
+public interface MyPlanDetailMapper {
+
+  /**
+   * 플랜번호와 사용자 고유식별 번호로 플랜 상세 정보 조회
+   * @param PlanNo 플랜 고유 식별 번호
+   * @param memberNo 사용자 고유 식별 번호 
+   * @return 플랜 내용의 싱세 정보
+   */
+  MyPlanDetailDto selectPlanDetailByPlanNoAndMemberNo(@Param("planNo") Long PlanNo,
+                                                      @Param("memberNo") Long memberNo);
+
+  /**
+   * 플랜 번호로 선택된 여행지 목록 조회
+   * @param planNo 플랜 고유 식별 번호
+   * @return 선택된 여행지 목록
+   */
+  List<SelectedPlaceDto> selectSelectedPlacesByPlanNo(@Param("planNo") Long planNo);
+
+}
