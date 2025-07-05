@@ -62,7 +62,7 @@ public class SecurityConfigure {
                         requests.requestMatchers(HttpMethod.GET,"/api/admin/**", "/api/travels/**").permitAll();
 
 
-                        requests.requestMatchers(HttpMethod.GET, "/api/members/checkedMemberName", "/api/my-plans").authenticated();
+                        requests.requestMatchers(HttpMethod.GET, "/api/members/checkedMemberName", "/api/my-plans/**").authenticated();
                         requests.requestMatchers(HttpMethod.POST, "/api/reports/review", "/api/bookMark/insert-book").authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
                         requests.requestMatchers(HttpMethod.DELETE, "/api/members/deleteMember", "/api/bookMark/delete-book").authenticated();

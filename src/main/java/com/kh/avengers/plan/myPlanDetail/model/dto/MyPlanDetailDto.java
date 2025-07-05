@@ -19,6 +19,7 @@ public class MyPlanDetailDto {
   private String planTitle;
   private String planDescription;
   private String planStatus;
+  private String selectRegion;
   private LocalDate travelStartDate;
   private LocalDate travelEndDate;
   private Integer groupSize;

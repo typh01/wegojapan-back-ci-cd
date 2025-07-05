@@ -6,12 +6,13 @@
     <select id="selectPlanDetailByPlanNoAndMemberNo" resultType="com.kh.avengers.plan.myPlanDetail.model.dto.MyPlanDetailDto">
         SELECT
             PLAN_NO as planNo,
+            MEMBER_NO as memberNo,
             PLAN_TITLE as planTitle,
             PLAN_DESCRIPTION as planDescription,
             CASE
                 WHEN TRAVEL_START_DATE > SYSDATE THEN '예정'
                 WHEN TRAVEL_END_DATE &lt; SYSDATE THEN '완료'
-                ELSE '진행중'
+                 ELSE '진행중'
             END AS planStatus,
             SELECT_REGION as selectRegion,
             TRAVEL_START_DATE as travelStartDate,
@@ -31,18 +32,18 @@
             MEMBER_NO = #{memberNo}
     </select>
 
-    <!-- 플랜 번호로 선택된 여행지 목록 조회-->
-    <select id="selectSelectedPlacesByPlanNo" resultType="com.kh.avengers.plan.myPlanDetail.model.dto.MyPlanDetailDto">
+    <!-- 플랜 번호로 선택된 여행지 목록 조회 -->
+    <select id="selectSelectedPlacesByPlanNo" resultType="com.kh.avengers.plan.model.dto.SelectedPlaceDto">
         SELECT
             tc.TRAVEL_NO as travelId,
             tc.PLAN_NO as planNo,
-            t.TRAVEL_NAME as travelName,
-            t.TRAVEL_DESCRIPTION as travelDescription,
-            t.MAP_X as mapX,
-            t.MAP_Y as mapY,
+            t.TRAVEL_TITLE as travelName,
+            t.TRAVEL_EXPLAIN as travelDescription,
+            t.TRAVEL_MAPX as mapX,
+            t.TRAVEL_MAPY as mapY,
             tc.CHOICE_ORDER as choiceOrder
         FROM
-            TB_TRAVEL_CHOICE tc
+            TB_CHOICE tc
         INNER JOIN
             TB_TRAVEL t ON tc.TRAVEL_NO = t.TRAVEL_NO
         WHERE
@@ -58,12 +59,6 @@
         SET
             PLAN_TITLE = #{planTitle},
             PLAN_DESCRIPTION = #{planDescription},
-            SELECT_REGION = #{selectRegion},
-            TRAVEL_START_DATE = #{travelStartDate},
-            TRAVEL_END_DATE = #{travelEndDate},
-            GROUP_SIZE = #{groupSize},
-            MIN_BUDGET = #{minBudget},
-            MAX_BUDGET = #{maxBudget},
             TRANSPORTRESERVATION_LINK = #{transportReservationLink},
             ACCOMMODATION_LINK = #{accommodationLink},
             MODIFIED_DATE = SYSDATE
@@ -77,10 +72,27 @@
     <delete id="deleteSelectedPlacesByPlanNo">
         DELETE
             FROM
-                TB_TRAVEL_CHOICE
+                TB_CHOICE
         WHERE
             PLAN_NO = #{planNo}
     </delete>
+
+    <!-- 여행지 수정하며 다시 선택한거 삽입 -->
+    <insert id="insertSelectedPlace" parameterType="com.kh.avengers.plan.model.dto.SelectedPlaceDto">
+        INSERT INTO
+            TB_CHOICE
+                (
+                PLAN_NO,
+                TRAVEL_NO,
+                CHOICE_ORDER
+                )
+            VALUES
+                (
+                #{planNo},
+                #{travelId},
+                #{choiceOrder}
+                )
+    </insert>
 
     <!-- 플랜 삭제 -->
     <delete id="deletePlan">

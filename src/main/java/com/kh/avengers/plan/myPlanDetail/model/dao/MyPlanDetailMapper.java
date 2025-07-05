@@ -12,11 +12,11 @@ public interface MyPlanDetailMapper {
 
   /**
    * 플랜번호와 사용자 고유식별 번호로 플랜 상세 정보 조회
-   * @param PlanNo 플랜 고유 식별 번호
-   * @param memberNo 사용자 고유 식별 번호 
-   * @return 플랜 내용의 싱세 정보
+   * @param planNo 플랜 고유 식별 번호
+   * @param memberNo 사용자 고유 식별 번호
+   * @return 플랜 내용의 상세 정보
    */
-  MyPlanDetailDto selectPlanDetailByPlanNoAndMemberNo(@Param("planNo") Long PlanNo,
+  MyPlanDetailDto selectPlanDetailByPlanNoAndMemberNo(@Param("planNo") Long planNo,
                                                       @Param("memberNo") Long memberNo);
 
   /**
@@ -41,11 +41,17 @@ public interface MyPlanDetailMapper {
   int deleteSelectedPlacesByPlanNo(@Param("planNo") Long planNo);
 
   /**
+   * 여행지 선택 삽입
+   * @param selectedPlace 삽입할 여행지 정보
+   * @return 삽입된 행의 개수
+   */
+  int insertSelectedPlace(SelectedPlaceDto selectedPlace);
+
+  /**
    * 플랜 삭제
    * @param planNo 삭제할 플랜 고유 식별 번호
    * @param memberNo 사용자 고유 식별 번호
    * @return 삭제된 행의 개수
    */
   int deletePlan(@Param("planNo") Long planNo, @Param("memberNo") Long memberNo);
-
 }

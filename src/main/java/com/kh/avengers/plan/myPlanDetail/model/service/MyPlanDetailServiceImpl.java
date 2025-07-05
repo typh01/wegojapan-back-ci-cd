@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,7 +30,8 @@ public class MyPlanDetailServiceImpl implements MyPlanDetailService{
   @Override
   public MyPlanDetailDto getPlanDetail(Long planNo, CustomUserDetails userDetails){
 
-    log.info("내플랜 상세 조회!! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planNo);
+    log.info("내플랜 상세 조회!! >> 사용자 : {}, 사용자번호: {}, 플랜번호 : {}",
+            userDetails.getMemberName(), userDetails.getMemberNo(), planNo);
 
     // 1. 플랜 상세 정보 조회(>> 본인 플랜인지 확인)
     MyPlanDetailDto planDetail = myPlanDetailMapper.selectPlanDetailByPlanNoAndMemberNo(planNo, userDetails.getMemberNo());
@@ -43,6 +45,17 @@ public class MyPlanDetailServiceImpl implements MyPlanDetailService{
     // 3. 플랜에 연결된 선택된 여행지 목록 조회
     List<SelectedPlaceDto> selectedPlaces = myPlanDetailMapper.selectSelectedPlacesByPlanNo(planNo);
     log.debug("선택된 여행지 조회 완료!!! >> 여행지 개수 : {}", selectedPlaces.size());
+
+    if (selectedPlaces.isEmpty()) {
+      log.warn("planNo{}에서 선택한 여행지가 없습니다!", planNo);
+    } else {
+      for (int i = 0; i < selectedPlaces.size(); i++) {
+        SelectedPlaceDto place = selectedPlaces.get(i);
+        log.info("여행지 {}: ID={}, 이름={}, 대표설명={}, 좌표=({}, {}), 순서={}",
+                i+1, place.getTravelId(), place.getTravelName(),
+                place.getTravelDescription(), place.getMapX(), place.getMapY(), place.getChoiceOrder());
+      }
+    }
 
     // 4. 플랜 상세 정보에 선택된 여행지 목록 설정
     planDetail.setSelectedPlaces(selectedPlaces);
@@ -72,21 +85,51 @@ public class MyPlanDetailServiceImpl implements MyPlanDetailService{
 
     // 3. 회원번호
     planDetailDto.setMemberNo(userDetails.getMemberNo());
-    
-    // 4. 플랜 상세정보 수정
-    int updateResult = myPlanDetailMapper.updatePlanDetail(planDetailDto);
-    
-    // 5. 확인
-    if (updateResult == 0) {
-      log.error("플랜 수정 실패! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo());
-      throw new RuntimeException("플랜 수정에 실패했습니다.");
+
+    try {
+      // 4. 플랜 상세정보 수정
+      int updateResult = myPlanDetailMapper.updatePlanDetail(planDetailDto);
+
+      // 5. 확인
+      if (updateResult == 0) {
+        log.error("플랜 기본 정보 수정 실패! >> 사용자 : {}, 플랜번호 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo());
+        throw new RuntimeException("플랜 기본 정보 수정에 실패했습니다.");
+      }
+
+      // 6. 여행지 순서 변경이 있는 경우
+      if (planDetailDto.getSelectedPlaces() != null && !planDetailDto.getSelectedPlaces().isEmpty()) {
+        log.info("여행지 순서 변경 요청됨");
+
+        // 기존 여행지 선택 정보 모두 삭제
+        int deletedCount = myPlanDetailMapper.deleteSelectedPlacesByPlanNo(planDetailDto.getPlanNo());
+
+        // 새로운 순서로 여행지 선택 정보 재삽입
+        for (SelectedPlaceDto place : planDetailDto.getSelectedPlaces()) {
+          place.setPlanNo(planDetailDto.getPlanNo());
+
+          log.info("여행지 재삽입 >>  travelId={}, choiceOrder={}", place.getTravelId(), place.getChoiceOrder());
+
+          // DB에 삽입
+          int insertResult = myPlanDetailMapper.insertSelectedPlace(place);
+          if (insertResult == 0) {
+            log.error("여행지 삽입 실패 >>  travelId={}, choiceOrder={}", place.getTravelId(), place.getChoiceOrder());
+            throw new RuntimeException("여행지 순서 저장에 실패했습니다.");
+          }
+        }
+
+        log.info("여행지 순서 변경 완료!!!");
+      }
+
+      log.info("플랜 수정 완료!! >> 사용자 : {}, 플랜번호 : {}, 플랜제목 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo(), planDetailDto.getPlanTitle());
+
+      // 7. 수정된 상세정보 반환
+      return getPlanDetail(planDetailDto.getPlanNo(), userDetails);
+
+    } catch (Exception e) {
+      log.error("플랜 수정 중 오류 발생!! >> 사용자 : {}, 플랜번호 : {}, 오류 : {}",
+              userDetails.getMemberName(), planDetailDto.getPlanNo(), e.getMessage());
+      throw new RuntimeException("플랜 수정 중 오류가 발생했습니다: " + e.getMessage(), e);
     }
-
-    log.info("플랜 수정 완료!! >> 사용자 : {}, 플랜번호 : {}, 플랜제목 : {}", userDetails.getMemberName(), planDetailDto.getPlanNo(), planDetailDto.getPlanTitle());
-    
-    // 6. 수정된 상세정보 반환
-    return getPlanDetail(planDetailDto.getPlanNo(), userDetails);
-
   }
 
   /**
@@ -130,7 +173,5 @@ public class MyPlanDetailServiceImpl implements MyPlanDetailService{
       log.error("플랜 삭제 중 오류 발생!! >> 사용자 : {}, 플랜번호 : {}, 오류 : {}", userDetails.getMemberName(), planNo, e.getMessage());
       throw new RuntimeException("플랜 삭제 중 오류가 발생했습니다: " + e.getMessage());
     }
-
   }
-
 }
