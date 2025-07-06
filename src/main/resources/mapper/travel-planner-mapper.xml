@@ -18,7 +18,9 @@
                 MEMBER_NO,
                 TRAVEL_START_DATE,
                 TRAVEL_END_DATE,
-                GROUP_SIZE
+                GROUP_SIZE,
+                CREATED_DATE,
+                MODIFIED_DATE
             )
             VALUES
             (
@@ -26,7 +28,9 @@
                 #{memberNo},
                 #{travelStartDate},
                 #{travelEndDate},
-                #{groupSize}
+                #{groupSize},
+                SYSDATE,
+                SYSDATE
             )
     </insert>
 
@@ -47,7 +51,9 @@
             MIN_BUDGET as minBudget,
             MAX_BUDGET as maxBudget,
             TRANSPORTRESERVATION_LINK as transportReservationLink,
-            ACCOMMODATION_LINK as accommodationLink
+            ACCOMMODATION_LINK as accommodationLink,
+            CREATED_DATE as createDate,
+            MODIFIED_DATE as updateDate
         FROM
             TB_TRAVEL_PLANNER
         WHERE
@@ -60,7 +66,8 @@
         UPDATE
             TB_TRAVEL_PLANNER
         SET
-            SELECT_REGION = #{selectRegion}
+            SELECT_REGION = #{selectRegion},
+            MODIFIED_DATE = SYSDATE
         WHERE
             PLAN_NO = #{planNo}
     </update>
@@ -71,7 +78,8 @@
         UPDATE
             TB_TRAVEL_PLANNER
         SET
-            SELECT_PLACES = #{selectPlaces}
+            SELECT_PLACES = #{selectPlaces},
+            MODIFIED_DATE = SYSDATE
         WHERE
             PLAN_NO = #{planNo}
     </update>
@@ -87,7 +95,8 @@
             MIN_BUDGET = #{minBudget},
             MAX_BUDGET = #{maxBudget},
             TRANSPORTRESERVATION_LINK = #{transportReservationLink},
-            ACCOMMODATION_LINK = #{accommodationLink}
+            ACCOMMODATION_LINK = #{accommodationLink},
+            MODIFIED_DATE = SYSDATE
         WHERE
             PLAN_NO = #{planNo}
     </update>
