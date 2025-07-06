@@ -113,6 +113,9 @@ import java.util.HashMap;
                     t.setOptionListForView(travelMapper.selectTravelOptionList(travelNo));
                     t.setTimeList(travelMapper.selectTravelTimeList(travelNo));
 
+                    Double avgRating = travelMapper.getAverageRatingByTravelNo(travelNo);
+                    t.setRating(avgRating != null ? avgRating : 0.0);
+
                     travelList.add(t);
                 }
 

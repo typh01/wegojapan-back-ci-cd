@@ -52,6 +52,9 @@ import org.springframework.stereotype.Service;
                 t.setThemaListForView(themaList);
                 List<TravelOptionDTO> optionList = travelMapper.selectTravelOptionList(t.getTravelNo());
                 t.setOptionListForView(optionList);
+
+                Double avgRating = travelMapper.getAverageRatingByTravelNo(t.getTravelNo());
+                t.setRating(avgRating != null ? avgRating : 0.0);
             }
 
             Map<String, Object> result = new HashMap<>();
@@ -74,6 +77,7 @@ import org.springframework.stereotype.Service;
             travel.setTagListForView(travelMapper.selectTravelTagList(travelNo));
             travel.setOptionListForView(travelMapper.selectTravelOptionList(travelNo));
             travel.setThemaListForView(travelMapper.selectTravelThemaList(travelNo));
+            travel.setRating(travelMapper.getAverageRatingByTravelNo(travelNo));
 
 
             return responseUtil.rd("200", travel, "여행지 상세 조회 성공");
