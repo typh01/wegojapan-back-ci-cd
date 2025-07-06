@@ -60,13 +60,13 @@ public class SecurityConfigure {
 
                         requests.requestMatchers(HttpMethod.GET, "/api/travels/**").permitAll();
 
-
                         requests.requestMatchers(HttpMethod.GET,"/api/admin/**", "/api/members/checkedMemberName").authenticated();
                         requests.requestMatchers(HttpMethod.POST,"/api/admin/**", "/api/reports/review", "/api/bookMark/insert-book",
                                                                   "/api/reviews/insert-like").authenticated();
                         requests.requestMatchers(HttpMethod.PUT,"/api/admin/**").authenticated();
                         requests.requestMatchers(HttpMethod.DELETE,"/api/admin/**", "/api/members/deleteMember", "/api/bookMark/delete-book",
                                                                    "/api/reviews/delete-like").authenticated();
+
                         requests.anyRequest().authenticated();
                        })
                        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
