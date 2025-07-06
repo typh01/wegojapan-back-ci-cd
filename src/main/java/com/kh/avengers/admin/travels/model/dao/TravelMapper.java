@@ -15,7 +15,6 @@ import com.kh.avengers.admin.travels.model.dto.TravelTagDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaBridgeDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelTimeDTO;
-import org.apache.ibatis.annotations.Param;
 
 
 @Mapper
@@ -97,6 +96,7 @@ public interface TravelMapper {
     int incrementViewCount(Long travelNo);
 
     List<TravelDTO> selectPagedTravelList(@Param("offset") int offset, @Param("limit") int limit);
+
     int selectTotalTravelCount();
 
 }

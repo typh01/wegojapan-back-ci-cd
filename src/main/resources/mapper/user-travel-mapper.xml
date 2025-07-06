@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.avengers.travels.model.dao.UserTravelMapper">
+
+  <!-- 카테고리 목록 -->
+  <select id="getCategoryList" resultType="com.kh.avengers.travels.model.dto.UserTravelCategoryDTO">
+    SELECT TRAVEL_CATEGORY_NO AS categoryNo, TRAVEL_CATEGORY_NAME AS categoryName
+    FROM TB_TRAVEL_CATEGORY
+    WHERE TRAVEL_CATEGORY_STATUS = 'Y'
+  </select>
+
+  <!-- 지역 목록 -->
+  <select id="getGuList" resultType="com.kh.avengers.travels.model.dto.UserTravelGuDTO">
+    SELECT GU_NAME AS guName
+    FROM TB_GU
+    WHERE GU_STATUS = 'Y'
+  </select>
+
+  <!-- 태그 목록 -->
+  <select id="getTagList" resultType="com.kh.avengers.travels.model.dto.UserTravelTagDTO">
+    SELECT TAG_NAME AS tagName
+    FROM TB_TRAVEL_TAG
+  </select>
+
+  <!-- 옵션 목록 -->
+  <select id="getOptionList" resultType="com.kh.avengers.travels.model.dto.UserTravelOptionDTO">
+    SELECT TRAVEL_OPTION_NAME AS optionName
+    FROM TB_TRAVEL_OPTION
+    WHERE TRAVEL_OPTION_STATUS = 'Y'
+  </select>
+
+  <!-- 전체 여행지 페이징 -->
+  <select id="selectPagedTravelList" resultType="com.kh.avengers.travels.model.dto.UserTravelDTO">
+    SELECT *
+    FROM (
+      SELECT ROWNUM AS RN, A.* FROM (
+        SELECT T.TRAVEL_NO, T.TRAVEL_TITLE AS title, T.TRAVEL_ADDRESS AS address,
+               T.TRAVEL_EXPLAIN AS explain, T.TRAVEL_DISCRIPTION AS discription,
+               T.TRAVEL_MAPY AS mapY, T.TRAVEL_MAPX AS mapX,
+               T.TRAVEL_TEL AS tel, T.TRAVEL_EMAIL AS email, T.TRAVEL_WEBSITE AS website,
+               T.VIEW_COUNT AS viewCount, C.TRAVEL_CATEGORY_NAME AS categoryName, G.GU_NAME AS guName
+        FROM TB_TRAVEL T
+        JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+        JOIN TB_GU G ON T.GU_NO = G.GU_NO
+        WHERE T.TRAVEL_STATUS = 'Y'
+        ORDER BY T.TRAVEL_NO DESC
+      ) A
+      WHERE ROWNUM &lt;= #{offset} + #{size}
+    )
+    WHERE RN &gt; #{offset}
+  </select>
+
+  <!-- 전체 개수 -->
+  <select id="selectTotalTravelCount" resultType="int">
+    SELECT COUNT(*) FROM TB_TRAVEL WHERE TRAVEL_STATUS = 'Y'
+  </select>
+
+  <!-- 상세 정보 -->
+  <select id="selectTravelDetail" resultType="com.kh.avengers.travels.model.dto.UserTravelDTO">
+    SELECT T.TRAVEL_NO, T.TRAVEL_TITLE AS title, T.TRAVEL_ADDRESS AS address,
+           T.TRAVEL_EXPLAIN AS explain, T.TRAVEL_DISCRIPTION AS discription,
+           T.TRAVEL_MAPY AS mapY, T.TRAVEL_MAPX AS mapX,
+           T.TRAVEL_TEL AS tel, T.TRAVEL_EMAIL AS email, T.TRAVEL_WEBSITE AS website,
+           T.VIEW_COUNT AS viewCount, C.TRAVEL_CATEGORY_NAME AS categoryName, G.GU_NAME AS guName
+    FROM TB_TRAVEL T
+    JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+    JOIN TB_GU G ON T.GU_NO = G.GU_NO
+    WHERE T.TRAVEL_NO = #{travelNo}
+  </select>
+
+  <!-- 필터 조회 -->
+  <select id="selectFilteredTravelList" parameterType="map" resultType="com.kh.avengers.travels.model.dto.UserTravelDTO">
+    SELECT * FROM (
+      SELECT ROWNUM AS RN, A.* FROM (
+        SELECT 
+          T.TRAVEL_NO AS travelNo,
+          T.GU_NO AS guNo,
+          T.TRAVEL_CATEGORY_NO AS categoryNo,
+          T.TRAVEL_TITLE AS title,
+          T.TRAVEL_ADDRESS AS address,
+          T.TRAVEL_EXPLAIN AS explain,
+          T.TRAVEL_DISCRIPTION AS discription,
+          T.TRAVEL_MAPY AS mapY,
+          T.TRAVEL_MAPX AS mapX,
+          T.TRAVEL_TEL AS tel,
+          T.TRAVEL_EMAIL AS email,
+          T.TRAVEL_WEBSITE AS website,
+          T.VIEW_COUNT AS viewCount,
+          C.TRAVEL_CATEGORY_NAME AS categoryName,
+          G.GU_NAME AS guName
+        FROM TB_TRAVEL T
+        JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+        JOIN TB_GU G ON T.GU_NO = G.GU_NO
+        <where>
+          T.TRAVEL_STATUS = 'Y'
+          <if test="search != null and search != ''">
+            AND (T.TRAVEL_TITLE LIKE '%' || #{search} || '%' OR T.TRAVEL_ADDRESS LIKE '%' || #{search} || '%')
+          </if>
+          <if test="category != null and category != ''">
+            AND C.TRAVEL_CATEGORY_NAME = #{category}
+          </if>
+          <if test="district != null and district != ''">
+            AND G.GU_NAME = #{district}
+          </if>
+          <if test="tags != null and tags != ''">
+            AND EXISTS (
+              SELECT 1 FROM TB_TRAVEL_TAG_BRIDGE TB
+              JOIN TB_TRAVEL_TAG TT ON TB.TAG_NO = TT.TAG_NO
+              WHERE TB.TRAVEL_NO = T.TRAVEL_NO
+                AND TT.TAG_NAME IN
+                <foreach item="tag" index="index" collection="tagsList" open="(" separator="," close=")">
+                  #{tag}
+                </foreach>
+            )
+          </if>
+          <if test="facilities != null and facilities != ''">
+            AND EXISTS (
+              SELECT 1 FROM TB_TRAVEL_OPTION_BRIDGE OB
+              JOIN TB_TRAVEL_OPTION OO ON OB.TRAVEL_OPTION_NO = OO.TRAVEL_OPTION_NO
+              WHERE OB.TRAVEL_NO = T.TRAVEL_NO
+                AND OO.TRAVEL_OPTION_NAME IN
+                <foreach item="opt" index="index" collection="facilitiesList" open="(" separator="," close=")">
+                  #{opt}
+                </foreach>
+            )
+          </if>
+          <if test="thema != null and thema != ''">
+            AND EXISTS (
+              SELECT 1 FROM TB_TRAVEL_THEMA_BRIDGE TB
+              JOIN TB_TRAVEL_THEMA TT ON TB.TRAVEL_THEMA_NO = TT.TRAVEL_THEMA_NO
+              WHERE TB.TRAVEL_NO = T.TRAVEL_NO
+                AND TT.TRAVEL_THEMA_NAME = #{thema}
+            )
+          </if>
+        </where>
+        ORDER BY T.TRAVEL_NO DESC
+      ) A
+      WHERE ROWNUM &lt;= #{offset} + #{limit}
+    )
+    WHERE RN &gt; #{offset}
+  </select>
+
+
+  <select id="countFilteredTravelList" parameterType="map" resultType="long">
+    SELECT COUNT(*) FROM TB_TRAVEL T
+    JOIN TB_TRAVEL_CATEGORY C ON T.TRAVEL_CATEGORY_NO = C.TRAVEL_CATEGORY_NO
+    JOIN TB_GU G ON T.GU_NO = G.GU_NO
+    <where>
+      T.TRAVEL_STATUS = 'Y'
+      <if test="search != null and search != ''">
+        AND (T.TRAVEL_TITLE LIKE '%' || #{search} || '%' OR T.TRAVEL_ADDRESS LIKE '%' || #{search} || '%')
+      </if>
+      <if test="category != null and category != ''">
+        AND C.TRAVEL_CATEGORY_NAME = #{category}
+      </if>
+      <if test="district != null and district != ''">
+        AND G.GU_NAME = #{district}
+      </if>
+      <if test="tags != null and tags != ''">
+        AND EXISTS (
+          SELECT 1 FROM TB_TRAVEL_TAG_BRIDGE TB
+          JOIN TB_TRAVEL_TAG TT ON TB.TAG_NO = TT.TAG_NO
+          WHERE TB.TRAVEL_NO = T.TRAVEL_NO
+            AND TT.TAG_NAME IN
+            <foreach item="tag" index="index" collection="tagsList" open="(" separator="," close=")">
+              #{tag}
+            </foreach>
+        )
+      </if>
+      <if test="facilities != null and facilities != ''">
+        AND EXISTS (
+          SELECT 1 FROM TB_TRAVEL_OPTION_BRIDGE OB
+          JOIN TB_TRAVEL_OPTION OO ON OB.TRAVEL_OPTION_NO = OO.TRAVEL_OPTION_NO
+          WHERE OB.TRAVEL_NO = T.TRAVEL_NO
+            AND OO.TRAVEL_OPTION_NAME IN
+            <foreach item="opt" index="index" collection="facilitiesList" open="(" separator="," close=")">
+              #{opt}
+            </foreach>
+        )
+      </if>
+      <if test="thema != null and thema != ''">
+        AND EXISTS (
+          SELECT 1 FROM TB_TRAVEL_THEMA_BRIDGE TB
+          JOIN TB_TRAVEL_THEMA TT ON TB.TRAVEL_THEMA_NO = TT.TRAVEL_THEMA_NO
+          WHERE TB.TRAVEL_NO = T.TRAVEL_NO
+            AND TT.TRAVEL_THEMA_NAME = #{thema}
+        )
+      </if>
+    </where>
+  </select>
+
+</mapper>

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.kh.avengers.admin.travels.model.dao.TravelMapper;
 import com.kh.avengers.common.dto.RequestData;
 import com.kh.avengers.exception.commonexception.InvalidException;
+import com.kh.avengers.exception.util.InvalidAccessException;
 import com.kh.avengers.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 
