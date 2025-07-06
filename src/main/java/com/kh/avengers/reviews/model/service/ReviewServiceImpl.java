@@ -61,13 +61,15 @@ public class ReviewServiceImpl implements ReviewService {
 
   /**
    * 리뷰 작성
+   *
    * @param reviewDTO 리뷰 정보
-   * @param images 첨부하는 이미지 목록
+   * @param images    첨부하는 이미지 목록
    * @return 작성된 리뷰 고유 식별번호
    */
   @Override
   @Transactional
   public RequestData createReview(ReviewDTO reviewDTO, List<MultipartFile> images) {
+
     log.info("리뷰 작성 시작 >> 여행지번호: {}, 회원번호: {}", reviewDTO.getTravelNo(), reviewDTO.getMemberNo());
 
     // 1. 리뷰 기본 정보 DB에 등록
@@ -106,10 +108,15 @@ public class ReviewServiceImpl implements ReviewService {
         }
       }
     }
-
-
     return responseUtil.rd("200", reviewDTO.getReviewNo(), "리뷰 작성이 완료되었습니다.");
   }
 
+  @Override
+  public RequestData getTravelReviews(Long travelNo, int offset, int limit){
 
+
+
+    return null;
+
+  }
 }

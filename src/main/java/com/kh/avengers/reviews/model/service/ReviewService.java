@@ -21,4 +21,13 @@ public interface ReviewService {
    */
   RequestData createReview(ReviewDTO reviewDTO, List<MultipartFile> images);
 
+  /**
+   * 특정 여행지의 리뷰목록 조회
+   * @param travelNo 여행지 번호
+   * @param offset
+   * @param limit
+   * @return 여행지의 리뷰 목록
+   */
+  RequestData getTravelReviews(Long travelNo, int offset, int limit);
+
 }
