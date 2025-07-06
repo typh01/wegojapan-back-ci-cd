@@ -62,6 +62,7 @@ public class ReviewServiceImpl implements ReviewService {
     return responseUtil.rd("200", null, "좋아요 취소했습니다.");
   }
 
+
   /**
    * 리뷰 작성
    *
@@ -122,13 +123,13 @@ public class ReviewServiceImpl implements ReviewService {
    * @return 여행지의 리뷰 목록
    */
   @Override
-  public RequestData getTravelReviews(Long travelNo, int offset, int limit){
+  public RequestData getTravelReviews(Long travelNo, int offset, int limit, Long currentMemberNo){
 
-    log.info("여행지의 리뷰 목록 조회 시작 >> 여행지번허 : {}, offset : {}, limit : {}", travelNo, offset, limit);
+    log.info("여행지의 리뷰 목록 조회 시작 >> 여행지번허: {}, offset: {}, limit: {}, 현재사용자: {}", travelNo, offset, limit, currentMemberNo);
 
     try{
       // 1. 리뷰 조회
-      List<ReviewDTO> reviewList = reviewMapper.selectTravelReviews(travelNo, offset, limit);
+      List<ReviewDTO> reviewList = reviewMapper.selectTravelReviews(travelNo, offset, limit, currentMemberNo);
       log.info("리뷰 조회 완료 >> 조회된 리뷰의 수 : {}", reviewList.size());
 
       // 2. 각 리뷰의 이미지 목록 조회
@@ -136,7 +137,8 @@ public class ReviewServiceImpl implements ReviewService {
         try{
           List<ReviewImageDTO> imageList = reviewMapper.selectReviewImages(review.getReviewNo());
           review.setImageList(imageList);
-          log.debug("리뷰 이미지 조회 완료 >>  리뷰번호: {}, 이미지 수: {}", review.getReviewNo(), imageList.size());
+          log.debug("리뷰 이미지 조회 완료 >> 리뷰번호 : {}, 이미지 수 : {}, 좋아요여부 : {}, 좋아요수 : {}",
+                  review.getReviewNo(), imageList.size(), review.getIsLiked(), review.getLikeCount());
         } catch (Exception e) {
           log.warn("리뷰 이미지 조회 실패 >> 리뷰번호: {}", review.getReviewNo(), e);
           // 이미지 조회 실패해도 리뷰는 표시
@@ -162,7 +164,6 @@ public class ReviewServiceImpl implements ReviewService {
       responseData.put("averageRating", averageRating);
 
       return responseUtil.rd("200", responseData, "여행지 리뷰 목록 조회 완료");
-
 
     } catch (Exception e) {
       log.error("여행지 리뷰 목록 조회 실패! >>  여행지번호 : {}", travelNo, e);

@@ -26,9 +26,10 @@ public interface ReviewService {
    * @param travelNo 여행지 번호
    * @param offset 시작위치
    * @param limit 조회할 개수
+   * @param currentMemberNo 현재 로그인한 사용자 번호
    * @return 여행지의 리뷰 목록
    */
-  RequestData getTravelReviews(Long travelNo, int offset, int limit);
+  RequestData getTravelReviews(Long travelNo, int offset, int limit, Long currentMemberNo);
 
   /**
    * 특정 회원의 리뷰 목록 조회

@@ -12,6 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ReviewDTO {
 
+  private Boolean isLiked;     // 현재 사용자가 좋아요를 눌렀는지
+  private Integer likeCount;
+
   private Long reviewNo;
   private Long travelNo;
   private Long memberNo;

@@ -67,12 +67,16 @@ public class ReviewController {
   public ResponseEntity<RequestData> getTravelReviews(
           @PathVariable Long travelNo,
           @RequestParam(defaultValue = "0") int offset,
-          @RequestParam(defaultValue = "3") int limit) {
+          @RequestParam(defaultValue = "3") int limit,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     try {
-      RequestData result = reviewService.getTravelReviews(travelNo, offset, limit);
+      // 현재 로그인한 사용자
+      Long currentMemberNo = userDetails != null ? userDetails.getMemberNo() : null;
 
-      log.info("여행지 리뷰 목록 조회 완료 >> 여행지번호: {}", travelNo);
+      RequestData result = reviewService.getTravelReviews(travelNo, offset, limit, currentMemberNo);
+
+      log.info("여행지 리뷰 목록 조회 완료 >> 여행지번호 : {}, 현재사용자 : {}", travelNo, currentMemberNo);
       return ResponseEntity.ok(result);
 
     } catch (Exception e) {
@@ -141,6 +145,5 @@ public class ReviewController {
 
     return ResponseEntity.ok(result);
   }
-
 
 }
