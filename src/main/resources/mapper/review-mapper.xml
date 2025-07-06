@@ -31,15 +31,65 @@
 
 
       <!-- 좋아요 취소-->
-  <delete id="deleteLikeCount" parameterType="map">
-    DELETE 
-      FROM 
-           TB_REVIEW_LIKE
-     WHERE
-           REVIEW_NO = #{reviewNo} 
-       AND
-           MEMBER_NO = #{memberNo}
-  </delete> 
+      <delete id="deleteLikeCount" parameterType="map">
+        DELETE
+          FROM
+               TB_REVIEW_LIKE
+         WHERE
+               REVIEW_NO = #{reviewNo}
+           AND
+               MEMBER_NO = #{memberNo}
+      </delete>
+
+    <!-- 리뷰 등록 -->
+    <insert id="insertReview" parameterType="com.kh.avengers.reviews.model.dto.ReviewDTO">
+        <!-- 시퀀스로 리뷰 번호 생성 -->
+        <selectKey keyProperty="reviewNo" resultType="long" order="BEFORE">
+            SELECT SEQ_REVIEW.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO
+            TB_TRAVEL_REVIEW
+            (
+                REVIEW_NO,
+                TRAVEL_NO,
+                MEMBER_NO,
+                REVIEW_TITLE,
+                REVIEW_CONTENT,
+                RATING,
+                CREATED_DATE,
+                MODIFIED_DATE
+            )
+            VALUES
+            (
+                #{reviewNo},
+                #{travelNo},
+                #{memberNo},
+                #{reviewTitle},
+                #{reviewContent},
+                #{rating},
+                SYSDATE,
+                SYSDATE
+            )
+    </insert>
+
+    <!-- 리뷰 이미지 등록 -->
+    <insert id="insertReviewImage" parameterType="com.kh.avengers.reviews.model.dto.ReviewImageDTO">
+        INSERT INTO
+            TB_REVIEW_IMAGE
+            (
+                IMAGE_NO,
+                REVIEW_NO,
+                IMAGE_URL,
+                CREATED_DATE
+            )
+            VALUES
+            (
+                SEQ_REVIEW_IMAGE.NEXTVAL,
+                #{reviewNo},
+                #{imageUrl},
+                SYSDATE
+            )
+    </insert>
 
 
 </mapper>
