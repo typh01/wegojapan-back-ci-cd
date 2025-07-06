@@ -1,5 +1,6 @@
 package com.kh.avengers.reviews.model.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,12 +112,62 @@ public class ReviewServiceImpl implements ReviewService {
     return responseUtil.rd("200", reviewDTO.getReviewNo(), "리뷰 작성이 완료되었습니다.");
   }
 
+  /**
+   * 특정 여행지의 리뷰목록 조회
+   * @param travelNo 여행지 번호
+   * @param offset 시작위치
+   * @param limit 조회할 개수
+   * @return 여행지의 리뷰 목록
+   */
   @Override
   public RequestData getTravelReviews(Long travelNo, int offset, int limit){
 
+    log.info("여행지의 리뷰 목록 조회 시작 >> 여행지번허 : {}, offset : {}, limit : {}", travelNo, offset, limit);
+
+    try{
+      // 1. 리뷰 조회
+      List<ReviewDTO> reviewList = reviewMapper.selectTravelReviews(travelNo, offset, limit);
+      log.info("리뷰 조회 완료 >> 조회된 리뷰의 수 : {}", reviewList.size());
+
+      // 2. 각 리뷰의 이미지 목록 조회
+      for(ReviewDTO review : reviewList){
+        try{
+          List<ReviewImageDTO> imageList = reviewMapper.selectReviewImages(review.getReviewNo());
+          review.setImageList(imageList);
+          log.debug("리뷰 이미지 조회 완료 >>  리뷰번호: {}, 이미지 수: {}", review.getReviewNo(), imageList.size());
+        } catch (Exception e) {
+          log.warn("리뷰 이미지 조회 실패 >> 리뷰번호: {}", review.getReviewNo(), e);
+          // 이미지 조회 실패해도 리뷰는 표시
+          review.setImageList(List.of());
+        }
+      }
+
+      // 3. 전체 리뷰 개수 조회
+      long totalCount = reviewMapper.countTravelReviews(travelNo);
+      log.info("전체 리뷰 개수: {}", totalCount);
+
+      // 4. 평균 별점 조회
+      Double averageRating = reviewMapper.selectAverageRating(travelNo);
+      if (averageRating == null) {
+        averageRating = 0.0;
+      }
+      log.info("평균 별점 >> {}", averageRating);
+
+      // 5. 응답 데이터 구성
+      Map<String, Object> responseData = new HashMap<>();
+      responseData.put("reviews", reviewList);
+      responseData.put("totalCount", totalCount);
+      responseData.put("averageRating", averageRating);
+
+      return responseUtil.rd("200", responseData, "여행지 리뷰 목록 조회 완료");
 
 
-    return null;
-
+    } catch (Exception e) {
+      log.error("여행지 리뷰 목록 조회 실패! >>  여행지번호 : {}", travelNo, e);
+      throw new RuntimeException("리뷰 목록을 불러오는 중 오류가 발생했습니다.", e);
+    }
   }
+
+
+
 }

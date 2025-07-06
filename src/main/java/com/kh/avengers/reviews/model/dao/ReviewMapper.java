@@ -1,10 +1,12 @@
 package com.kh.avengers.reviews.model.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import com.kh.avengers.reviews.model.dto.ReviewDTO;
 import com.kh.avengers.reviews.model.dto.ReviewImageDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface ReviewMapper {
@@ -22,5 +24,17 @@ public interface ReviewMapper {
 
   // 리뷰 이미지 등록
   int insertReviewImage(ReviewImageDTO imageDTO);
+
+  // 특정 여행지의 모든 리뷰목록 조회
+  List<ReviewDTO> selectTravelReviews(@Param("travelNo") Long travelNo, @Param("offset") int offset, @Param("limit") int limit);
+
+  // 리뷰번호로 이미지 목록 조회
+  List<ReviewImageDTO> selectReviewImages(@Param("reviewNo") Long reviewNo);
+
+  // 특정 여행지의 리뷰 개수 조회
+  long countTravelReviews(@Param("travelNo") Long travelNo);
+
+  // 특정 여행지의 평균 별점 조회
+  Double selectAverageRating(@Param("travelNo") Long travelNo);
 
 }

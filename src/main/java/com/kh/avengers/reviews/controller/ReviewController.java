@@ -60,4 +60,29 @@ public class ReviewController {
     return ResponseEntity.status(201).body(result);
   }
 
+  /**
+   * 특정 여행지의 리뷰 목록 조회
+   */
+  @GetMapping("/travel/{travelNo}")
+  public ResponseEntity<RequestData> getTravelReviews(
+          @PathVariable Long travelNo,
+          @RequestParam(defaultValue = "0") int offset,
+          @RequestParam(defaultValue = "3") int limit) {
+
+    try {
+      RequestData result = reviewService.getTravelReviews(travelNo, offset, limit);
+
+      log.info("여행지 리뷰 목록 조회 완료 >> 여행지번호: {}", travelNo);
+      return ResponseEntity.ok(result);
+
+    } catch (Exception e) {
+      log.error("여행지 리뷰 목록 조회 중 예상치 못한 오류 발생 >> 여행지번호: {}", travelNo, e);
+      return ResponseEntity.status(500)
+              .body(RequestData.builder()
+                      .code("500")
+                      .message("서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+                      .build());
+    }
+  }
+
 }

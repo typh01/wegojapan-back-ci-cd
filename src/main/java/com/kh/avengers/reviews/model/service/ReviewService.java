@@ -24,8 +24,8 @@ public interface ReviewService {
   /**
    * 특정 여행지의 리뷰목록 조회
    * @param travelNo 여행지 번호
-   * @param offset
-   * @param limit
+   * @param offset 시작위치
+   * @param limit 조회할 개수
    * @return 여행지의 리뷰 목록
    */
   RequestData getTravelReviews(Long travelNo, int offset, int limit);
