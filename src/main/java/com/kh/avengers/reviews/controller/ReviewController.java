@@ -49,7 +49,7 @@ public class ReviewController {
           @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     log.info("리뷰 작성 요청 >> 사용자: {}, 여행지번호: {}, 별점: {}",
-            userDetails.getUsername(), reviewDTO.getTravelNo(), reviewDTO.getReviewRating());
+            userDetails.getUsername(), reviewDTO.getTravelNo(), reviewDTO.getRating());
 
     reviewDTO.setMemberNo(userDetails.getMemberNo());
 

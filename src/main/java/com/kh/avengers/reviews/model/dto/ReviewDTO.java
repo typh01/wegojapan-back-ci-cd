@@ -17,7 +17,7 @@ public class ReviewDTO {
   private Long memberNo;
   private String reviewTitle;
   private String reviewContent;
-  private Integer reviewRating;
+  private Integer rating;
   private LocalDateTime createdDate;
   private LocalDateTime updatedDate;
 
