@@ -168,6 +168,40 @@ public class ReviewServiceImpl implements ReviewService {
     }
   }
 
+  /**
+   * 특정 회원의 리뷰 목록 조회
+   * @param memberNo 회원 번호
+   * @return 리뷰 목록
+   */
+  @Override
+  public RequestData getMemberReviews(Long memberNo) {
+
+    log.info("회원 리뷰 목록 조회 시작 >> 회원번호: {}", memberNo);
+
+    try {
+      // 1. 특정 회원의 모든 리뷰 목록 조회
+      List<ReviewDTO> reviewList = reviewMapper.selectMemberReviews(memberNo);
+      log.info("회원의 리뷰 조회 완료 >> 조회된 리뷰 수: {}", reviewList.size());
+
+      // 2. 각 리뷰의 이미지 목록 조회
+      for (ReviewDTO review : reviewList) {
+        try {
+          List<ReviewImageDTO> imageList = reviewMapper.selectReviewImages(review.getReviewNo());
+          review.setImageList(imageList);
+        } catch (Exception e) {
+          log.warn("회원 리뷰 이미지 조회 실패 >> 리뷰번호: {}", review.getReviewNo(), e);
+          review.setImageList(List.of());
+        }
+      }
+
+      return responseUtil.rd("200", reviewList, "내 리뷰 목록 조회 완료!!!");
+
+    } catch (Exception e) {
+      log.error("회원 리뷰 목록 조회 실패 >> 회원번호: {}", memberNo, e);
+      throw new RuntimeException("내 리뷰 목록을 불러오는 중 오류가 발생했습니다.", e);
+    }
+  }
+
 
 
 }

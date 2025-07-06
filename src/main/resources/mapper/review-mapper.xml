@@ -153,5 +153,27 @@
             TRAVEL_NO = #{travelNo}
     </select>
 
+    <!--특정 회원의 모든 리뷰 목록 조회-->
+    <select id="selectMemberReviews" parameterType="long" resultType="com.kh.avengers.reviews.model.dto.ReviewDTO">
+        SELECT
+            r.REVIEW_NO as reviewNo,
+            r.TRAVEL_NO as travelNo,
+            r.MEMBER_NO as memberNo,
+            r.REVIEW_TITLE as reviewTitle,
+            r.REVIEW_CONTENT as reviewContent,
+            r.RATING as rating,
+            r.CREATED_DATE as createdDate,
+            r.MODIFIED_DATE as modifiedDate,
+            t.TRAVEL_TITLE as travelName
+        FROM
+            TB_TRAVEL_REVIEW r
+        LEFT JOIN TB_TRAVEL t
+            ON r.TRAVEL_NO = t.TRAVEL_NO
+        WHERE
+            r.MEMBER_NO = #{memberNo}
+        ORDER BY
+            r.CREATED_DATE DESC
+    </select>
+
 
 </mapper>

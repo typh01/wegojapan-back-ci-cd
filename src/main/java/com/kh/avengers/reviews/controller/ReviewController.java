@@ -85,4 +85,21 @@ public class ReviewController {
     }
   }
 
+  /**
+   * 내가 작성한 리뷰 목록 조회
+   */
+  @GetMapping("/my")
+  public ResponseEntity<RequestData> getMyReviews(
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+    log.info("내 리뷰 목록 조회 요청 >> 사용자 : {}", userDetails.getUsername());
+
+    RequestData result = reviewService.getMemberReviews(userDetails.getMemberNo());
+
+    log.info("내 리뷰 목록 조회 완료!! >> 사용자 : {}", userDetails.getUsername());
+
+    return ResponseEntity.ok(result);
+  }
+
+
 }

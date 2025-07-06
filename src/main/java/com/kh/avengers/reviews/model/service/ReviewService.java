@@ -30,4 +30,11 @@ public interface ReviewService {
    */
   RequestData getTravelReviews(Long travelNo, int offset, int limit);
 
+  /**
+   * 특정 회원의 리뷰 목록 조회
+   * @param memberNo 회원 번호
+   * @return 리뷰 목록
+   */
+  RequestData getMemberReviews(Long memberNo);
+
 }

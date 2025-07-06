@@ -37,4 +37,7 @@ public interface ReviewMapper {
   // 특정 여행지의 평균 별점 조회
   Double selectAverageRating(@Param("travelNo") Long travelNo);
 
+  // 특정 회원의 모든 리뷰 목록 조회
+  List<ReviewDTO> selectMemberReviews(@Param("memberNo") Long memberNo);
+
 }
