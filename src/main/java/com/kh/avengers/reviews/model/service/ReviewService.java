@@ -37,4 +37,21 @@ public interface ReviewService {
    */
   RequestData getMemberReviews(Long memberNo);
 
+  /**
+   * 리뷰 수정
+   * @param reviewDTO 수정할 리뷰 정보
+   * @param images 새로 추가할 이미지 목록
+   * @param deletedImageNos 삭제할 이미지 번호 목록
+   * @return 수정 결과
+   */
+  RequestData updateReview(ReviewDTO reviewDTO, List<MultipartFile> images, List<Long> deletedImageNos);
+
+  /**
+   * 리뷰 삭제
+   * @param reviewNo 삭제할 리뷰 번호
+   * @return 삭제 결과
+   */
+  RequestData deleteReview(Long reviewNo);
+
+
 }

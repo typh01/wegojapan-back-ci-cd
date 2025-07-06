@@ -101,5 +101,46 @@ public class ReviewController {
     return ResponseEntity.ok(result);
   }
 
+  /**
+   * 리뷰 수정
+   */
+  @PutMapping("/{reviewNo}")
+  public ResponseEntity<RequestData> updateReview(
+          @PathVariable Long reviewNo,
+          @RequestPart("review") @Valid ReviewDTO reviewDTO,
+          @RequestPart(value = "images", required = false) List<MultipartFile> images,
+          @RequestParam(value = "deletedImageNos", required = false) List<Long> deletedImageNos,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+    log.info("리뷰 수정 요청 >> 사용자: {}, 리뷰번호: {}", userDetails.getUsername(), reviewNo);
+
+    // 리뷰번호 설정
+    reviewDTO.setReviewNo(reviewNo);
+    reviewDTO.setMemberNo(userDetails.getMemberNo());
+
+    RequestData result = reviewService.updateReview(reviewDTO, images, deletedImageNos);
+
+    log.info("리뷰 수정 완료 >> 리뷰번호: {}", reviewNo);
+
+    return ResponseEntity.ok(result);
+  }
+
+  /**
+   * 리뷰 삭제
+   */
+  @DeleteMapping("/{reviewNo}")
+  public ResponseEntity<RequestData> deleteReview(
+          @PathVariable Long reviewNo,
+          @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+    log.info("리뷰 삭제 요청 >> 사용자: {}, 리뷰번호: {}", userDetails.getUsername(), reviewNo);
+
+    RequestData result = reviewService.deleteReview(reviewNo);
+
+    log.info("리뷰 삭제 완료 >> 리뷰번호: {}", reviewNo);
+
+    return ResponseEntity.ok(result);
+  }
+
 
 }

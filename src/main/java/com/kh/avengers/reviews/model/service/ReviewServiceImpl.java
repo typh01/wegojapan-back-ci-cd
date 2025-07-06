@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.kh.avengers.exception.commonexception.NotFoundException;
+import com.kh.avengers.exception.commonexception.UpdateException;
 import com.kh.avengers.reviews.model.dto.ReviewDTO;
 import com.kh.avengers.reviews.model.dto.ReviewImageDTO;
 import com.kh.avengers.travels.model.service.S3Service;
@@ -203,5 +205,92 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
 
+  /**
+   * 리뷰 수정
+   * @param reviewDTO 수정할 리뷰 정보
+   * @param images 새로 추가할 이미지 목록
+   * @param deletedImageNos 삭제할 이미지 번호 목록
+   * @return 수정 결과
+   */
+  @Override
+  @Transactional
+  public RequestData updateReview(ReviewDTO reviewDTO, List<MultipartFile> images, List<Long> deletedImageNos) {
 
+    log.info("리뷰 수정 시작 >>  리뷰번호 : {}", reviewDTO.getReviewNo());
+
+    // 1. 리뷰 존재 여부 확인
+    ReviewDTO existingReview = reviewMapper.selectReviewByNo(reviewDTO.getReviewNo());
+    if (existingReview == null) {
+      throw new NotFoundException("해당 리뷰를 찾을 수 없습니다.");
+    }
+
+    // 2. 리뷰 정보 수정
+    int result = reviewMapper.updateReview(reviewDTO);
+    if (result <= 0) {
+      throw new UpdateException("리뷰 수정에 실패했습니다.");
+    }
+
+    // 3. 삭제할 이미지가 있으면 삭제
+    if (deletedImageNos != null && !deletedImageNos.isEmpty()) {
+      for (Long imageNo : deletedImageNos) {
+        reviewMapper.deleteReviewImage(imageNo);
+      }
+    }
+
+    // 4. 새로운 이미지가 있으면 S3에 업로드 후 DB 저장
+    if (images != null && !images.isEmpty()) {
+      for (MultipartFile image : images) {
+        if (!image.isEmpty()) {
+          try {
+            // S3에 이미지 업로드
+            String imageUrl = s3Service.upload(image);
+
+            // DB에 이미지 정보 저장
+            ReviewImageDTO imageDTO = ReviewImageDTO.builder()
+                    .reviewNo(reviewDTO.getReviewNo())
+                    .imageUrl(imageUrl)
+                    .build();
+
+            reviewMapper.insertReviewImage(imageDTO);
+          } catch (Exception e) {
+            log.error("리뷰 수정 중 이미지 업로드 실패", e);
+          }
+        }
+      }
+    }
+
+    log.info("리뷰 수정 완료 >> 리뷰번호: {}", reviewDTO.getReviewNo());
+    return responseUtil.rd("200", reviewDTO.getReviewNo(), "리뷰 수정이 완료되었습니다!!!");
+
+  }
+
+  /**
+   * 리뷰 삭제
+   * @param reviewNo 삭제할 리뷰 번호
+   * @return 삭제 결과
+   */
+  @Override
+  @Transactional
+  public RequestData deleteReview(Long reviewNo) {
+    log.info("리뷰 삭제 시작 >> 리뷰번호: {}", reviewNo);
+
+    // 1. 리뷰 존재 여부 확인
+    ReviewDTO existingReview = reviewMapper.selectReviewByNo(reviewNo);
+    if (existingReview == null) {
+      throw new NotFoundException("해당 리뷰를 찾을 수 없습니다.");
+    }
+
+    // 2. 리뷰 이미지 먼저 삭제
+    reviewMapper.deleteReviewImagesByReviewNo(reviewNo);
+
+    // 3. 리뷰 삭제
+    int result = reviewMapper.deleteReview(reviewNo);
+    if (result <= 0) {
+      throw new UpdateException("리뷰 삭제에 실패했습니다.");
+    }
+
+    log.info("리뷰 삭제 완료 >>  리뷰번호: {}", reviewNo);
+    return responseUtil.rd("200", reviewNo, "리뷰 삭제가 완료되었습니다.");
+
+  }
 }
