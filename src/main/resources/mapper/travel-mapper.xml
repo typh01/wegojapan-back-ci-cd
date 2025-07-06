@@ -564,21 +564,22 @@
 
   <select id="selectBookList" resultType="TravelDTO">
           SELECT
-                 T.TRAVEL_NO AS travelNo,
-                 T.GU_NO AS guNo,
-                 T.TRAVEL_CATEGORY_NO AS categoryNo,
-                 T.TRAVEL_TITLE AS title,
-                 T.TRAVEL_EXPLAIN AS explain,
-                 T.TRAVEL_DISCRIPTION AS description,
+                 T.TRAVEL_NO travelNo,
+                 T.GU_NO guNo,
+                 T.TRAVEL_CATEGORY_NO categoryNo,
+                 T.TRAVEL_TITLE title,
+                 T.TRAVEL_EXPLAIN explain,
+                 T.TRAVEL_DISCRIPTION description,
                  T.TRAVEL_ADDRESS AS address,
-                 T.TRAVEL_MAPY AS mapY,
-                 T.TRAVEL_MAPX AS mapX,
-                 T.TRAVEL_TEL AS tel,
-                 T.TRAVEL_EMAIL AS email,
-                 T.TRAVEL_WEBSITE AS website,
-                 T.TRAVEL_STATUS AS status,
-                 C.TRAVEL_CATEGORY_NAME As categoryName,
-                 G.GU_NAME As guName
+                 T.TRAVEL_MAPY mapY,
+                 T.TRAVEL_MAPX mapX,
+                 T.TRAVEL_TEL tel,
+                 T.TRAVEL_EMAIL email,
+                 T.TRAVEL_WEBSITE website,
+                 T.VIEW_COUNT viewCount,
+                 T.TRAVEL_STATUS status,
+                 C.TRAVEL_CATEGORY_NAME categoryName,
+                 G.GU_NAME guName
             FROM 
                  TB_TRAVEL T
             JOIN 

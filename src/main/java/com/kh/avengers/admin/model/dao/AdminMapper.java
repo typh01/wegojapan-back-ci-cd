@@ -23,4 +23,8 @@ public interface AdminMapper {
 
   List<AdminReviewReportDTO> selectReportMembers(RowBounds rowBounds);
 
+  Long countAllMember();
+
+  Long countReportMembers();
+
 }

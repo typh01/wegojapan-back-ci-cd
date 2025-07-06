@@ -26,7 +26,21 @@
     ORDER 
        BY 
           ENROLL_DATE DESC
-</select>
+  </select>
+
+  <select id="countAllMember" resultType="Long">
+      SELECT 
+             COUNT(*) 
+        FROM 
+             TB_MEMBER
+  </select>
+
+  <select id="countReportMembers" resultType="long">
+      SELECT 
+             COUNT(*) 
+        FROM 
+             TB_REVIEW_REPORT
+  </select>
 
  <select id="getMemberById" resultType="AdminMemberDTO">
   SELECT 
