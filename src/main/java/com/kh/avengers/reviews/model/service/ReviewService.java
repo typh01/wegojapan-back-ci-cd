@@ -27,9 +27,10 @@ public interface ReviewService {
    * @param offset 시작위치
    * @param limit 조회할 개수
    * @param currentMemberNo 현재 로그인한 사용자 번호
+   * @param sort 정렬(최신||별점||좋아요)
    * @return 여행지의 리뷰 목록
    */
-  RequestData getTravelReviews(Long travelNo, int offset, int limit, Long currentMemberNo);
+  RequestData getTravelReviews(Long travelNo, int offset, int limit, Long currentMemberNo, String sort);
 
   /**
    * 특정 회원의 리뷰 목록 조회

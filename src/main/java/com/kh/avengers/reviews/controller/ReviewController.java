@@ -68,13 +68,14 @@ public class ReviewController {
           @PathVariable Long travelNo,
           @RequestParam(defaultValue = "0") int offset,
           @RequestParam(defaultValue = "3") int limit,
+          @RequestParam(defaultValue = "latest") String sort,
           @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     try {
       // 현재 로그인한 사용자
       Long currentMemberNo = userDetails != null ? userDetails.getMemberNo() : null;
 
-      RequestData result = reviewService.getTravelReviews(travelNo, offset, limit, currentMemberNo);
+      RequestData result = reviewService.getTravelReviews(travelNo, offset, limit, currentMemberNo, sort);
 
       log.info("여행지 리뷰 목록 조회 완료 >> 여행지번호 : {}, 현재사용자 : {}", travelNo, currentMemberNo);
       return ResponseEntity.ok(result);

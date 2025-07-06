@@ -26,7 +26,7 @@ public interface ReviewMapper {
   int insertReviewImage(ReviewImageDTO imageDTO);
 
   // 특정 여행지의 모든 리뷰목록 조회
-  List<ReviewDTO> selectTravelReviews(@Param("travelNo") Long travelNo, @Param("offset") int offset, @Param("limit") int limit, @Param("currentMemberNo") Long currentMemberNo);
+  List<ReviewDTO> selectTravelReviews(@Param("travelNo") Long travelNo, @Param("offset") int offset, @Param("limit") int limit, @Param("currentMemberNo") Long currentMemberNo, @Param("sort") String sort);
 
   // 리뷰번호로 이미지 목록 조회
   List<ReviewImageDTO> selectReviewImages(@Param("reviewNo") Long reviewNo);

@@ -111,12 +111,12 @@
                 CASE WHEN rl.MEMBER_NO IS NOT NULL THEN 1 ELSE 0 END AS isLiked,
                 <!-- 총 좋아요 개수 -->
                 NVL(like_counts.like_count, 0) AS likeCount
-            FROM
-                TB_TRAVEL_REVIEW r
-            LEFT JOIN TB_MEMBER m
-                ON r.MEMBER_NO = m.MEMBER_NO
-            LEFT JOIN TB_REVIEW_LIKE rl
-                ON r.REVIEW_NO = rl.REVIEW_NO
+        FROM
+            TB_TRAVEL_REVIEW r
+        LEFT JOIN TB_MEMBER m
+            ON r.MEMBER_NO = m.MEMBER_NO
+        LEFT JOIN TB_REVIEW_LIKE rl
+            ON r.REVIEW_NO = rl.REVIEW_NO
         <if test="currentMemberNo != null">
             AND rl.MEMBER_NO = #{currentMemberNo}
         </if>
@@ -128,22 +128,35 @@
                 TB_REVIEW_LIKE
             GROUP BY
                 REVIEW_NO
-        ) like_counts
-        ON r.REVIEW_NO = like_counts.REVIEW_NO
+            ) like_counts
+            ON r.REVIEW_NO = like_counts.REVIEW_NO
 
         WHERE
             r.TRAVEL_NO = #{travelNo}
 
         ORDER BY
-            r.CREATED_DATE DESC
+        <choose>
+            <when test="sort == 'rating_high'">
+                r.RATING DESC, r.CREATED_DATE DESC
+            </when>
+            <when test="sort == 'rating_low'">
+                r.RATING ASC, r.CREATED_DATE DESC
+            </when>
+            <when test="sort == 'like_high'">
+                NVL(like_counts.like_count, 0) DESC, r.CREATED_DATE DESC
+            </when>
+            <otherwise>
+                r.CREATED_DATE DESC
+            </otherwise>
+        </choose>
         ) v
 
         WHERE
-            ROWNUM &lt;= #{offset} + #{limit}
+        ROWNUM &lt;= #{offset} + #{limit}
         )
 
         WHERE
-            rnum > #{offset}
+        rnum > #{offset}
 
     </select>
 

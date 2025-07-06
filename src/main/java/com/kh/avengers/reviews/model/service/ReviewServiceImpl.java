@@ -120,16 +120,18 @@ public class ReviewServiceImpl implements ReviewService {
    * @param travelNo 여행지 번호
    * @param offset 시작위치
    * @param limit 조회할 개수
+   * @param currentMemberNo 현재 로그인한 사용자 번호
+   * @param sort 정렬(최신||별점||좋아요)
    * @return 여행지의 리뷰 목록
    */
   @Override
-  public RequestData getTravelReviews(Long travelNo, int offset, int limit, Long currentMemberNo){
+  public RequestData getTravelReviews(Long travelNo, int offset, int limit, Long currentMemberNo, String sort){
 
-    log.info("여행지의 리뷰 목록 조회 시작 >> 여행지번허: {}, offset: {}, limit: {}, 현재사용자: {}", travelNo, offset, limit, currentMemberNo);
+    log.info("여행지의 리뷰 목록 조회 시작 >> 여행지번허: {}, offset: {}, limit: {}, 현재사용자: {}, 정렬: {}", travelNo, offset, limit, currentMemberNo, sort);
 
     try{
       // 1. 리뷰 조회
-      List<ReviewDTO> reviewList = reviewMapper.selectTravelReviews(travelNo, offset, limit, currentMemberNo);
+      List<ReviewDTO> reviewList = reviewMapper.selectTravelReviews(travelNo, offset, limit, currentMemberNo, sort);
       log.info("리뷰 조회 완료 >> 조회된 리뷰의 수 : {}", reviewList.size());
 
       // 2. 각 리뷰의 이미지 목록 조회
