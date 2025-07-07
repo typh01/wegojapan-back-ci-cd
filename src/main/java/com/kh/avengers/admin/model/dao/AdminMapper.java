@@ -15,6 +15,8 @@ public interface AdminMapper {
 
   List<AdminMemberDTO> findAllMembers(RowBounds pages);
 
+
+  
   AdminMemberDTO getMemberById(Long memberNo);
 
   void updateMemberRole(Long memberNo, String role);
