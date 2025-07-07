@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
     import com.kh.avengers.exception.commonexception.InvalidException;
     import com.kh.avengers.exception.commonexception.NotFoundException;
     import com.kh.avengers.exception.commonexception.UpdateException;
-    import com.kh.avengers.util.ResponseUtil;
+import com.kh.avengers.reviews.model.dao.ReviewMapper;
+import com.kh.avengers.util.ResponseUtil;
 
     import lombok.RequiredArgsConstructor;
     import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
         private final TravelMapper travelMapper;
         private final ResponseUtil responseUtil;
+        private final ReviewMapper reviewMapper;
 
         private TravelDTO checkTravelExists(Long travelNo) {
             TravelDTO result = travelMapper.selectTravelByNo(travelNo);
@@ -53,7 +55,7 @@ import org.springframework.stereotype.Service;
                 List<TravelOptionDTO> optionList = travelMapper.selectTravelOptionList(t.getTravelNo());
                 t.setOptionListForView(optionList);
 
-                Double avgRating = travelMapper.getAverageRatingByTravelNo(t.getTravelNo());
+                Double avgRating = reviewMapper.selectAverageRating(t.getTravelNo());
                 t.setRating(avgRating != null ? avgRating : 0.0);
             }
 
@@ -77,7 +79,7 @@ import org.springframework.stereotype.Service;
             travel.setTagListForView(travelMapper.selectTravelTagList(travelNo));
             travel.setOptionListForView(travelMapper.selectTravelOptionList(travelNo));
             travel.setThemaListForView(travelMapper.selectTravelThemaList(travelNo));
-            travel.setRating(travelMapper.getAverageRatingByTravelNo(travelNo));
+            travel.setRating(reviewMapper.selectAverageRating(travelNo));
 
 
             return responseUtil.rd("200", travel, "여행지 상세 조회 성공");

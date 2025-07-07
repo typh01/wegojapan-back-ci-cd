@@ -610,12 +610,5 @@
         SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
         WHERE TRAVEL_NO = #{travelNo}
       </update>
-
-      <select id="getAverageRatingByTravelNo" parameterType="long" resultType="double">
-        SELECT ROUND(AVG(RATING), 1)
-        FROM TB_TRAVEL_REVIEW
-        WHERE TRAVEL_NO = #{travelNo}
-      </select>
-
       
 </mapper>
