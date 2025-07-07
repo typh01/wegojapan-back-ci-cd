@@ -43,6 +43,7 @@ public class TravelDTO {
     private List<TravelThemaBridgeDTO> themaList;
     private List<TravelOptionBridgeDTO> optionList;
     
+    
     private List<TravelTagDTO> tagListForView;
     private List<TravelThemaDTO> themaListForView;
     private List<TravelOptionDTO> optionListForView;
