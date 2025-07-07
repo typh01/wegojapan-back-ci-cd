@@ -1,5 +1,6 @@
 package com.kh.avengers.admin.travels.model.service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.kh.avengers.exception.util.InvalidAccessException;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.kh.avengers.admin.travels.model.dao.TravelMapper;
 import com.kh.avengers.common.dto.RequestData;
 import com.kh.avengers.exception.commonexception.InvalidException;
+import com.kh.avengers.exception.util.InvalidAccessException;
 import com.kh.avengers.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -21,35 +23,30 @@ public class BookMarkServiceImpl implements BookMarkService{
 
   private final TravelMapper travelMapper;
 
+   @Override
+  public RequestData checkBookMark(Long travelNo, Long memberNo) {
+
+    Map<String, Long> book = new HashMap<>();
+    book.put("travelNo", travelNo);
+    book.put("memberNo", memberNo);
+    Long checkBook = travelMapper.checkedBook(book);
+
+    return responseUtil.rd("200",checkBook,"즐겨찾기 여부 확인 완료");
+  }
+
   @Override
-  public RequestData insertBookMark(Map<String, String> book) {
-    Long bookCheck = travelMapper.checkedBook(book);
-    if (bookCheck == 1) {
-        throw new InvalidException("즐겨찾기를 이미 눌렀습니다.");
-    }
-
-    Long bookCount = travelMapper.insertBookCount(book);
+  public RequestData selectBookMark(Map<String, Long> book) {
+    Long bookCount = travelMapper.checkedBook(book);
     if (bookCount == 0) {
-        throw new InvalidAccessException("즐겨찾기 등록에 실패했습니다.");
+        travelMapper.insertBookCount(book);
+    } else{
+        travelMapper.deleteBookCount(book);
     }
-
     return responseUtil.rd("200", book, "즐겨찾기 되었습니다.");
 }
 
-  @Override
-  public RequestData deleteBookMark(Map<String, String> book) {
-    Long bookCheck = travelMapper.checkedBook(book);
-    if (bookCheck == 0) {
-        throw new InvalidException("즐겨찾기를 이미 취소했습니다.");
-    }
+ 
 
-    Long bookCount = travelMapper.deleteBookCount(book);
-    if (bookCount == 0) {
-        throw new InvalidAccessException("즐겨찾기 취소에 실패했습니다.");
-    }
-
-    return responseUtil.rd("200", null, "즐겨찾기를 취소했습니다.");
-}
 
 
 

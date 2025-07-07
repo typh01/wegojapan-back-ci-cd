@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.kh.avengers.admin.model.dao.AdminMapper;
@@ -34,7 +33,12 @@ public class AdminServiceImpl implements AdminService{
     RowBounds rowBounds = new RowBounds(startIndex, size);
 
     List<AdminMemberDTO> members = adminMapper.findAllMembers(rowBounds);
-     return responseUtil.rd("200",members,"회원 목록 전체 조회 완료 ");
+
+    Long totalCount = adminMapper.countAllMember();
+    Map<String, Object> data = new HashMap<>();
+    data.put("list", members);
+    data.put("totalCount", totalCount);
+     return responseUtil.rd("200",data,"회원 목록 전체 조회 완료 ");
   }
 
   
@@ -61,7 +65,12 @@ public class AdminServiceImpl implements AdminService{
 
     List<AdminReviewReportDTO> reportList = adminMapper.selectReportMembers(rowBounds);
 
-    return responseUtil.rd("200", reportList, "신고된 리뷰조회 성공했습니다." );
+    Long totalCount = adminMapper.countReportMembers();
+    Map<String, Object> data = new HashMap<>();
+    data.put("list", reportList);
+    data.put("totalCount", totalCount);
+
+    return responseUtil.rd("200", data, "신고된 리뷰조회 성공했습니다." );
   }
 
 

@@ -15,7 +15,6 @@ import com.kh.avengers.admin.travels.model.dto.TravelTagDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaBridgeDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelThemaDTO;
 import com.kh.avengers.admin.travels.model.dto.TravelTimeDTO;
-import org.apache.ibatis.annotations.Param;
 
 
 @Mapper
@@ -86,18 +85,25 @@ public interface TravelMapper {
     long countFilteredTravelList(Map<String, Object> filters);
 
     // 즐겨찾기 중복 확인
-    Long checkedBook(Map<String, String> book);
+    Long checkedBook(Map<String,Long> book);
 
     // 즐겨찾기 올리기
-    Long insertBookCount(Map<String, String> book);
+    Long insertBookCount(Map<String, Long> book);
   
     // 즐겨찾기 취소하기
-    Long deleteBookCount(Map<String, String> book);
+    Long deleteBookCount(Map<String, Long> book);
+
+
+    List<TravelDTO> selectBookList(Long memberNo);
 
     int incrementViewCount(Long travelNo);
 
     List<TravelDTO> selectPagedTravelList(@Param("offset") int offset, @Param("limit") int limit);
+
     int selectTotalTravelCount();
+
+    Long selectBookMark(Map<String,String> book);
+
 
 }
 

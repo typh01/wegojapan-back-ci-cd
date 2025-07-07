@@ -40,6 +40,7 @@ public class SecurityConfigure {
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(requests -> {
+
               requests.requestMatchers("/ws/**", "/api/chat/**").permitAll();
               requests.requestMatchers("/admin/**").hasRole("ADMIN");
               requests.requestMatchers(HttpMethod.POST, "/api/auth/login",
@@ -75,7 +76,7 @@ public class SecurityConfigure {
             })
             .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-
+      
             .exceptionHandling(ex -> {
               ex.authenticationEntryPoint((request, response, authException) -> {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -91,8 +92,6 @@ public class SecurityConfigure {
 
             .build();
 
-  }
-
   @Bean
   public CorsConfigurationSource corsConfigurationSource(){
     CorsConfiguration configuration = new CorsConfiguration();
@@ -104,6 +103,7 @@ public class SecurityConfigure {
     source.registerCorsConfiguration("/**", configuration);
     return source;
   }
+
 
 
   @Bean
