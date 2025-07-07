@@ -17,8 +17,6 @@ public interface AdminMapper {
 
   AdminMemberDTO getMemberById(Long memberNo);
 
-
-
   void updateMemberRole(Long memberNo, String role);
 
   List<AdminReviewReportDTO> selectReportMembers(RowBounds rowBounds);
