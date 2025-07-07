@@ -33,14 +33,17 @@ public class TravelDTO {
     private String categoryName;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private List<TravelTimeDTO> timeList;
-    private List<TravelImageDTO> imageList;
-    private List<TravelTagDTO> tagListForView;
-    private List<TravelTagBridgeDTO> tagList;
-    private List<TravelOptionDTO> optionListForView;
-    private List<TravelOptionBridgeDTO> optionList;
-    private List<TravelThemaDTO> themaListForView;
-    private List<TravelThemaBridgeDTO> themaList;
     private String travelImage;
     private Long viewCount;
+    private Double rating;
+
+    private List<TravelTimeDTO> timeList;
+    private List<TravelImageDTO> imageList;
+    private List<TravelTagBridgeDTO> tagList;
+    private List<TravelThemaBridgeDTO> themaList;
+    private List<TravelOptionBridgeDTO> optionList;
+    
+    private List<TravelTagDTO> tagListForView;
+    private List<TravelThemaDTO> themaListForView;
+    private List<TravelOptionDTO> optionListForView;
 }

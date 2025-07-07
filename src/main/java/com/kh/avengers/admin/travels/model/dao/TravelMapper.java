@@ -104,7 +104,6 @@ public interface TravelMapper {
 
     Long selectBookMark(Map<String,String> book);
 
-
 }
 
     
