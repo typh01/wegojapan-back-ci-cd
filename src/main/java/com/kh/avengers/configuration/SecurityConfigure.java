@@ -1,6 +1,7 @@
 package com.kh.avengers.configuration;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.kh.avengers.configuration.filter.JwtFilter;
 import jakarta.servlet.http.HttpServletResponse;
@@ -97,6 +98,7 @@ public class SecurityConfigure {
   @Bean
   public CorsConfigurationSource corsConfigurationSource(){
     CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(List.of("https://wegojapan.shop"));
     configuration.setAllowedOriginPatterns(Arrays.asList("*"));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
