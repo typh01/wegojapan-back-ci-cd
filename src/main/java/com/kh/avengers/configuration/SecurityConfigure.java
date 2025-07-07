@@ -75,7 +75,7 @@ public class SecurityConfigure {
             })
             .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-      
+
             .exceptionHandling(ex -> {
               ex.authenticationEntryPoint((request, response, authException) -> {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -117,4 +117,4 @@ public class SecurityConfigure {
   public PasswordEncoder passwordEncoder(){
     return new BCryptPasswordEncoder();
   }
-}
+} 
