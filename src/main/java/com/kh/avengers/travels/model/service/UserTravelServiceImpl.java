@@ -3,7 +3,8 @@
     import com.kh.avengers.admin.travels.model.dao.TravelMapper;
     import com.kh.avengers.admin.travels.model.dto.TravelDTO;
     import com.kh.avengers.common.dto.RequestData;
-    import com.kh.avengers.travels.model.dao.UserTravelMapper;
+import com.kh.avengers.reviews.model.dao.ReviewMapper;
+import com.kh.avengers.travels.model.dao.UserTravelMapper;
     import com.kh.avengers.travels.model.dto.UserTravelDTO;
     import com.kh.avengers.util.ResponseUtil;
 
@@ -22,6 +23,7 @@ import java.util.HashMap;
     public class UserTravelServiceImpl implements UserTravelService {
         private final UserTravelMapper userTravelMapper;
         private final TravelMapper travelMapper;
+        private final ReviewMapper reviewMapper;
         private final ResponseUtil responseUtil;
 
         @Override
@@ -112,6 +114,9 @@ import java.util.HashMap;
                     t.setTagListForView(travelMapper.selectTravelTagList(travelNo));
                     t.setOptionListForView(travelMapper.selectTravelOptionList(travelNo));
                     t.setTimeList(travelMapper.selectTravelTimeList(travelNo));
+
+                    Double avgRating = reviewMapper.selectAverageRating(travelNo);
+                    t.setRating(avgRating != null ? avgRating : 0.0);
 
                     travelList.add(t);
                 }

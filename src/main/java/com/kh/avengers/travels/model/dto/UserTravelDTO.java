@@ -29,6 +29,7 @@ public class UserTravelDTO {
     private Long viewCount;
     private String categoryName;
     private String guName;
+    private Double rating;
 
     private List<UserTravelImageDTO> imageList;
     private List<UserTravelTimeDTO> timeList;
