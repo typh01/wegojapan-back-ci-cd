@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.pl.NIP;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -21,12 +22,11 @@ public class ChatRoom {
   private String status; // 상담 상태 (WAITING || ACTIVE ||CLOSED)
   private LocalDateTime createdAt; // 생성 시간
   private LocalDateTime updatedAt; // 마지막 업데이트 시간
-  private Set<String> participants; // 참여자 목록
+  private Set<String> participants = new HashSet<>();// 참여자 목록
   private String lastMessage; // 마지막 메시지
   private LocalDateTime lastMessageTime; // 마지막 메시지 시간
 
-  public ChatRoom(String roomId, String customerId, String customerName) {
-  }
+
 
   public enum RoomStatus {
     WAITING,  // 대기 중 (직원 배정 전)
