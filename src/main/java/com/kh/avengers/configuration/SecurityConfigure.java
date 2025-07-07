@@ -67,7 +67,7 @@ public class SecurityConfigure {
                         requests.requestMatchers(HttpMethod.POST, "/api/reports/review", "/api/bookMark/bookmark",
                                                                   "/api/reviews/insert-like").authenticated();
                         requests.requestMatchers(HttpMethod.PUT).authenticated();
-                        requests.requestMatchers(HttpMethod.DELETE, "/api/members/deleteMember",
+                        requests.requestMatchers(HttpMethod.DELETE, "/api/members/deleteMember").authenticated();
 
 
                         requests.requestMatchers(HttpMethod.GET,"/api/admin/**", "/api/members/checkedMemberName").authenticated();
