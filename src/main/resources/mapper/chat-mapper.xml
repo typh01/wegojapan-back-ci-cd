@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.kh.avengers.chat.model.dao.ChatMapper">
+
+    <!-- ChatRoom 객체와 테이블 컬럼 매핑 -->
+    <resultMap id="chatRoomResult" type="com.kh.avengers.chat.model.dto.ChatRoom">
+        <id property="roomId" column="room_id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="staffId" column="staff_id"/>
+        <result property="staffName" column="staff_name"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="lastMessage" column="last_message"/>
+        <result property="lastMessageTime" column="last_message_time"/>
+    </resultMap>
+
+    <!-- ChatMessage 객체와 테이블 컬럼을 매핑 -->
+    <resultMap id="chatMessageResult" type="com.kh.avengers.chat.model.dto.ChatMessage">
+        <id property="id" column="id"/>
+        <result property="roomId" column="room_id"/>
+        <result property="senderId" column="sender_id"/>
+        <result property="senderName" column="sender_name"/>
+        <result property="content" column="content"/>
+        <result property="type" column="type"/>
+        <result property="timestamp" column="timestamp"/>
+        <result property="isStaff" column="is_staff" typeHandler="com.kh.avengers.common.typehandler.BooleanYnTypeHandler"/>
+    </resultMap>
+
+    <!-- 새로운 채팅방 생성 -->
+    <insert id="insertChatRoom" parameterType="com.kh.avengers.chat.model.dto.ChatRoom">
+        <selectKey keyProperty="roomId" resultType="string" order="BEFORE">
+        SELECT
+            CASE
+                WHEN #{roomId} IS NULL OR LENGTH(TRIM(#{roomId})) = 0
+                THEN 'ROOM_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS') || '_' || SUBSTR(DBMS_RANDOM.STRING('X', 8), 1, 8)
+                ELSE #{roomId}
+            END
+            FROM DUAL
+        </selectKey>
+        INSERT INTO chat_rooms
+            (
+                room_id,
+                customer_id,
+                customer_name,
+                status,
+                created_at,
+                updated_at
+            )
+        VALUES
+            (
+                #{roomId},
+                #{customerId},
+                #{customerName},
+                'WAITING',      <!-- 초기 상태는 대기중 -->
+                SYSTIMESTAMP,
+                SYSTIMESTAMP
+            )
+    </insert>
+
+    <!-- ID로 특정 채팅방 조회 -->
+    <select id="selectChatRoomById" resultMap="chatRoomResult">
+        SELECT
+            room_id,
+            customer_id,
+            customer_name,
+            staff_id,
+            staff_name,
+            status,
+            created_at,
+            updated_at,
+            last_message,
+            last_message_time
+        FROM
+            chat_rooms
+        WHERE
+            room_id = #{roomId}
+    </select>
+
+    <!-- 새로운 채팅 메시지 저장 -->
+    <insert id="insertChatMessage" parameterType="com.kh.avengers.chat.model.dto.ChatMessage">
+        <!-- 메시지 ID를 시퀀스로 자동 생성 -->
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT seq_chat_messages_id.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO chat_messages
+            (
+                id,           <!-- 메시지 ID -->
+                room_id,
+                sender_id,
+                sender_name,
+                content,
+                type,         <!-- 메시지 타입 -->
+                "timestamp",  <!-- 메시지 시간 -->
+                is_staff
+            )
+        VALUES
+            (
+                #{id},
+                #{roomId},
+                #{senderId},
+                #{senderName},
+                #{content},
+                #{type, jdbcType=VARCHAR},
+                SYSTIMESTAMP,
+                #{isStaff, typeHandler=com.kh.avengers.common.typehandler.BooleanYnTypeHandler}
+            )
+    </insert>
+
+    <!-- 채팅방 정보 업데이트 -->
+    <update id="updateChatRoom" parameterType="com.kh.avengers.chat.model.dto.ChatRoom">
+        UPDATE chat_rooms
+            SET
+                staff_id = #{staffId},
+                staff_name = #{staffName},
+                status = #{status},
+                last_message = #{lastMessage},
+                last_message_time = SYSTIMESTAMP,
+                updated_at = SYSTIMESTAMP
+            WHERE
+                room_id = #{roomId}
+    </update>
+
+
+
+    <!-- 대기중인 모든 채팅방 조회 -->
+    <select id="selectWaitingRooms" resultMap="chatRoomResult">
+        SELECT
+            room_id,
+            customer_id,
+            customer_name,
+            staff_id,
+            staff_name,
+            status,
+            created_at,
+            updated_at,
+            last_message,
+            last_message_time
+        FROM
+            chat_rooms
+        WHERE
+            status = 'WAITING'     <!-- 대기중인 채팅방만 조회 -->
+        ORDER BY
+            created_at ASC
+    </select>
+
+
+    <!-- 특정 직원이 담당중인 활성 채팅방 조회 -->
+    <select id="selectActiveRoomsByStaffId" resultMap="chatRoomResult">
+        SELECT
+            room_id,
+            customer_id,
+            customer_name,
+            staff_id,
+            staff_name,
+            status,
+            created_at,
+            updated_at,
+            last_message,
+            last_message_time
+        FROM
+            chat_rooms
+        WHERE
+            staff_id = #{staffId}  <!-- 특정 직원이 담당하는 채팅방 -->
+        AND
+            status = 'ACTIVE'        <!-- 활성 상태인 채팅방만 -->
+        ORDER BY updated_at DESC
+    </select>
+
+
+    <!-- 고객의 활성 채팅방 조회 (LIMIT 대신 ROWNUM 사용) -->
+    <select id="selectActiveRoomByCustomerId" resultMap="chatRoomResult">
+        SELECT
+            *
+        FROM
+            (
+            SELECT
+                room_id,
+                customer_id,
+                customer_name,
+                staff_id,
+                staff_name,
+                status,
+                created_at,
+                updated_at,
+                last_message,
+                last_message_time
+            FROM
+                chat_rooms
+        WHERE
+            customer_id = #{customerId}
+        AND status IN ('WAITING', 'ACTIVE')      <!-- 대기중이거나 활성 상태인 채팅방 -->
+        ORDER BY
+            created_at DESC
+            )
+        WHERE ROWNUM = 1
+    </select>
+
+
+
+    <!-- 특정 채팅방의 모든 메시지 조회 -->
+    <select id="selectMessagesByRoomId" resultMap="chatMessageResult">
+        SELECT
+            id,
+            room_id,
+            sender_id,
+            sender_name,
+            content,
+            type,
+            "timestamp",  <!-- 메시지 시간 -->
+            is_staff
+        FROM
+            chat_messages
+        WHERE
+            room_id = #{roomId}
+        ORDER BY
+            "timestamp" ASC
+    </select>
+
+
+
+</mapper>

@@ -3,6 +3,7 @@ package com.kh.avengers.configuration;
 import java.util.Arrays;
 
 import com.kh.avengers.configuration.filter.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -38,6 +39,8 @@ public class SecurityConfigure {
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(requests -> {
+
+              requests.requestMatchers("/ws/**", "/api/chat/**").permitAll();
               requests.requestMatchers("/admin/**").hasRole("ADMIN");
               requests.requestMatchers(HttpMethod.POST, "/api/auth/login",
                       "/api/members",
@@ -72,9 +75,24 @@ public class SecurityConfigure {
             })
             .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+      
+            .exceptionHandling(ex -> {
+              ex.authenticationEntryPoint((request, response, authException) -> {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\": \"인증이 필요합니다.\", \"status\": 401}");
+              });
+              ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\": \"접근 권한이 없습니다.\", \"status\": 403}");
+              });
+            })
+
             .build();
 
   }
+
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource(){
@@ -90,14 +108,10 @@ public class SecurityConfigure {
 
 
 
-
-
-
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration authentiConfig) throws Exception {
     return authentiConfig.getAuthenticationManager();
   }
-
 
   @Bean
   public PasswordEncoder passwordEncoder(){
