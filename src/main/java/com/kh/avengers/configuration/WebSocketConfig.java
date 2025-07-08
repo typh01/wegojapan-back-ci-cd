@@ -33,6 +33,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws")
+            .setAllowedOriginPatterns("https://wegojapan.shop", "http://localhost:5173")
             .withSockJS();
   }
 
@@ -48,8 +49,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600);
 
+
         registry.addMapping("/ws/**")
-                .allowedOrigins("https://wegojapan.shop")
+                .allowedOrigins("https://wegojapan.shop", "http://localhost:5173")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
