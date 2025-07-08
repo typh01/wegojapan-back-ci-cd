@@ -30,7 +30,7 @@ public class SecurityConfigure {
   SecurityConfigure(JwtFilter jwtFilter) {
     this.jwtFilter = jwtFilter;
   }
-
+  
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
 
