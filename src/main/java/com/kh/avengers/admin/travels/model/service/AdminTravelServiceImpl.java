@@ -57,13 +57,15 @@ import com.kh.avengers.util.ResponseUtil;
 
                 Double avgRating = reviewMapper.selectAverageRating(t.getTravelNo());
                 t.setRating(avgRating != null ? avgRating : 0.0);
+                System.out.println(avgRating);
+                System.out.println("출력");
             }
 
             Map<String, Object> result = new HashMap<>();
             result.put("data", travelList);
             result.put("total", total);
 
-            return responseUtil.rd("200", result, "여행지 목록 조회 완료");
+            return responseUtil.rd("200", result, "여행지 목록 조회 완료(별점 포함)");
         }
 
 
