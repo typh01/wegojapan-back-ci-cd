@@ -51,8 +51,14 @@ public class AdminController {
     RequestData result = adminService.reportMember(page);
 
     return ResponseEntity.ok(result);
-  
   }
+
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+  @PutMapping("/report/{reportNo}")
+  public ResponseEntity<RequestData> updateReportStatus(@PathVariable("reportNo") Long reportNo) {
+    RequestData result = adminService.updateReportStatus(reportNo);
+    return ResponseEntity.ok(result);
+}
 
 
 }
