@@ -26,7 +26,8 @@
     ORDER 
        BY 
           ENROLL_DATE DESC
-  </select>
+</select>
+
 
   <select id="countAllMember" resultType="Long">
       SELECT 
@@ -55,7 +56,6 @@
     WHERE
           MEMBER_NO =  #{memberNo}
  </select>
-
   <update id="updateMemberStatus" parameterType="AdminMemberDTO">
     UPDATE 
             TB_MEMBER
@@ -64,7 +64,6 @@
      WHERE 
             MEMBER_NO = #{memberNo}
   </update>
-
  	<!--역할 업데이트-->
     <update id="updateMemberRole" parameterType="AdminMemberDTO">
         UPDATE 
@@ -74,10 +73,11 @@
          WHERE 
                 MEMBER_NO = #{memberNo}
     </update>
-
-    <select id="selectReportMembers" parameterType="map" resultType="AdminReviewReportDTO">
+    <select id="selectReportMembers" resultType="AdminReviewReportDTO">
   SELECT
           RR.REVIEW_REPORT_NO reportNo,
+           R.REVIEW_NO reviewNo,         
+           R.TRAVEL_NO travelNo,
           R.REVIEW_CONTENT    reviewContent,
           WRITER.MEMBER_NAME  memberName,
           RR.REPORT_CONTENT   reportReason,
@@ -87,7 +87,6 @@
               WHEN RR.STATUS = 'N' THEN '대기중'
               ELSE '처리완료'
           END status
-
     FROM 
           TB_REVIEW_REPORT RR
     JOIN 
@@ -101,7 +100,18 @@
     ORDER 
        BY 
           RR.CREATE_DATE DESC
-</select>
+  </select>
+
+  <update id="updateStatusReport" parameterType="long">
+    UPDATE 
+           TB_REVIEW_REPORT
+       SET 
+           STATUS = 'Y'
+     WHERE 
+           REVIEW_REPORT_NO = #{reviewReportNo}
+  </update>
+
+  
 
 
 </mapper>

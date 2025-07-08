@@ -12,7 +12,8 @@ import com.kh.avengers.admin.model.dto.AdminMemberDTO;
 import com.kh.avengers.admin.model.dto.AdminReviewReportDTO;
 import com.kh.avengers.common.dto.RequestData;
 import com.kh.avengers.exception.commonexception.NotFoundException;
-
+import com.kh.avengers.reviews.model.dao.ReviewMapper;
+import com.kh.avengers.reviews.model.dto.ReviewDTO;
 import com.kh.avengers.util.ResponseUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminServiceImpl implements AdminService{
   private final AdminMapper adminMapper;
   private final ResponseUtil responseUtil;
+  private final ReviewMapper reviewMapper;
  
   
   @Override
@@ -72,6 +74,21 @@ public class AdminServiceImpl implements AdminService{
 
     return responseUtil.rd("200", data, "신고된 리뷰조회 성공했습니다." );
   }
+
+
+
+  @Override
+  public RequestData updateReportStatus(Long reportNo) {
+    Long result = adminMapper.updateStatusReport(reportNo);
+    if (result == 0) {
+        throw new NotFoundException("해당 신고가 존재하지 않습니다.");
+    }
+
+    return responseUtil.rd("200", null, "신고 상태를 처리완료로 변경했습니다.");
+  }
+
+
+
 
 
 

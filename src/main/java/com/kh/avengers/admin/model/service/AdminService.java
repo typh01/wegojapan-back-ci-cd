@@ -11,4 +11,9 @@ public interface AdminService {
 
   RequestData reportMember(int page);
 
+
+  RequestData updateReportStatus(Long reportNo);
+
+
+
 }
