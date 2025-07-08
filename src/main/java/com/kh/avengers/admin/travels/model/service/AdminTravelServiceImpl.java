@@ -57,6 +57,8 @@ import com.kh.avengers.util.ResponseUtil;
 
                 Double avgRating = reviewMapper.selectAverageRating(t.getTravelNo());
                 t.setRating(avgRating != null ? avgRating : 0.0);
+                System.out.println(avgRating);
+                System.out.println("출력");
             }
 
             Map<String, Object> result = new HashMap<>();
