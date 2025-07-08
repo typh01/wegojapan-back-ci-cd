@@ -52,7 +52,8 @@ public class SecurityConfigure {
                       "/api/emails/findPassword-code",
                       "/api/emails/new-password",
                       "/api/upload/s3",
-                      "/api/admin/**"
+                      "/api/admin/**",
+                      "/api/chat/create"
               ).permitAll();
 
 
