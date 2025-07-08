@@ -15,6 +15,8 @@ import lombok.ToString;
 @ToString
 public class AdminMemberDTO {
     private Long memberNo;
+    private Long reviewNo;      
+    private Long travelNo;
     private String memberId;
     private String memberName;
     private String email;

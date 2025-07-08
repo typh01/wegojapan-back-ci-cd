@@ -42,7 +42,7 @@ public class SecurityConfigure {
             .authorizeHttpRequests(requests -> {
 
               requests.requestMatchers("/ws/**", "/api/chat/**").permitAll();
-              requests.requestMatchers("/admin/**").hasRole("ADMIN");
+              requests.requestMatchers("/api/admin/**").hasRole("ADMIN");
               requests.requestMatchers(HttpMethod.POST, "/api/auth/login",
                       "/api/members",
                       "/api/emails/send-email",

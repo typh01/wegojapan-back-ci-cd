@@ -15,6 +15,7 @@ import lombok.ToString;
 @ToString
 public class AdminReviewReportDTO {
   private Long reportNo;
+  private Long reviewNo;
   private String reviewContent;
   private String memberName;
   private String reportReason;

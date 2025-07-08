@@ -8,6 +8,7 @@ import org.apache.ibatis.session.RowBounds;
 
 import com.kh.avengers.admin.model.dto.AdminMemberDTO;
 import com.kh.avengers.admin.model.dto.AdminReviewReportDTO;
+import com.kh.avengers.reviews.model.dto.ReviewDTO;
 
 
 @Mapper
@@ -26,5 +27,13 @@ public interface AdminMapper {
   Long countAllMember();
 
   Long countReportMembers();
+
+
+
+  Long updateStatusReport(Long reportNo);
+
+
+
+  ReviewDTO findReviewByNo(Long reviewNo);
 
 }
