@@ -18,8 +18,8 @@ public class TravelPlannerStep4Response {
     private String planDescription;
     private Integer minBudget;
     private Integer maxBudget;
-    private String flightLink;
-    private String hotelLink;
+    private String transportReservationLink;
+    private String accommodationLink;
     private String message;
 
 

@@ -33,8 +33,8 @@ public class TravelPlannerStep4Request {
     @Min(value = 0, message = "예산은 0원 이상이어야 합니다.")
     private Integer maxBudget;
 
-    private String flightLink;
-    private String hotelLink;
+    private String transportReservationLink;
+    private String accommodationLink;
 
 
 }
