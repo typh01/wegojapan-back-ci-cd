@@ -63,8 +63,8 @@ public class TravelPlannerStep4ServiceImpl implements TravelPlannerStep4Service 
                                                      .planDescription(request.getPlanDescription())
                                                      .minBudget(request.getMinBudget())
                                                      .maxBudget(request.getMaxBudget())
-                                                     .transportReservationLink(request.getFlightLink())
-                                                     .accommodationLink(request.getHotelLink())
+                                                     .transportReservationLink(request.getTransportReservationLink())
+                                                     .accommodationLink(request.getAccommodationLink())
                                                      .build();
 
 
@@ -86,8 +86,8 @@ public class TravelPlannerStep4ServiceImpl implements TravelPlannerStep4Service 
         .planDescription(request.getPlanDescription())
         .minBudget(request.getMinBudget())
         .maxBudget(request.getMaxBudget())
-        .flightLink(request.getFlightLink())
-        .hotelLink(request.getHotelLink())
+        .transportReservationLink(request.getTransportReservationLink())
+        .accommodationLink(request.getAccommodationLink())
         .message("여행 플랜이 성공적으로 완료되었습니다.")
         .build();
     }
